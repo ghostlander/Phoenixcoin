@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2012 Litecoin Developers
-// Copyright (c) 2011-2012 Phoenixcoin Developers
+// Copyright (c) 2013 Phoenixcoin Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file LICENCE or http://www.opensource.org/licenses/mit-license.php
 
@@ -905,8 +905,12 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
     // 2400, 600, 108, 126 and 20 blocks respectively
     int nInterval = nTargetTimespan / nTargetSpacing;
 
+    // Just in case a hard fork isn't aligned properly
     bool fHardFork = (nHeight == nForkOne) || (nHeight == nForkTwo) || (nHeight == nForkThree) || (nHeight == nForkFour);
-    if(fTestNet) fHardFork = false;
+    if(fTestNet) {
+        if(nHeight == nTestnetForkOne) fHardFork = true;
+        else fHardFork = false;
+    }
 
     // Difficulty rules for regular blocks
     if((nHeight % nInterval != 0) && !(fHardFork)) {
@@ -931,8 +935,10 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
     }
 
     // Basic 100 blocks averaging after the 4th livenet or 1st testnet hard fork
-    if((nHeight >= nForkFour) || (fTestNet && (nHeight >= nTestnetForkOne)))
-      nInterval *= 5;
+    if((nHeight >= nForkFour) || (fTestNet && (nHeight >= nTestnetForkOne))) {
+        nInterval *= 5;
+        nTargetTimespan *= 5;
+    }
 
     // The 1st retarget after the genesis
     if(nInterval >= nHeight) nInterval = nHeight - 1;
@@ -1487,10 +1493,10 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex)
     if (vtx[0].GetValueOut() > GetBlockValue(pindex->nHeight, nFees))
         return false;
 
-     // No more blocks with bogus reward accepted
-     if ((pindex->nHeight >= nForkFour) &&
-       (vtx[0].GetValueOut() != GetBlockValue(pindex->nHeight, nFees)))
-         return false;
+    // No more blocks with bogus reward accepted
+    if((fTestNet || (pindex->nHeight >= nForkFour)) &&
+      (vtx[0].GetValueOut() != GetBlockValue(pindex->nHeight, nFees)))
+        return false;
 
     // Update block index on disk without changing it in memory.
     // The memory index structure will be changed after the db commits.
@@ -1881,8 +1887,9 @@ bool CBlock::AcceptBlock()
         return error("AcceptBlock() : block %d has a time stamp behind the median", nHeight);
 
     // Check for time stamp (past limit #2)
-    if ((nHeight >= nForkFour) && (GetBlockTime() <= pindexPrev->GetBlockTime() - 30 * 60))
-         return error("AcceptBlock() : block %d has a time stamp too far in the past", nHeight);
+    if((fTestNet || (nHeight >= nForkFour)) &&
+      (GetBlockTime() <= pindexPrev->GetBlockTime() - 30 * 60))
+        return error("AcceptBlock() : block %d has a time stamp too far in the past", nHeight);
 
     // Check that all transactions are finalized
     BOOST_FOREACH(const CTransaction& tx, vtx)
