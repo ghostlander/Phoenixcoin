@@ -98,7 +98,7 @@ void AskPassphraseDialog::accept()
             break;
         }
         QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Confirm wallet encryption"),
-                 tr("WARNING: If you encrypt your wallet and lose your passphrase, you will <b>LOSE ALL OF YOUR PHENIXCOINS</b>!\nAre you sure you wish to encrypt your wallet?"),
+                 tr("WARNING: If you encrypt your wallet and forget your passphrase, you <b>LOSE ALL OF YOUR PXC</b> stored!\nAre you sure you wish to encrypt your wallet?"),
                  QMessageBox::Yes|QMessageBox::Cancel,
                  QMessageBox::Cancel);
         if(retval == QMessageBox::Yes)

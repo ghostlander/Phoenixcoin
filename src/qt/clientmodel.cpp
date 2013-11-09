@@ -163,7 +163,7 @@ int ClientModel::getHashrate() const
     return (boost::int64_t)dHashesPerSec;
 }
 
-// Litecoin: copied from bitcoinrpc.cpp.
+// copied from bitcoinrpc.cpp
 double ClientModel::GetDifficulty() const
 {
     // Floating point number that is a multiple of the minimum difficulty,
