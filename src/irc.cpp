@@ -193,7 +193,7 @@ void ThreadIRCSeed(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadIRCSeed(parg));
 
     // Make this thread recognisable as the IRC seeding thread
-    RenameThread("bitcoin-ircseed");
+    RenameThread("phoenixcoin-ircseed");
 
     try
     {
