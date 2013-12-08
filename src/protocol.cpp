@@ -9,7 +9,7 @@
 #include "util.h"
 #include "netbase.h"
 
-#ifndef WIN32
+#ifndef WINDOWS
 # include <arpa/inet.h>
 #endif
 

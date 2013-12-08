@@ -13,7 +13,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-#ifndef WIN32
+#ifndef WINDOWS
 #include "sys/stat.h"
 #endif
 

@@ -15,7 +15,7 @@
 
 extern int nConnectTimeout;
 
-#ifdef WIN32
+#ifdef WINDOWS
 // In MSVC, this is defined as a macro, undefine it to prevent a compile and link error
 #undef SetPort
 #endif

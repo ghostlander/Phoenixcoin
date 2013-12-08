@@ -19,7 +19,7 @@
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
-#ifndef WIN32
+#ifndef WINDOWS
 #include <signal.h>
 #endif
 
@@ -36,7 +36,7 @@ CClientUIInterface uiInterface;
 
 void ExitTimeout(void* parg)
 {
-#ifdef WIN32
+#ifdef WINDOWS
     Sleep(5000);
     ExitProcess(0);
 #endif
@@ -261,7 +261,7 @@ std::string HelpMessage()
 #ifdef QT_GUI
         "  -server                " + _("Accept command line and JSON-RPC commands") + "\n" +
 #endif
-#if !defined(WIN32) && !defined(QT_GUI)
+#if !defined(WINDOWS) && !defined(QT_GUI)
         "  -daemon                " + _("Run in the background as a daemon and accept commands") + "\n" +
 #endif
         "  -testnet               " + _("Use the test network") + "\n" +
@@ -269,7 +269,7 @@ std::string HelpMessage()
         "  -debugnet              " + _("Output extra network debugging information") + "\n" +
         "  -logtimestamps         " + _("Prepend debug output with timestamp") + "\n" +
         "  -printtoconsole        " + _("Send trace/debug info to console instead of debug.log file") + "\n" +
-#ifdef WIN32
+#ifdef WINDOWS
         "  -printtodebugger       " + _("Send trace/debug info to debugger") + "\n" +
 #endif
         "  -rpcuser=<user>        " + _("Username for JSON-RPC connections") + "\n" +
@@ -311,10 +311,10 @@ bool AppInit2()
     // Disable confusing "helpful" text message on abort, ctrl-c
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 #endif
-#ifndef WIN32
+#ifndef WINDOWS
     umask(077);
 #endif
-#ifndef WIN32
+#ifndef WINDOWS
     // Clean shutdown on SIGTERM
     struct sigaction sa;
     sa.sa_handler = HandleSIGTERM;
@@ -380,7 +380,7 @@ bool AppInit2()
 
     bitdb.SetDetach(GetBoolArg("-detachdb", false));
 
-#if !defined(WIN32) && !defined(QT_GUI)
+#if !defined(WINDOWS) && !defined(QT_GUI)
     fDaemon = GetBoolArg("-daemon");
 #else
     fDaemon = false;
@@ -444,7 +444,7 @@ bool AppInit2()
     if (!lock.try_lock())
         return InitError(strprintf(_("Cannot obtain a lock on data directory %s.  Phoenixcoin is probably already running."), GetDataDir().string().c_str()));
 
-#if !defined(WIN32) && !defined(QT_GUI)
+#if !defined(WINDOWS) && !defined(QT_GUI)
     if (fDaemon)
     {
         // Daemonize

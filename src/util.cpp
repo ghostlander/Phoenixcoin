@@ -32,7 +32,7 @@ namespace boost {
 #include <openssl/rand.h>
 #include <stdarg.h>
 
-#ifdef WIN32
+#ifdef WINDOWS
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
 #pragma warning(disable:4804)
@@ -100,7 +100,7 @@ public:
             ppmutexOpenSSL[i] = new CCriticalSection();
         CRYPTO_set_locking_callback(locking_callback);
 
-#ifdef WIN32
+#ifdef WINDOWS
         // Seed random number generator with screen scrape and other hardware sources
         RAND_screen();
 #endif
@@ -144,7 +144,7 @@ void RandAddSeedPerfmon()
         return;
     nLastPerfmon = GetTime();
 
-#ifdef WIN32
+#ifdef WINDOWS
     // Don't need this on Linux, OpenSSL automatically uses /dev/urandom
     // Seed with the entire set of perfmon data
     unsigned char pdata[250000];
@@ -246,7 +246,7 @@ inline int OutputDebugStringF(const char* pszFormat, ...)
         }
     }
 
-#ifdef WIN32
+#ifdef WINDOWS
     if (fPrintToDebugger)
     {
         static CCriticalSection cs_OutputDebugStringF;
@@ -494,7 +494,7 @@ void ParseParameters(int argc, const char* const argv[])
             pszValue = strchr(psz, '=');
             *pszValue++ = '\0';
         }
-        #ifdef WIN32
+        #ifdef WINDOWS
         _strlwr(psz);
         if (psz[0] == '/')
             psz[0] = '-';
@@ -933,7 +933,7 @@ bool WildcardMatch(const string& str, const string& mask)
 
 static std::string FormatException(std::exception* pex, const char* pszThread)
 {
-#ifdef WIN32
+#ifdef WINDOWS
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
@@ -973,7 +973,7 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-#ifdef WIN32
+#ifdef WINDOWS
     // Windows < Vista: C:\Documents and Settings\Username\Application Data\Phoenixcoin
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\Phoenixcoin
 //    return GetSpecialFolderPath(CSIDL_APPDATA) / "Phoenixcoin";
@@ -1083,19 +1083,19 @@ void CreatePidFile(const boost::filesystem::path &path, pid_t pid)
 
 bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest)
 {
-#ifdef WIN32
+#ifdef WINDOWS
     return MoveFileExA(src.string().c_str(), dest.string().c_str(),
                       MOVEFILE_REPLACE_EXISTING);
 #else
     int rc = std::rename(src.string().c_str(), dest.string().c_str());
     return (rc == 0);
-#endif /* WIN32 */
+#endif /* WINDOWS */
 }
 
 void FileCommit(FILE *fileout)
 {
     fflush(fileout);                // harmless if redundantly called
-#ifdef WIN32
+#ifdef WINDOWS
     _commit(_fileno(fileout));
 #else
     fsync(fileno(fileout));
@@ -1254,7 +1254,7 @@ std::string FormatSubVersion(const std::string& name, int nClientVersion, const 
     return ss.str();
 }
 
-#ifdef WIN32
+#ifdef WINDOWS
 boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
 {
     namespace fs = boost::filesystem;

@@ -15,23 +15,25 @@ LIBPATHS= \
  -L"C:\openssl-1.0.1e"
 
 LIBS= \
- -l boost_system-mgw46-mt-s-1_54 \
- -l boost_filesystem-mgw46-mt-s-1_54 \
- -l boost_program_options-mgw46-mt-s-1_54 \
- -l boost_thread-mgw46-mt-s-1_54 \
+ -l boost_system-mgw46-mt-1_54 \
+ -l boost_filesystem-mgw46-mt-1_54 \
+ -l boost_program_options-mgw46-mt-1_54 \
+ -l boost_thread-mgw46-mt-1_54 \
  -l db_cxx \
  -l ssl \
  -l crypto
 
-DEFS=-DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -DUSE_IPV6
-#DEBUGFLAGS=-g
+DEFS=-D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -DUSE_IPV6
+# Uncomment for MinGW64
+#DEFS+=-DWIN64
 CFLAGS=-mthreads -O2 -w -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
+#DEBUGFLAGS=-g
 
 TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
 
 ifdef USE_UPNP
- INCLUDEPATHS += -I"C:\miniupnpc-1.6"
- LIBPATHS += -L"C:\miniupnpc-1.6"
+ INCLUDEPATHS += -I"C:\miniupnpc-1.8"
+ LIBPATHS += -L"C:\miniupnpc-1.8"
  LIBS += -l miniupnpc -l iphlpapi
  DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
 endif
@@ -89,7 +91,7 @@ test_phoenixcoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
 	g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework $(LIBS)
 
 clean:
-	rm -fv phoenixcoind test_phoenixcoi
-	rm -fv obj\*
-	rm -fv obj-test\*
-	rm -fv build.h
+	del /q phoenixcoind.exe test_phoenixcoin.exe
+	del /q obj\*
+	del /q obj-test\*
+	del /q build.h

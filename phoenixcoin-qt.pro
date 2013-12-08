@@ -318,7 +318,9 @@ isEmpty(BOOST_INCLUDE_PATH) {
 }
 
 windows:LIBS += -lshlwapi
-windows:DEFINES += WIN32
+windows:DEFINES += WINDOWS
+# Uncomment for MinGW64
+#windows:DEFINES += WIN64
 windows:RC_FILE = src/qt/res/bitcoin-qt.rc
 
 windows:!contains(MINGW_THREAD_BUGFIX, 0) {

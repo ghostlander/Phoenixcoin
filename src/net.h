@@ -13,7 +13,7 @@
 #include <boost/foreach.hpp>
 #include <openssl/rand.h>
 
-#ifndef WIN32
+#ifndef WINDOWS
 #include <arpa/inet.h>
 #endif
 

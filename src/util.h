@@ -10,13 +10,16 @@
 
 #include "uint256.h"
 
-#ifndef WIN32
+#ifndef WINDOWS
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#elif defined WIN64
+#include <sys/types.h>
 #else
 typedef int pid_t; /* define for windows compatiblity */
 #endif
+
 #include <map>
 #include <vector>
 #include <string>
@@ -75,7 +78,7 @@ T* alignup(T* p)
     return u.ptr;
 }
 
-#ifdef WIN32
+#ifdef WINDOWS
 #define MSG_NOSIGNAL        0
 #define MSG_DONTWAIT        0
 
@@ -166,7 +169,7 @@ boost::filesystem::path GetConfigFile();
 boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path &path, pid_t pid);
 void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet, std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
-#ifdef WIN32
+#ifdef WINDOWS
 boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 #endif
 void ShrinkDebugFile();
@@ -275,7 +278,7 @@ inline void PrintHex(const std::vector<unsigned char>& vch, const char* pszForma
 inline int64 GetPerformanceCounter()
 {
     int64 nCounter = 0;
-#ifdef WIN32
+#ifdef WINDOWS
     QueryPerformanceCounter((LARGE_INTEGER*)&nCounter);
 #else
     timeval t;
@@ -309,7 +312,7 @@ void skipspaces(T& it)
 
 inline bool IsSwitchChar(char c)
 {
-#ifdef WIN32
+#ifdef WINDOWS
     return c == '-' || c == '/';
 #else
     return c == '-';
@@ -553,7 +556,7 @@ public:
 
 // Note: It turns out we might have been able to use boost::thread
 // by using TerminateThread(boost::thread.native_handle(), 0);
-#ifdef WIN32
+#ifdef WINDOWS
 
 inline HANDLE CreateThread(void(*pfn)(void*), void* parg, bool fWantHandle=false)
 {
