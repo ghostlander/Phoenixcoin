@@ -59,7 +59,7 @@ void Shutdown(void* parg)
     static bool fTaken;
 
     // Make this thread recognisable as the shutdown thread
-    RenameThread("phoenixcoin-shutoff");
+    RenameThread("pxc-shutoff");
 
     bool fFirstThread = false;
     {

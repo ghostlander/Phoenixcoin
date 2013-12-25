@@ -410,7 +410,7 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 void ThreadGetMyExternalIP(void* parg)
 {
     // Make this thread recognisable as the external IP detection thread
-    RenameThread("phoenixcoin-ext-ip");
+    RenameThread("pxc-ext-ip");
 
     CNetAddr addrLocalHost;
     if (GetMyExternalIP(addrLocalHost))
@@ -643,7 +643,7 @@ void ThreadSocketHandler(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadSocketHandler(parg));
 
     // Make this thread recognisable as the networking thread
-    RenameThread("phoenixcoin-net");
+    RenameThread("pxc-net");
 
     try
     {
@@ -999,7 +999,7 @@ void ThreadMapPort(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadMapPort(parg));
 
     // Make this thread recognisable as the UPnP thread
-    RenameThread("phoenixcoin-UPnP");
+    RenameThread("pxc-upnp");
 
     try
     {
@@ -1153,7 +1153,7 @@ void ThreadDNSAddressSeed(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadDNSAddressSeed(parg));
 
     // Make this thread recognisable as the DNS seeding thread
-    RenameThread("phoenixcoin-dnsseed");
+    RenameThread("pxc-dnsseed");
 
     try
     {
@@ -1250,7 +1250,7 @@ void ThreadDumpAddress(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadDumpAddress(parg));
 
     // Make this thread recognisable as the address dumping thread
-    RenameThread("phoenixcoin-adrdump");
+    RenameThread("pxc-adrdump");
 
     try
     {
@@ -1267,7 +1267,7 @@ void ThreadOpenConnections(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadOpenConnections(parg));
 
     // Make this thread recognisable as the connection opening thread
-    RenameThread("phoenixcoin-opencon");
+    RenameThread("pxc-opencon");
 
     try
     {
@@ -1424,7 +1424,7 @@ void ThreadOpenAddedConnections(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadOpenAddedConnections(parg));
 
     // Make this thread recognisable as the connection opening thread
-    RenameThread("phoenixcoin-opencon");
+    RenameThread("pxc-opencon");
 
     try
     {
@@ -1557,7 +1557,7 @@ void ThreadMessageHandler(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadMessageHandler(parg));
 
     // Make this thread recognisable as the message handling thread
-    RenameThread("phoenixcoin-msghand");
+    RenameThread("pxc-msghand");
 
     try
     {
@@ -1802,7 +1802,7 @@ void static Discover()
 void StartNode(void* parg)
 {
     // Make this thread recognisable as the startup thread
-    RenameThread("phoenixcoin-start");
+    RenameThread("pxc-start");
 
     if (semOutbound == NULL) {
         // initialize semaphore

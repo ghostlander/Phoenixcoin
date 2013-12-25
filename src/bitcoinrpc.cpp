@@ -1622,7 +1622,7 @@ Value keypoolrefill(const Array& params, bool fHelp)
 void ThreadTopUpKeyPool(void* parg)
 {
     // Make this thread recognisable as the key-topping-up thread
-    RenameThread("phoenixcoin-key-top");
+    RenameThread("pxc-key-top");
 
     pwalletMain->TopUpKeyPool();
 }
@@ -1630,7 +1630,7 @@ void ThreadTopUpKeyPool(void* parg)
 void ThreadCleanWalletPassphrase(void* parg)
 {
     // Make this thread recognisable as the wallet relocking thread
-    RenameThread("phoenixcoin-lock-wa");
+    RenameThread("pxc-lock-wa");
 
     int64 nMyWakeTime = GetTimeMillis() + *((int64*)parg) * 1000;
 
@@ -2812,7 +2812,7 @@ void ThreadRPCServer(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadRPCServer(parg));
 
     // Make this thread recognisable as the RPC listener
-    RenameThread("phoenixcoin-rpclist");
+    RenameThread("pxc-rpclist");
 
     try
     {
@@ -3114,7 +3114,7 @@ void ThreadRPCServer3(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadRPCServer3(parg));
 
     // Make this thread recognisable as the RPC handler
-    RenameThread("phoenixcoin-rpchand");
+    RenameThread("pxc-rpchand");
 
     {
         LOCK(cs_THREAD_RPCHANDLER);

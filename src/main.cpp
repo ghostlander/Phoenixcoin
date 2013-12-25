@@ -3810,7 +3810,7 @@ void static PhoenixcoinMiner(CWallet *pwallet)
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
     // Make this thread recognisable as the mining thread
-    RenameThread("phoenixcoin-miner");
+    RenameThread("pxc-miner");
 
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
