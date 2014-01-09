@@ -61,10 +61,11 @@ private slots:
     void contextualMenu(const QPoint &);
     void dateRangeChanged();
     void showDetails();
+    void copyTxID();
     void copyAddress();
+    void copyAmount();
     void editLabel();
     void copyLabel();
-    void copyAmount();
 
 signals:
     void doubleClicked(const QModelIndex&);
