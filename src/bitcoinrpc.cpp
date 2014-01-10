@@ -54,6 +54,10 @@ extern Value createrawtransaction(const Array& params, bool fHelp);
 extern Value decoderawtransaction(const Array& params, bool fHelp);
 extern Value signrawtransaction(const Array& params, bool fHelp);
 extern Value sendrawtransaction(const Array& params, bool fHelp);
+
+extern json_spirit::Value addnode(const json_spirit::Array& params, bool fHelp); // in rpcnet.cpp
+extern json_spirit::Value getaddednodeinfo(const json_spirit::Array& params, bool fHelp);
+
 extern json_spirit::Value getcheckpoint(const json_spirit::Array& params, bool fHelp); // in checkpointsync.cpp
 extern json_spirit::Value sendcheckpoint(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value enforcecheckpoint(const json_spirit::Array& params, bool fHelp);
@@ -2391,6 +2395,8 @@ static const CRPCCommand vRPCCommands[] =
     { "stop",                   &stop,                   true },
     { "getblockcount",          &getblockcount,          true },
     { "getconnectioncount",     &getconnectioncount,     true },
+    { "addnode",                &addnode,                true },
+    { "getaddednodeinfo",       &getaddednodeinfo,       true },
     { "getpeerinfo",            &getpeerinfo,            true },
     { "getdifficulty",          &getdifficulty,          true },
     { "getnetworkhashps",       &getnetworkhashps,       true },
@@ -3360,6 +3366,7 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "createrawtransaction"   && n > 1) ConvertTo<Object>(params[1]);
     if (strMethod == "signrawtransaction"     && n > 1) ConvertTo<Array>(params[1]);
     if (strMethod == "signrawtransaction"     && n > 2) ConvertTo<Array>(params[2]);
+    if (strMethod == "getaddednodeinfo"       && n > 0) ConvertTo<bool>(params[0]);
 
     return params;
 }
