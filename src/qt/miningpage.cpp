@@ -163,8 +163,8 @@ void MiningPage::readProcessOutput()
             QString line = list.at(i);
 
             // Ignore protocol dump
-            if (!line.startsWith("[") || line.contains("JSON protocol") || line.contains("HTTP hdr"))
-                continue;
+//            if (!line.startsWith("[") || line.contains("JSON protocol") || line.contains("HTTP hdr"))
+//                continue;
 
             if (ui->debugCheckBox->isChecked())
             {
@@ -176,18 +176,22 @@ void MiningPage::readProcessOutput()
                 reportToList("Share accepted!", SHARE_SUCCESS, getTime(line));
             else if (line.contains("(booooo)"))
                 reportToList("Share rejected", SHARE_FAIL, getTime(line));
-            else if (line.contains("LONGPOLL detected a new block"))
+            else if (line.contains("LONGPOLL detected new block"))
                 reportToList("Long polling detected a new block", LONGPOLL, getTime(line));
             else if (line.contains("Stratum detected new block"))
                 reportToList("Stratum detected a new block", STRATUM, getTime(line));
+            else if (line.contains("Long-polling activated"))
+                reportToList("Long polling activated.", ERROR, NULL);
             else if (line.contains("Supported options:"))
                 reportToList("Miner didn't start properly. Try checking your settings.", ERROR, NULL);
             else if (line.contains("HTTP request failed"))
                 reportToList("Couldn't connect via HTTP. Please check the server name and port.", ERROR, NULL);
             else if (line.contains("stratum_subscribe time out"))
                 reportToList("Couldn't connect via Stratum. Please check the server name and port.", ERROR, NULL);
+            else if (line.contains("Bad worker credentials"))
+                reportToList("Authentication failed via HTTP. Please check your username and password.", ERROR, NULL);
             else if (line.contains("Stratum authentication failed"))
-                reportToList("Couldn't authenticate via Stratum. Please check your username and password.", ERROR, NULL);
+                reportToList("Authentication failed via Stratum. Please check your username and password.", ERROR, NULL);
             else if (line.contains("retry after 30 seconds"))
                 reportToList("Couldn't communicate with the server. Retrying in 30 seconds.", ERROR, NULL);
             else if (line.contains("thread ") && line.contains("khash/s"))
