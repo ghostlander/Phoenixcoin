@@ -20,6 +20,7 @@
 #define SHARE_FAIL 2
 #define ERROR 3
 #define LONGPOLL 4
+#define STRATUM 5
 
 namespace Ui {
     class MiningPage;

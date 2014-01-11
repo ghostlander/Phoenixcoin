@@ -81,16 +81,16 @@ void MiningPage::startPoolMining()
 {
     QStringList args;
     QString url = ui->serverLine->text();
-    if (!url.contains("http://"))
-        url.prepend("http://");
+    if (!url.contains("http://") && !url.contains("stratum+tcp://"))
+        url.prepend("stratum+tcp://");
     QString urlLine = QString("%1:%2").arg(url, ui->portLine->text());
     QString userpassLine = QString("%1:%2").arg(ui->usernameLine->text(), ui->passwordLine->text());
-    args << "--algo" << "scrypt";
-    args << "--scantime" << ui->scantimeBox->text().toAscii();
-    args << "--url" << urlLine.toAscii();
-    args << "--userpass" << userpassLine.toAscii();
-    args << "--threads" << ui->threadsBox->text().toAscii();
-    args << "--retries" << "-1"; // Retry forever.
+    args << "-a" << "scrypt";
+    args << "-s" << ui->scantimeBox->text().toAscii();
+    args << "-o" << urlLine.toAscii();
+    args << "-O" << userpassLine.toAscii();
+    args << "-t" << ui->threadsBox->text().toAscii();
+    args << "-r" << "-1"; // Retry forever.
     args << "-P"; // This is needed for this to work correctly on Windows. Extra protocol dump helps flush the buffer quicker.
 
     threadSpeed.clear();
@@ -173,19 +173,23 @@ void MiningPage::readProcessOutput()
             }
 
             if (line.contains("(yay!!!)"))
-                reportToList("Share accepted", SHARE_SUCCESS, getTime(line));
+                reportToList("Share accepted!", SHARE_SUCCESS, getTime(line));
             else if (line.contains("(booooo)"))
                 reportToList("Share rejected", SHARE_FAIL, getTime(line));
-            else if (line.contains("LONGPOLL detected new block"))
-                reportToList("LONGPOLL detected a new block", LONGPOLL, getTime(line));
+            else if (line.contains("LONGPOLL detected a new block"))
+                reportToList("Long polling detected a new block", LONGPOLL, getTime(line));
+            else if (line.contains("Stratum detected new block"))
+                reportToList("Stratum detected a new block", STRATUM, getTime(line));
             else if (line.contains("Supported options:"))
                 reportToList("Miner didn't start properly. Try checking your settings.", ERROR, NULL);
-            else if (line.contains("The requested URL returned error: 403"))
-                reportToList("Couldn't connect. Please check your username and password.", ERROR, NULL);
             else if (line.contains("HTTP request failed"))
-                reportToList("Couldn't connect. Please check pool server and port.", ERROR, NULL);
-            else if (line.contains("JSON-RPC call failed"))
-                reportToList("Couldn't communicate with server. Retrying in 30 seconds.", ERROR, NULL);
+                reportToList("Couldn't connect via HTTP. Please check the server name and port.", ERROR, NULL);
+            else if (line.contains("stratum_subscribe time out"))
+                reportToList("Couldn't connect via Stratum. Please check the server name and port.", ERROR, NULL);
+            else if (line.contains("Stratum authentication failed"))
+                reportToList("Couldn't authenticate via Stratum. Please check your username and password.", ERROR, NULL);
+            else if (line.contains("retry after 30 seconds"))
+                reportToList("Couldn't communicate with the server. Retrying in 30 seconds.", ERROR, NULL);
             else if (line.contains("thread ") && line.contains("khash/s"))
             {
                 QString threadIDstr = line.at(line.indexOf("thread ")+7);
@@ -212,7 +216,7 @@ void MiningPage::minerError(QProcess::ProcessError error)
 {
     if (error == QProcess::FailedToStart)
     {
-        reportToList("Miner failed to start. Make sure you have the minerd executable and libraries in the same directory as Phoenixcoin-Qt.", ERROR, NULL);
+        reportToList("Miner failed to start. Make sure you have the minerd executable in the same directory as Phoenixcoin-Qt.", ERROR, NULL);
     }
 }
 
@@ -230,11 +234,12 @@ void MiningPage::minerFinished()
 
 void MiningPage::minerStarted()
 {
-    if (!minerActive)
+    if (!minerActive) {
         if (getMiningType() == ClientModel::SoloMining)
             reportToList("Solo mining started.", ERROR, NULL);
         else
             reportToList("Miner started. You might not see any output for a few minutes.", STARTED, NULL);
+    }
     minerActive = true;
     resetMiningButton();
     model->setMining(getMiningType(), true, initThreads, 0);
@@ -305,6 +310,11 @@ void MiningPage::reportToList(QString msg, int type, QString time)
             roundRejectedShares = 0;
             break;
 
+        case STRATUM:
+            roundAcceptedShares = 0;
+            roundRejectedShares = 0;
+            break;
+
         default:
             break;
     }
@@ -351,11 +361,11 @@ void MiningPage::enablePoolMiningControls(bool enable)
 
 ClientModel::MiningType MiningPage::getMiningType()
 {
-    if (ui->typeBox->currentIndex() == 0)  // Solo Mining
+    if (ui->typeBox->currentIndex() == 1)  // Solo Mining
     {
         return ClientModel::SoloMining;
     }
-    else if (ui->typeBox->currentIndex() == 1)  // Pool Mining
+    else if (ui->typeBox->currentIndex() == 0)  // Pool Mining
     {
         return ClientModel::PoolMining;
     }
@@ -364,11 +374,11 @@ ClientModel::MiningType MiningPage::getMiningType()
 
 void MiningPage::typeChanged(int index)
 {
-    if (index == 0)  // Solo Mining
+    if (index == 1)  // Solo Mining
     {
         enablePoolMiningControls(false);
     }
-    else if (index == 1)  // Pool Mining
+    else if (index == 0)  // Pool Mining
     {
         enablePoolMiningControls(true);
     }
