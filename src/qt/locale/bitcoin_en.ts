@@ -244,7 +244,7 @@ Are you sure you wish to encrypt your wallet?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -252,11 +252,11 @@ Are you sure you wish to encrypt your wallet?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Address Book</source>
+        <source>&amp;Addresses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -264,7 +264,7 @@ Are you sure you wish to encrypt your wallet?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Receive coins</source>
+        <source>&amp;Receive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -272,7 +272,7 @@ Are you sure you wish to encrypt your wallet?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Send coins</source>
+        <source>&amp;Send</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -331,7 +331,7 @@ Are you sure you wish to encrypt your wallet?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -303,7 +303,7 @@ Jsi si jistý, že chceš peněženku zašifrovat?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Zobraz celkový přehled peněženky</translation>
     </message>
     <message>
@@ -313,12 +313,12 @@ Jsi si jistý, že chceš peněženku zašifrovat?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Procházet historii transakcí</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
+        <source>&amp;Addresses</source>
         <translation>&amp;Adresář</translation>
     </message>
     <message>
@@ -328,8 +328,8 @@ Jsi si jistý, že chceš peněženku zašifrovat?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>Pří&amp;jem mincí</translation>
+        <source>&amp;Receive</source>
+        <translation>Pří&amp;jem</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -338,8 +338,8 @@ Jsi si jistý, že chceš peněženku zašifrovat?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>P&amp;oslání mincí</translation>
+        <source>&amp;Send</source>
+        <translation>P&amp;oslání</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -413,7 +413,7 @@ Jsi si jistý, že chceš peněženku zašifrovat?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation type="unfinished"/>
     </message>
     <message>

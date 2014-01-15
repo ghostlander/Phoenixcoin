@@ -303,7 +303,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>显示钱包概况</translation>
     </message>
     <message>
@@ -313,13 +313,13 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>查看交易历史</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;地址薄</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;地址</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -328,8 +328,8 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>&amp;接收货币</translation>
+        <source>&amp;Receive</source>
+        <translation>&amp;接收</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -339,7 +339,7 @@ Are you sure you wish to encrypt your wallet?</source>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
         <source>&amp;Send coins</source>
-        <translation>&amp;发送货币</translation>
+        <translation>&amp;发送</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -413,8 +413,8 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
-        <translation>向一个比特币地址发送比特币</translation>
+        <source>Send coins to a Phoenixcoin address</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="246"/>

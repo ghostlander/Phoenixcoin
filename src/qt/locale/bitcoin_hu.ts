@@ -297,7 +297,7 @@ Biztosan kódolni akarod a tárcát?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Tárca általános áttekintése</translation>
     </message>
     <message>
@@ -307,13 +307,13 @@ Biztosan kódolni akarod a tárcát?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Tranzakciótörténet megtekintése</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>Cím&amp;jegyzék</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Címek</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -322,8 +322,8 @@ Biztosan kódolni akarod a tárcát?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>Érmék &amp;fogadása</translation>
+        <source>&amp;Receive</source>
+        <translation>&amp;Fogadása</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -332,8 +332,8 @@ Biztosan kódolni akarod a tárcát?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>Érmék &amp;küldése</translation>
+        <source>&amp;Send</source>
+        <translation>&amp;Küldése</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -407,7 +407,7 @@ Biztosan kódolni akarod a tárcát?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation type="unfinished"/>
     </message>
     <message>

@@ -33,7 +33,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location filename="../forms/addressbookpage.ui" line="20"/>
-        <source>These are your Bitcoin addresses for receiving payments.  You may want to give a different one to each sender so you can keep track of who is paying you.</source>
+        <source>These are your Phoenixcoin addresses for receiving payments.  You may want to give a different one to each sender so you can keep track of who is paying you.</source>
         <translation>Това са входящите адреси (за получаване на плащания).  За прегледност може да предоставяте различен адрес за всяко плащане.</translation>
     </message>
     <message>
@@ -297,7 +297,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Обобщена информация за портфейла</translation>
     </message>
     <message>
@@ -307,12 +307,12 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>История на входящи и изходящи плащания</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
+        <source>&amp;Addresses</source>
         <translation>&amp;Адреси</translation>
     </message>
     <message>
@@ -322,7 +322,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
+        <source>&amp;Receive</source>
         <translation>&amp;Получаване</translation>
     </message>
     <message>
@@ -332,7 +332,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
+        <source>&amp;Send</source>
         <translation>&amp;Изпращане</translation>
     </message>
     <message>
@@ -407,7 +407,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation type="unfinished"/>
     </message>
     <message>

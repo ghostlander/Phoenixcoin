@@ -303,7 +303,7 @@ Tahdotko varmasti salata lompakon?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Näyttää kokonaiskatsauksen lompakon tilanteesta</translation>
     </message>
     <message>
@@ -313,13 +313,13 @@ Tahdotko varmasti salata lompakon?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Selaa rahansiirtohistoriaa</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Osoitekirja</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Osoitteita</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -328,8 +328,8 @@ Tahdotko varmasti salata lompakon?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>&amp;Vastaanota Bitcoineja</translation>
+        <source>&amp;Receive</source>
+        <translation>&amp;Vastaanota</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -338,8 +338,8 @@ Tahdotko varmasti salata lompakon?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>&amp;Lähetä Bitcoineja</translation>
+        <source>&amp;Send</source>
+        <translation>&amp;Lähetä</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -413,7 +413,7 @@ Tahdotko varmasti salata lompakon?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation type="unfinished"/>
     </message>
     <message>

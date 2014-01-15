@@ -304,7 +304,7 @@ Bent u er zeker van uw dat u uw portemonnee wilt versleutelen?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Toon algemeen overzicht van de portemonnee</translation>
     </message>
     <message>
@@ -314,13 +314,13 @@ Bent u er zeker van uw dat u uw portemonnee wilt versleutelen?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Blader door transactieverleden</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Adresboek</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Adressen</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -329,8 +329,8 @@ Bent u er zeker van uw dat u uw portemonnee wilt versleutelen?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>&amp;Ontvang munten</translation>
+        <source>&amp;Receive</source>
+        <translation>&amp;Ontvang</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -339,8 +339,8 @@ Bent u er zeker van uw dat u uw portemonnee wilt versleutelen?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>&amp;Verstuur munten</translation>
+        <source>&amp;Send</source>
+        <translation>&amp;Verstuur</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -414,7 +414,7 @@ Bent u er zeker van uw dat u uw portemonnee wilt versleutelen?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation>Verstuur munten naar een Bitcoinadres</translation>
     </message>
     <message>

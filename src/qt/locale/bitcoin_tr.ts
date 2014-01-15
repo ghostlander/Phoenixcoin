@@ -303,7 +303,7 @@ Cüzdanınızı şifrelemek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Cüzdana genel bakışı gösterir</translation>
     </message>
     <message>
@@ -313,13 +313,13 @@ Cüzdanınızı şifrelemek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Muamele tarihçesini tara</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Adres defteri</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Adresleri</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -328,8 +328,8 @@ Cüzdanınızı şifrelemek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>Bitcoin &amp;al</translation>
+        <source>&amp;Receive</source>
+        <translation>&amp;Almak</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -338,8 +338,8 @@ Cüzdanınızı şifrelemek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>Bitcoin &amp;yolla</translation>
+        <source>&amp;Send</source>
+        <translation>&amp;Yollamak</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -413,8 +413,8 @@ Cüzdanınızı şifrelemek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
-        <translation>Bir Bitcoin adresine Bitcoin yollar</translation>
+        <source>Send coins to a Phoenixcoin address</source>
+        <translation>Bir Bitcoin adresine Phoenixcoin yollar</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="246"/>

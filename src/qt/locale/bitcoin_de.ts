@@ -302,7 +302,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Allgemeine Übersicht der Brieftasche anzeigen</translation>
     </message>
     <message>
@@ -312,13 +312,13 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Transaktionsverlauf durchsehen</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Adressbuch</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Adressen</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -327,8 +327,8 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>Bitcoins &amp;empfangen</translation>
+        <source>&amp;Receive</source>
+        <translation>Empfangen</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -337,8 +337,8 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>Bitcoins &amp;überweisen</translation>
+        <source>&amp;Send</source>
+        <translation>Überweisen</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -412,8 +412,8 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
-        <translation>Bitcoins an eine Bitcoin-Adresse überweisen</translation>
+        <source>Send coins to a Phoenixcoin address</source>
+        <translation>Bitcoins an eine Phoenixcoin-Adresse überweisen</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="246"/>

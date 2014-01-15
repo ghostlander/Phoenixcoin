@@ -308,7 +308,7 @@ Czy na pewno chcesz zaszyfrować swój portfel?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Pokazuje ogólny zarys portfela</translation>
     </message>
     <message>
@@ -318,13 +318,13 @@ Czy na pewno chcesz zaszyfrować swój portfel?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Przeglądaj historię transakcji</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>Książka &amp;adresowa</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Adresy</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -333,8 +333,8 @@ Czy na pewno chcesz zaszyfrować swój portfel?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>Odbie&amp;rz monety</translation>
+        <source>&amp;Receive</source>
+        <translation>Odbie&amp;rz</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -343,8 +343,8 @@ Czy na pewno chcesz zaszyfrować swój portfel?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>Wy&amp;syłka monet</translation>
+        <source>&amp;Send</source>
+        <translation>Wy&amp;syłka</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -418,7 +418,7 @@ Czy na pewno chcesz zaszyfrować swój portfel?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation>Wyślij monety na adres Bitcoin</translation>
     </message>
     <message>

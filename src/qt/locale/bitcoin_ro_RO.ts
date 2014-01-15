@@ -297,7 +297,7 @@ Sunteţi sigur că doriţi să criptaţi portofelul electronic?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Afişează detalii despre portofelul electronic</translation>
     </message>
     <message>
@@ -307,13 +307,13 @@ Sunteţi sigur că doriţi să criptaţi portofelul electronic?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Istoricul tranzacţiilor</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Lista de adrese</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Adresele</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -322,8 +322,8 @@ Sunteţi sigur că doriţi să criptaţi portofelul electronic?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>&amp;Primiţi Bitcoin</translation>
+        <source>&amp;Receive</source>
+        <translation>&amp;Primiţi</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -332,8 +332,8 @@ Sunteţi sigur că doriţi să criptaţi portofelul electronic?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>&amp;Trimiteţi Bitcoin</translation>
+        <source>&amp;Send</source>
+        <translation>&amp;Trimiteţi</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -407,7 +407,7 @@ Sunteţi sigur că doriţi să criptaţi portofelul electronic?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation type="unfinished"/>
     </message>
     <message>

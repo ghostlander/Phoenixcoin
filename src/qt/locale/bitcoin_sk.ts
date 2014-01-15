@@ -297,7 +297,7 @@ Ste si istí, že si želáte zašifrovať peňaženku?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Zobraziť celkový prehľad o peňaženke</translation>
     </message>
     <message>
@@ -307,13 +307,13 @@ Ste si istí, že si želáte zašifrovať peňaženku?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Prechádzať históriu transakcií</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Adresár</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Adresy</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -322,8 +322,8 @@ Ste si istí, že si želáte zašifrovať peňaženku?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>&amp;Prijať bitcoins</translation>
+        <source>&amp;Receive</source>
+        <translation>&amp;Prijať</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -332,8 +332,8 @@ Ste si istí, že si želáte zašifrovať peňaženku?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>&amp;Poslať bitcoins</translation>
+        <source>&amp;Send</source>
+        <translation>&amp;Poslať</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -407,7 +407,7 @@ Ste si istí, že si želáte zašifrovať peňaženku?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation type="unfinished"/>
     </message>
     <message>

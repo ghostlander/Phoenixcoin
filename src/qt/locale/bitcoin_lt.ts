@@ -304,7 +304,7 @@ Ar jūs tikrai norite užšifruoti savo piniginę?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Rodyti piniginės bendrą apžvalgą</translation>
     </message>
     <message>
@@ -314,13 +314,13 @@ Ar jūs tikrai norite užšifruoti savo piniginę?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Apžvelgti sandorių istoriją</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Adresų knygelė</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Adresai</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -329,8 +329,8 @@ Ar jūs tikrai norite užšifruoti savo piniginę?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>&amp;R Gautos monetos</translation>
+        <source>&amp;Receive</source>
+        <translation>&amp;Gauti</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -339,8 +339,8 @@ Ar jūs tikrai norite užšifruoti savo piniginę?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>&amp;Siųsti monetas</translation>
+        <source>&amp;Send</source>
+        <translation>&amp;Siųsti</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -414,7 +414,7 @@ Ar jūs tikrai norite užšifruoti savo piniginę?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation type="unfinished"/>
     </message>
     <message>

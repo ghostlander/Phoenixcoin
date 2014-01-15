@@ -303,7 +303,7 @@ Si è sicuri di voler cifrare il portamonete?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="186"/>
-        <source>Show general overview of wallet</source>
+        <source>Show a general overview of the wallet</source>
         <translation>Mostra lo stato generale del portamonete</translation>
     </message>
     <message>
@@ -313,13 +313,13 @@ Si è sicuri di voler cifrare il portamonete?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
-        <source>Browse transaction history</source>
+        <source>Browse the transaction history</source>
         <translation>Cerca nelle transazioni</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
-        <source>&amp;Address Book</source>
-        <translation>&amp;Rubrica</translation>
+        <source>&amp;Addresses</source>
+        <translation>&amp;Indirizzi</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="198"/>
@@ -328,8 +328,8 @@ Si è sicuri di voler cifrare il portamonete?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="203"/>
-        <source>&amp;Receive coins</source>
-        <translation>&amp;Ricevi monete</translation>
+        <source>&amp;Receive</source>
+        <translation>&amp;Ricevi</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="204"/>
@@ -338,8 +338,8 @@ Si è sicuri di voler cifrare il portamonete?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="209"/>
-        <source>&amp;Send coins</source>
-        <translation>&amp;Invia monete</translation>
+        <source>&amp;Send</source>
+        <translation>&amp;Invia</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="216"/>
@@ -413,7 +413,7 @@ Si è sicuri di voler cifrare il portamonete?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Phoenixcoin address</source>
         <translation type="unfinished"/>
     </message>
     <message>
