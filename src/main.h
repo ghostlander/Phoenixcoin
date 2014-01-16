@@ -44,6 +44,8 @@ static const int64 MAX_MONEY = 100000000 * COIN;
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 // Confirmation limit for mining rewards to become spendable, in blocks
 static const int COINBASE_MATURITY = 100;
+// Offset for the above to allow safe network propagation, in blocks
+static const int COINBASE_MATURITY_OFFSET = 1;
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.
 static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 #ifdef USE_UPNP
