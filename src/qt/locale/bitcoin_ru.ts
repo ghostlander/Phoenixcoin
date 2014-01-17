@@ -1216,7 +1216,7 @@ Address: %4
     <message>
         <location filename="../forms/rpcconsole.ui" line="323"/>
         <source>&amp;Console</source>
-        <translation>Консоль</translation>
+        <translation>&amp;Консоль</translation>
     </message>
     <message>
         <location filename="../forms/rpcconsole.ui" line="92"/>
@@ -1230,8 +1230,8 @@ Address: %4
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="212"/>
-        <source>Welcome to the Bitcoin RPC console.</source>
-        <translation>Добро пожаловать в RPC-консоль Bitcoin.</translation>
+        <source>Welcome to the Phoenixcoin RPC console.</source>
+        <translation>Добро пожаловать в RPC консоль Феникскоина.</translation>
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="213"/>

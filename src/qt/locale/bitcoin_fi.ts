@@ -1230,7 +1230,7 @@ Osoite: %4</translation>
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="212"/>
-        <source>Welcome to the Bitcoin RPC console.</source>
+        <source>Welcome to the Phoenixcoin RPC console.</source>
         <translation type="unfinished"/>
     </message>
     <message>

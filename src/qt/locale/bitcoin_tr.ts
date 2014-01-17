@@ -1230,8 +1230,8 @@ Adres: %4
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="212"/>
-        <source>Welcome to the Bitcoin RPC console.</source>
-        <translation>Bitcoin RPC konsoluna hoş geldiniz.</translation>
+        <source>Welcome to the Phoenixcoin RPC console.</source>
+        <translation>Phoenixcoin RPC konsoluna hoş geldiniz.</translation>
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="213"/>

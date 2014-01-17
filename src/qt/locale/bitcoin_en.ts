@@ -975,7 +975,7 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Welcome to the Bitcoin RPC console.</source>
+        <source>Welcome to the Phoenixcoin RPC console.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
