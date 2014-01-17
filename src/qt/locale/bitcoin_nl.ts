@@ -449,13 +449,13 @@ Bent u er zeker van uw dat u uw portemonnee wilt versleutelen?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="259"/>
-        <source>&amp;Debug window</source>
-        <translation>&amp;Debugscherm</translation>
+        <source>&amp;Console</source>
+        <translation>&amp;Console</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="260"/>
-        <source>Open debugging and diagnostic console</source>
-        <translation>Open debugging en diagnostische console</translation>
+        <source>Open the RPC console</source>
+        <translation>Open de RPC console</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="261"/>
@@ -1124,7 +1124,7 @@ Adres: %4
     <name>RPCConsole</name>
     <message>
         <location filename="../forms/rpcconsole.ui" line="14"/>
-        <source>Bitcoin debug window</source>
+        <source>Phoenixcoin - RPC Console</source>
         <translation>Bitcoin debugscherm</translation>
     </message>
     <message>

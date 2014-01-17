@@ -371,11 +371,11 @@ Are you sure you wish to encrypt your wallet?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Debug window</source>
+        <source>&amp;Console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open debugging and diagnostic console</source>
+        <source>Open the RPC console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -879,7 +879,7 @@ Address: %4
 <context>
     <name>RPCConsole</name>
     <message>
-        <source>Bitcoin debug window</source>
+        <source>Phoenixcoin - RPC Console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

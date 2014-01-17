@@ -448,13 +448,13 @@ Cüzdanınızı şifrelemek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="259"/>
-        <source>&amp;Debug window</source>
-        <translation>&amp;Hata ayıklama penceresi</translation>
+        <source>&amp;Console</source>
+        <translation>&amp;Konsol</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="260"/>
-        <source>Open debugging and diagnostic console</source>
-        <translation>Hata ayıklama ve teşhis penceresini aç</translation>
+        <source>Open the RPC console</source>
+        <translation>RPC konsolu açın</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="261"/>
@@ -1122,8 +1122,8 @@ Adres: %4
     <name>RPCConsole</name>
     <message>
         <location filename="../forms/rpcconsole.ui" line="14"/>
-        <source>Bitcoin debug window</source>
-        <translation>Bitcoin hata ayıklama penceresi</translation>
+        <source>Phoenixcoin - RPC Console</source>
+        <translation>Phoenixcoin - RPC konsol</translation>
     </message>
     <message>
         <location filename="../forms/rpcconsole.ui" line="46"/>

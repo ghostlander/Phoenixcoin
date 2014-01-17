@@ -442,12 +442,12 @@ Ste si istí, že si želáte zašifrovať peňaženku?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="259"/>
-        <source>&amp;Debug window</source>
-        <translation type="unfinished"/>
+        <source>&amp;Console</source>
+        <translation>&amp;Konzola</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="260"/>
-        <source>Open debugging and diagnostic console</source>
+        <source>Open the RPC console</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1115,7 +1115,7 @@ Adresa: %4</translation>
     <name>RPCConsole</name>
     <message>
         <location filename="../forms/rpcconsole.ui" line="14"/>
-        <source>Bitcoin debug window</source>
+        <source>Phoenixcoin - RPC Console</source>
         <translation type="unfinished"/>
     </message>
     <message>

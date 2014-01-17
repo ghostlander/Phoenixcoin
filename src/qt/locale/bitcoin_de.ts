@@ -408,7 +408,7 @@ Are you sure you wish to encrypt your wallet?</source>
     <message>
         <location filename="../bitcoingui.cpp" line="250"/>
         <source>&amp;Export...</source>
-        <translation>&amp;Exportieren nach...</translation>
+        <translation>&amp;Exportieren...</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="210"/>
@@ -447,13 +447,13 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="259"/>
-        <source>&amp;Debug window</source>
-        <translation>&amp;Debug-Fenster</translation>
+        <source>&amp;Console</source>
+        <translation>&amp;Konsole</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="260"/>
-        <source>Open debugging and diagnostic console</source>
-        <translation>Debugging- und Diagnose-Konsole öffnen</translation>
+        <source>Open the RPC console</source>
+        <translation>RPC-Konsole öffnen</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="261"/>
@@ -1120,8 +1120,8 @@ Adresse: %4</translation>
     <name>RPCConsole</name>
     <message>
         <location filename="../forms/rpcconsole.ui" line="14"/>
-        <source>Bitcoin debug window</source>
-        <translation>Bitcoin Debug-Fenster</translation>
+        <source>Phoenixcoin - RPC Console</source>
+        <translation>Phoenixcoin - RPC Konsole</translation>
     </message>
     <message>
         <location filename="../forms/rpcconsole.ui" line="46"/>

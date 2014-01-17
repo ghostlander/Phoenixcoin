@@ -448,12 +448,12 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="259"/>
-        <source>&amp;Debug window</source>
+        <source>&amp;Console</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="260"/>
-        <source>Open debugging and diagnostic console</source>
+        <source>Open the RPC console</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1121,7 +1121,7 @@ Address: %4
     <name>RPCConsole</name>
     <message>
         <location filename="../forms/rpcconsole.ui" line="14"/>
-        <source>Bitcoin debug window</source>
+        <source>Phoenixcoin - RPC Console</source>
         <translation type="unfinished"/>
     </message>
     <message>
