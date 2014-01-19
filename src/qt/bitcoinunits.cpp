@@ -32,12 +32,20 @@ bool BitcoinUnits::valid(int unit)
 
 QString BitcoinUnits::name(int unit)
 {
-    switch(unit)
-    {
-    case BTC: return QString("PXC");
-    case mBTC: return QString("mPXC");
-    case uBTC: return QString::fromUtf8("μPXC");
-    default: return QString("???");
+    if(!fTestNet) {
+        switch(unit) {
+          case BTC: return QString("PXC");
+          case mBTC: return QString("mPXC");
+          case uBTC: return QString::fromUtf8("μPXC");
+          default: return QString("???");
+        }
+    } else {
+        switch(unit) {
+          case BTC: return QString("PXCt");
+          case mBTC: return QString("mPXCt");
+          case uBTC: return QString::fromUtf8("μPXCt");
+          default: return QString("???");
+        }
     }
 }
 
