@@ -1,6 +1,8 @@
 #ifndef BITCOINGUI_H
 #define BITCOINGUI_H
 
+extern bool fTestNet;
+
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 
@@ -101,7 +103,9 @@ private:
     TransactionView *transactionView;
     RPCConsole *rpcConsole;
 
-    QMovie *syncIconMovie;
+    /** Keep track of previous number of blocks, to detect progress */
+    int prevBlocks;
+    int spinnerFrame;
 
     /** Create the main UI actions. */
     void createActions();
@@ -116,7 +120,7 @@ public slots:
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
     /** Set number of blocks shown in the UI */
-    void setNumBlocks(int count, int countOfPeers);
+    void setNumBlocks(int count, int nTotalBlocks);
     /** Set mining status and hashrate in the UI */
     void setMining(bool mining, int hashrate);
     /** Set the encryption status as shown in the UI.

@@ -287,7 +287,7 @@ Biztosan kódolni akarod a tárcát?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Szinkronizálás a hálózattal...</translation>
     </message>
     <message>
@@ -539,8 +539,8 @@ Biztosan kódolni akarod a tárcát?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Az utolsóként kapott blokk generálva: %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Az utolsóként kapott blokk generálva: %1 ezelőtt.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

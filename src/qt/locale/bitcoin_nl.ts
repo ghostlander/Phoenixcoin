@@ -294,7 +294,7 @@ Bent u er zeker van uw dat u uw portemonnee wilt versleutelen?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Synchroniseren met netwerk...</translation>
     </message>
     <message>
@@ -546,8 +546,8 @@ Bent u er zeker van uw dat u uw portemonnee wilt versleutelen?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Laatst ontvangen blok is %1 gegenereerd.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Laatst ontvangen blok is %1 geleden gegenereerd.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

@@ -189,6 +189,43 @@
        </layout>
       </widget>
      </item>
+     <item alignment="Qt::AlignHCenter|Qt::AlignTop">
+      <widget class="QLabel" name="phoenix">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>300</width>
+         <height>300</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>300</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>300</width>
+         <height>300</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">image: url(:/images/phoenix);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
      <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
@@ -227,7 +264,8 @@
           <item>
            <widget class="QLabel" name="labelTransactionsStatus">
             <property name="toolTip">
-             <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Phoenixcoin network after a connection is established, but this process has not completed yet.</string>            </property>
+             <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Phoenixcoin network after a connection is established, but this process has not completed yet.</string>
+            </property>
             <property name="styleSheet">
              <string notr="true">QLabel { color: red; }</string>
             </property>

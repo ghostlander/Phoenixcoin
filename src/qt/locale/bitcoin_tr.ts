@@ -293,7 +293,7 @@ Cüzdanınızı şifrelemek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Şebeke ile senkronizasyon...</translation>
     </message>
     <message>
@@ -545,8 +545,8 @@ Cüzdanınızı şifrelemek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Son alınan blok şu vakit oluşturulmuştu: %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Son alınan blok şu vakit oluşturulmuştu: %1 önce.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

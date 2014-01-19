@@ -287,7 +287,7 @@ Er du sikker på at du ønsker at kryptere din tegnebog?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Synkroniserer med netværk ...</translation>
     </message>
     <message>
@@ -539,8 +539,8 @@ Er du sikker på at du ønsker at kryptere din tegnebog?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Sidst modtagne blok blev genereret %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Sidst modtagne blok blev genereret %1 siden.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

@@ -236,7 +236,7 @@ Are you sure you wish to encrypt your wallet?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -458,7 +458,7 @@ Are you sure you wish to encrypt your wallet?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Last received block was generated %1.</source>
+        <source>The last received block was generated %1 ago.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

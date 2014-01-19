@@ -50,7 +50,6 @@
 #include <QProgressBar>
 #include <QStackedWidget>
 #include <QDateTime>
-#include <QMovie>
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QTimer>
@@ -68,7 +67,9 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     aboutQtAction(0),
     trayIcon(0),
     notificator(0),
-    rpcConsole(0)
+    rpcConsole(0),
+    prevBlocks(0),
+    spinnerFrame(0)
 {
     resize(850, 550);
     setWindowTitle(tr("Phoenixcoin") + " - " + tr("Wallet"));
@@ -161,7 +162,9 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     statusBar()->addWidget(progressBar);
     statusBar()->addPermanentWidget(frameBlocks);
 
-    syncIconMovie = new QMovie(":/movies/update_spinner", "mng", this);
+    // OS & theme independent style; widgets must be added prior to styling
+    progressBar->setStyleSheet("QProgressBar { color: black; background-color: transparent; border: 1px solid grey; border-radius: 2px; padding: 1px; text-align: center; } \
+      QProgressBar::chunk { background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #FF7F00, stop: 1 #FFD77F); margin: 0px; }");
 
     // Clicking on a transaction on the overview page simply sends you to transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), this, SLOT(gotoHistoryPage()));
@@ -277,7 +280,7 @@ void BitcoinGUI::createActions()
     aboutAction = new QAction(QIcon(":/icons/bitcoin"), tr("&About Phoenixcoin"), this);
     aboutAction->setToolTip(tr("Show information about Phoenixcoin"));
     aboutAction->setMenuRole(QAction::AboutRole);
-    aboutQtAction = new QAction(tr("About &Qt"), this);
+    aboutQtAction = new QAction(QIcon(":/icons/qtlogo"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
@@ -520,7 +523,7 @@ void BitcoinGUI::setNumConnections(int count)
 
 void BitcoinGUI::setNumBlocks(int count, int nTotalBlocks)
 {
-    // don't show / hide progressBar and it's label if we have no connection(s) to the network
+    // don't show / hide the progress bar and it's label if we have no connection(s) to the network
     if (!clientModel || clientModel->getNumConnections() == 0)
     {
         progressBarLabel->setVisible(false);
@@ -530,92 +533,79 @@ void BitcoinGUI::setNumBlocks(int count, int nTotalBlocks)
     }
 
     QString tooltip;
+    QString strStatusBarWarnings = clientModel->getStatusBarWarnings();
+    QDateTime lastBlockDate = clientModel->getLastBlockDate();
+    QDateTime currentDate = QDateTime::currentDateTime();
+    int secs = lastBlockDate.secsTo(currentDate);
 
-    if(count < nTotalBlocks)
-    {
-        int nRemainingBlocks = nTotalBlocks - count;
-        float nPercentageDone = count / (nTotalBlocks * 0.01f);
+    // count > nTotalBlocks if the former is above the last checkpoint
+    // and the median chain height of the peers connected is low
+    if(count < nTotalBlocks) {
+        tooltip = tr("Processed %1 of %2 blocks of the transaction history.").arg(count).arg(nTotalBlocks);
+    } else {
+        tooltip = tr("Processed %1 blocks of the transaction history.").arg(count);
+    }
 
-        if (clientModel->getStatusBarWarnings() == "")
-        {
-            progressBarLabel->setText(tr("Synchronizing with network..."));
+    // Taskbar icons: a spinner if catching up, a tick otherwise;
+    // testnet is allowed to be well behind the current time
+    if(((secs < 90*60) || fTestNet) && count >= nTotalBlocks) {
+        tooltip = tr("The current difficulty is %1").arg(clientModel->GetDifficulty()) + QString("<br>") + tooltip;
+
+        tooltip = tr("Up to date") + QString(".<br>") + tooltip;
+        labelBlocksIcon->setPixmap(QIcon(":/icons/synced").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+
+        progressBarLabel->setVisible(false);
+        progressBar->setVisible(false);
+
+        overviewPage->showOutOfSyncWarning(false);
+    } else {
+        // Represent time from last generated block in human readable text
+        QString timeBehindText;
+        if(secs < 48*60*60) {
+            timeBehindText = tr("%n hours","",secs/(60*60));
+        } else if(secs < 14*24*60*60) {
+            timeBehindText = tr("%n days","",secs/(24*60*60));
+        } else {
+            timeBehindText = tr("%n weeks","",secs/(7*24*60*60));
+        }
+
+        QString blocksBehindText = tr("%n blocks","", nTotalBlocks - count);
+
+
+        if(strStatusBarWarnings.isEmpty()) {
+            progressBarLabel->setText(tr("Synchronising with the network..."));
             progressBarLabel->setVisible(true);
-            progressBar->setFormat(tr("~%n block(s) remaining", "", nRemainingBlocks));
-            progressBar->setMaximum(nTotalBlocks);
+            if(count < nTotalBlocks) {
+                progressBar->setFormat(tr("%1 or %2 behind").arg(blocksBehindText).arg(timeBehindText));
+                progressBar->setMaximum(nTotalBlocks);
+            } else {
+                progressBar->setFormat(tr("%1 behind").arg(timeBehindText));
+                progressBar->setMaximum(count);
+
+            }
             progressBar->setValue(count);
             progressBar->setVisible(true);
-        }
-        else
-        {
+        } else {
             progressBarLabel->setText(clientModel->getStatusBarWarnings());
             progressBarLabel->setVisible(true);
             progressBar->setVisible(false);
         }
-        tooltip = tr("Downloaded %1 of %2 blocks of transaction history (%3% done).").arg(count).arg(nTotalBlocks).arg(nPercentageDone, 0, 'f', 2);
-    }
-    else
-    {
-        if (clientModel->getStatusBarWarnings() == "")
-            progressBarLabel->setVisible(false);
-        else
-        {
-            progressBarLabel->setText(clientModel->getStatusBarWarnings());
-            progressBarLabel->setVisible(true);
-        }
-        progressBar->setVisible(false);
-        tooltip = tr("Downloaded %1 blocks of transaction history.").arg(count);
-    }
 
-    tooltip = tr("Current difficulty is %1.").arg(clientModel->GetDifficulty()) + QString("<br>") + tooltip;
-
-    QDateTime now = QDateTime::currentDateTime();
-    QDateTime lastBlockDate = clientModel->getLastBlockDate();
-    int secs = lastBlockDate.secsTo(now);
-    QString text;
-
-    // Represent time from last generated block in human readable text
-    if(secs <= 0)
-    {
-        // Fully up to date. Leave text empty.
-    }
-    else if(secs < 60)
-    {
-        text = tr("%n second(s) ago","",secs);
-    }
-    else if(secs < 60*60)
-    {
-        text = tr("%n minute(s) ago","",secs/60);
-    }
-    else if(secs < 24*60*60)
-    {
-        text = tr("%n hour(s) ago","",secs/(60*60));
-    }
-    else
-    {
-        text = tr("%n day(s) ago","",secs/(60*60*24));
-    }
-
-    // Set icon state: spinning if catching up, tick otherwise
-    if(secs < 90*60 && count >= nTotalBlocks)
-    {
-        tooltip = tr("Up to date") + QString(".<br>") + tooltip;
-        labelBlocksIcon->setPixmap(QIcon(":/icons/synced").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
-
-        overviewPage->showOutOfSyncWarning(false);
-    }
-    else
-    {
         tooltip = tr("Catching up...") + QString("<br>") + tooltip;
-        labelBlocksIcon->setMovie(syncIconMovie);
-        syncIconMovie->start();
+        if(count != prevBlocks) {
+            labelBlocksIcon->setPixmap(QIcon(QString(
+                ":/movies/spinner-%1").arg(spinnerFrame, 2, 10, QChar('0')))
+                .pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+            spinnerFrame = (spinnerFrame + 1) % SPINNER_FRAMES;
+        }
+        prevBlocks = count;
+
+        tooltip += QString("<br>");
+        tooltip += tr("The last received block was generated %1 ago.").arg(timeBehindText);
+        tooltip += QString("<br>");
+        tooltip += tr("Transactions after this will not yet be visible.");
 
         overviewPage->showOutOfSyncWarning(true);
-    }
-
-    if(!text.isEmpty())
-    {
-        tooltip += QString("<br>");
-        tooltip += tr("Last received block was generated %1.").arg(text);
     }
 
     // Don't word-wrap this (fixed-width) tooltip

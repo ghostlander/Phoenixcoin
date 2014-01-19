@@ -294,7 +294,7 @@ Ar jūs tikrai norite užšifruoti savo piniginę?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Sinchronizavimas su tinklu ...</translation>
     </message>
     <message>
@@ -546,8 +546,8 @@ Ar jūs tikrai norite užšifruoti savo piniginę?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Paskutinis gautas blokas buvo sukurtas %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Paskutinis gautas blokas buvo sukurtas %1 prieš.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

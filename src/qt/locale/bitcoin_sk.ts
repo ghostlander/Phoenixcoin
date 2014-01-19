@@ -287,7 +287,7 @@ Ste si istí, že si želáte zašifrovať peňaženku?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Synchronizácia so sieťou...</translation>
     </message>
     <message>
@@ -539,8 +539,8 @@ Ste si istí, že si želáte zašifrovať peňaženku?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Posledný prijatý blok bol generovaný %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Posledný prijatý blok bol generovaný %1 pred.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

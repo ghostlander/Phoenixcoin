@@ -293,7 +293,7 @@ Er du sikker på at du vil kryptere lommeboken?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Synkroniserer med nettverk...</translation>
     </message>
     <message>
@@ -545,8 +545,8 @@ Er du sikker på at du vil kryptere lommeboken?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Siste mottatte blokk ble generert %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Siste mottatte blokk ble generert %1 siden.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

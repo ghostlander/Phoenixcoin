@@ -287,7 +287,7 @@ Sunteţi sigur că doriţi să criptaţi portofelul electronic?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Se sincronizează cu reţeaua...</translation>
     </message>
     <message>
@@ -539,8 +539,8 @@ Sunteţi sigur că doriţi să criptaţi portofelul electronic?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Ultimul bloc primit a fost generat %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Ultimul bloc primit a fost generat acum %1.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

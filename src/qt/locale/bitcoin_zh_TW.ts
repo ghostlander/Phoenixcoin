@@ -293,7 +293,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>網路同步中...</translation>
     </message>
     <message>
@@ -545,7 +545,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
+        <source>The last received block was generated %1 ago.</source>
         <translation>最近收到的區塊產生於 %1.</translation>
     </message>
     <message>

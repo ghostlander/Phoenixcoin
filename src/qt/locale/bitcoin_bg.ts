@@ -287,7 +287,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Синхронизиране с мрежата...</translation>
     </message>
     <message>
@@ -539,8 +539,8 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Последният блок е от %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Последният блок е от %1 преди.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

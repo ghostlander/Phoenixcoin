@@ -293,7 +293,7 @@ Tahdotko varmasti salata lompakon?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Synkronoidaan verkon kanssa...</translation>
     </message>
     <message>
@@ -545,8 +545,8 @@ Tahdotko varmasti salata lompakon?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Viimeisin vastaanotettu lohko tuotettu %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Viimeisin vastaanotettu lohko tuotettu %1 sitten.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

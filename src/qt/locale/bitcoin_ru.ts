@@ -293,7 +293,7 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Синхронизация с сетью...</translation>
     </message>
     <message>
@@ -309,12 +309,12 @@ Are you sure you wish to encrypt your wallet?</source>
     <message>
         <location filename="../bitcoingui.cpp" line="191"/>
         <source>&amp;Transactions</source>
-        <translation>&amp;Транзакции</translation>
+        <translation>&amp;Переводы</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="192"/>
         <source>Browse the transaction history</source>
-        <translation>Показать историю транзакций</translation>
+        <translation>Показать историю переводов</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="197"/>
@@ -536,7 +536,7 @@ Are you sure you wish to encrypt your wallet?</source>
     <message>
         <location filename="../bitcoingui.cpp" line="573"/>
         <source>Up to date</source>
-        <translation>Синхронизированно</translation>
+        <translation>Синхронизировано</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="580"/>
@@ -545,8 +545,8 @@ Are you sure you wish to encrypt your wallet?</source>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Последний полученный блок был сгенерирован %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Последний полученный блок был сгенерирован %1 назад.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>
@@ -931,7 +931,7 @@ Address: %4
     <message>
         <location filename="../messagepage.cpp" line="105"/>
         <source>Private key for %1 is not available.</source>
-        <translation>Секретный ключ для %1 не доступен</translation>
+        <translation>Секретный ключ для %1 недоступен</translation>
     </message>
     <message>
         <location filename="../messagepage.cpp" line="117"/>
@@ -1662,7 +1662,7 @@ Address: %4
     <message>
         <location filename="../transactiontablemodel.cpp" line="400"/>
         <source>(n/a)</source>
-        <translation>[не доступно]</translation>
+        <translation>[недоступно]</translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="599"/>

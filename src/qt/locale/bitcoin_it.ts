@@ -293,7 +293,7 @@ Si è sicuri di voler cifrare il portamonete?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Sto sincronizzando con la rete...</translation>
     </message>
     <message>
@@ -545,8 +545,8 @@ Si è sicuri di voler cifrare il portamonete?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>L&apos;ultimo blocco ricevuto è stato generato %1</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>L&apos;ultimo blocco ricevuto è stato generato %1 fa.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

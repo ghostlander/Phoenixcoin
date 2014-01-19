@@ -298,7 +298,7 @@ Czy na pewno chcesz zaszyfrować swój portfel?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Synchronizacja z siecią...</translation>
     </message>
     <message>
@@ -550,8 +550,8 @@ Czy na pewno chcesz zaszyfrować swój portfel?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Ostatnio otrzymany blok została wygenerowany %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Ostatnio otrzymany blok została wygenerowany %1 temu.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>

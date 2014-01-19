@@ -293,7 +293,7 @@ Jeste li sigurni da želite šifrirati svoj novčanik?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="515"/>
-        <source>Synchronizing with network...</source>
+        <source>Synchronising with the network...</source>
         <translation>Usklađivanje s mrežom ...</translation>
     </message>
     <message>
@@ -545,8 +545,8 @@ Jeste li sigurni da želite šifrirati svoj novčanik?</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="590"/>
-        <source>Last received block was generated %1.</source>
-        <translation>Zadnji primljeni blok je generiran %1.</translation>
+        <source>The last received block was generated %1 ago.</source>
+        <translation>Zadnji primljeni blok je generiran %1 prije.</translation>
     </message>
     <message>
         <location filename="../bitcoingui.cpp" line="649"/>
