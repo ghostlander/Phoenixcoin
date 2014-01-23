@@ -2043,8 +2043,8 @@ Adresse : %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="63"/>
-        <source>Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333)</source>
-        <translation>Écouter les connexions sur le &lt;port&gt; (par défaut : 8333 ou testnet : 18333)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 9555 or testnet: 19555)</source>
+        <translation>Écouter les connexions sur le &lt;port&gt; (par défaut : 9555 ou testnet : 19555)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="64"/>
@@ -2153,8 +2153,8 @@ Adresse : %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="95"/>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 8332)</source>
-        <translation>Écouter les connexions JSON-RPC sur le &lt;port&gt; (par défaut : 8332)</translation>
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 9554 or testnet: 19554)</source>
+        <translation>Écouter les connexions JSON-RPC sur le &lt;port&gt; (par défaut : 9554 ou testnet: 19554)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="96"/>

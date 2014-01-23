@@ -2055,8 +2055,8 @@ Indirizzo: %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="63"/>
-        <source>Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333)</source>
-        <translation>Ascolta le connessioni JSON-RPC su &lt;porta&gt; (default: 8333 o testnet: 18333)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 9555 or testnet: 19555)</source>
+        <translation>Ascolta le connessioni JSON-RPC su &lt;porta&gt; (default: 9555 o testnet: 19555)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="64"/>
@@ -2171,8 +2171,8 @@ Indirizzo: %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="95"/>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 8332)</source>
-        <translation>Attendi le connessioni JSON-RPC su &lt;porta&gt; (default: 8332)
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 9554 or testnet: 19554)</source>
+        <translation>Attendi le connessioni JSON-RPC su &lt;porta&gt; (default: 9554 o testnet: 19554)
 </translation>
     </message>
     <message>

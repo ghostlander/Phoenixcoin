@@ -1705,7 +1705,7 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333)</source>
+        <source>Listen for connections on &lt;port&gt; (default: 9555 or testnet: 19555)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1833,7 +1833,7 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 8332)</source>
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 9554 or testnet: 19554)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

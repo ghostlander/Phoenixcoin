@@ -777,7 +777,7 @@ Address: %4
     <message>
         <location filename="../bitcoin.cpp" line="139"/>
         <source>Set language, for example &quot;de_DE&quot; (default: system locale)</source>
-        <translation>Выберите язык, например &quot;de_DE&quot; (по умолчанию: как в системе)</translation>
+        <translation>Выберите язык, например &quot;de_DE&quot; (стандартно: как в системе)</translation>
     </message>
     <message>
         <location filename="../bitcoin.cpp" line="140"/>
@@ -787,7 +787,7 @@ Address: %4
     <message>
         <location filename="../bitcoin.cpp" line="141"/>
         <source>Show splash screen on startup (default: 1)</source>
-        <translation>Показывать сплэш при запуске (по умолчанию: 1)</translation>
+        <translation>Показывать сплэш при запуске (стандартно: 1)</translation>
     </message>
 </context>
 <context>
@@ -2005,12 +2005,12 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="50"/>
         <source>Specify configuration file (default: bitcoin.conf)</source>
-        <translation>Указать конфигурационный файл (по умолчанию: bitcoin.conf)</translation>
+        <translation>Указать конфигурационный файл (стандартно: bitcoin.conf)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="51"/>
         <source>Specify pid file (default: bitcoind.pid)</source>
-        <translation>Указать pid-файл (по умолчанию: bitcoin.pid)</translation>
+        <translation>Указать pid-файл (стандартно: bitcoin.pid)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="52"/>
@@ -2030,12 +2030,12 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="55"/>
         <source>Set database cache size in megabytes (default: 25)</source>
-        <translation>Установить размер кэша базы данных в мегабайтах (по умолчанию: 25)</translation>
+        <translation>Установить размер кэша базы данных в мегабайтах (стандартно: 25)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="56"/>
         <source>Set database disk log size in megabytes (default: 100)</source>
-        <translation>Установить размер лога базы данных в мегабайтах (по умолчанию: 100)</translation>
+        <translation>Установить размер лога базы данных в мегабайтах (стандартно: 100)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="57"/>
@@ -2044,13 +2044,13 @@ Address: %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="63"/>
-        <source>Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333)</source>
-        <translation>Принимать входящие подключения на &lt;port&gt; (по умолчанию: 8333 или 18333 в тестовой сети)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 9555 or testnet: 19555)</source>
+        <translation>Принимать входящие подключения на &lt;port&gt; (стандартно: 9555 или в тестовой сети: 19555)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="64"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation>Поддерживать не более &lt;n&gt; подключений к узлам (по умолчанию: 125)</translation>
+        <translation>Поддерживать не более &lt;n&gt; подключений к узлам (стандартно: 125)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="66"/>
@@ -2075,7 +2075,7 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="70"/>
         <source>Try to discover public IP address (default: 1)</source>
-        <translation>Попробовать обнаружить внешний IP-адрес (по умолчанию: 1)</translation>
+        <translation>Попробовать обнаружить внешний IP-адрес (стандартно: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="73"/>
@@ -2085,27 +2085,27 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="75"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation>Порог для отключения неправильно ведущих себя узлов (по умолчанию: 100)</translation>
+        <translation>Порог для отключения неправильно ведущих себя узлов (стандартно: 100)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="76"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation>Число секунд блокирования неправильно ведущих себя узлов (по умолчанию: 86400)</translation>
+        <translation>Число секунд блокирования неправильно ведущих себя узлов (стандартно: 86400)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="79"/>
         <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 10000)</source>
-        <translation>Максимальный размер буфера приёма на соединение, &lt;n&gt;*1000 байт (по умолчанию: 10000)</translation>
+        <translation>Максимальный размер буфера приёма на соединение, &lt;n&gt;*1000 байт (стандартно: 10000)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="80"/>
         <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 10000)</source>
-        <translation>Максимальный размер буфера отправки на соединение, &lt;n&gt;*1000 байт (по умолчанию: 10000)</translation>
+        <translation>Максимальный размер буфера отправки на соединение, &lt;n&gt;*1000 байт (стандартно: 10000)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="83"/>
         <source>Detach block and address databases. Increases shutdown time (default: 0)</source>
-        <translation>Отключить базы данных блоков и адресов. Увеличивает время завершения работы (по умолчанию: 0)</translation>
+        <translation>Отключить базы данных блоков и адресов. Увеличивает время завершения работы (стандартно: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="86"/>
@@ -2154,8 +2154,8 @@ Address: %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="95"/>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 8332)</source>
-        <translation>Ожидать подключения JSON-RPC на &lt;порт&gt; (по умолчанию: 8332)</translation>
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 9554 or testnet: 19554)</source>
+        <translation>Ожидать подключения JSON-RPC на &lt;порт&gt; (стандартно: 9554 или в тестовой сети: 19554)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="96"/>
@@ -2165,7 +2165,7 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="97"/>
         <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
-        <translation>Посылать команды узлу, запущенному на &lt;ip&gt; (по умолчанию: 127.0.0.1)</translation>
+        <translation>Посылать команды узлу, запущенному на &lt;ip&gt; (стандартно: 127.0.0.1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="98"/>
@@ -2180,7 +2180,7 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="102"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation>Установить размер запаса ключей в &lt;n&gt; (по умолчанию: 100)</translation>
+        <translation>Установить размер запаса ключей в &lt;n&gt; (стандартно: 100)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="103"/>
@@ -2190,12 +2190,12 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="104"/>
         <source>How many blocks to check at startup (default: 2500, 0 = all)</source>
-        <translation>Сколько блоков проверять при запуске (по умолчанию: 2500, 0 = все)</translation>
+        <translation>Сколько блоков проверять при запуске (стандартно: 2500, 0 = все)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="105"/>
         <source>How thorough the block verification is (0-6, default: 1)</source>
-        <translation>Насколько тщательно проверять блоки (0-6, по умолчанию: 1)</translation>
+        <translation>Насколько тщательно проверять блоки (0-6, стандартно: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="106"/>
@@ -2217,17 +2217,17 @@ SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
     <message>
         <location filename="../bitcoinstrings.cpp" line="112"/>
         <source>Server certificate file (default: server.cert)</source>
-        <translation>Файл серверного сертификата (по умолчанию: server.cert)</translation>
+        <translation>Файл серверного сертификата (стандартно: server.cert)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="113"/>
         <source>Server private key (default: server.pem)</source>
-        <translation>Приватный ключ сервера (по умолчанию: server.pem)</translation>
+        <translation>Приватный ключ сервера (стандартно: server.pem)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="114"/>
         <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
-        <translation>Разрешённые алгоритмы (по умолчанию: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
+        <translation>Разрешённые алгоритмы (стандартно: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="145"/>
@@ -2262,7 +2262,7 @@ SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
     <message>
         <location filename="../bitcoinstrings.cpp" line="59"/>
         <source>Select the version of socks proxy to use (4 or 5, 5 is default)</source>
-        <translation>Выберите версию socks прокси (4 или 5, по умолчанию 5)</translation>
+        <translation>Выберите версию socks прокси (4 или 5, стандартно 5)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="60"/>
@@ -2407,27 +2407,27 @@ SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
     <message>
         <location filename="../bitcoinstrings.cpp" line="71"/>
         <source>Find peers using internet relay chat (default: 0)</source>
-        <translation>Найти участников через IRC (по умолчанию: 0)</translation>
+        <translation>Найти участников через IRC (стандартно: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="72"/>
         <source>Accept connections from outside (default: 1)</source>
-        <translation>Принимать входящие подключения (по умолчанию: 1)</translation>
+        <translation>Принимать входящие подключения (стандартно: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="74"/>
         <source>Find peers using DNS lookup (default: 1)</source>
-        <translation>Найти участников с помощью запросов DNS (по умолчанию: 1)</translation>
+        <translation>Найти участников с помощью запросов DNS (стандартно: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="81"/>
         <source>Use Universal Plug and Play to map the listening port (default: 1)</source>
-        <translation>Использовать универсальный Plug and Play для проброса порта (по умолчанию: 1)</translation>
+        <translation>Использовать универсальный Plug and Play для проброса порта (стандартно: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="82"/>
         <source>Use Universal Plug and Play to map the listening port (default: 0)</source>
-        <translation>Использовать универсальный Plug and Play для проброса порта (по умолчанию: 0)</translation>
+        <translation>Использовать универсальный Plug and Play для проброса порта (стандартно: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="85"/>

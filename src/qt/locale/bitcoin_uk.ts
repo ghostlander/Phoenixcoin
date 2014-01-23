@@ -2009,13 +2009,13 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="50"/>
         <source>Specify configuration file (default: bitcoin.conf)</source>
-        <translation>Вкажіть файл конфігурації (за промовчуванням: bitcoin.conf)
+        <translation>Вкажіть файл конфігурації (стандартно: bitcoin.conf)
 </translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="51"/>
         <source>Specify pid file (default: bitcoind.pid)</source>
-        <translation>Вкажіть pid-файл (за промовчуванням: bitcoind.pid)
+        <translation>Вкажіть pid-файл (стандартно: bitcoind.pid)
 </translation>
     </message>
     <message>
@@ -2054,13 +2054,13 @@ Address: %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="63"/>
-        <source>Listen for connections on &lt;port&gt; (default: 8333 or testnet: 18333)</source>
-        <translation>Чекати на з&apos;єднання на порту (по замовченню 8333 або тестова мережа 18333)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 9555 or testnet: 19555)</source>
+        <translation>Чекати на з&apos;єднання на порту (стандартно: 9555 або в тестовій мережі: 19555)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="64"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation>Підтримувати не більше &lt;n&gt; зв&apos;язків з колегами (за замовчуванням: 125)</translation>
+        <translation>Підтримувати не більше &lt;n&gt; зв&apos;язків з колегами (стандартно: 125)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="66"/>
@@ -2096,22 +2096,22 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="75"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation>Поріг відключення неправильно підєднаних пірів (за замовчуванням: 100)</translation>
+        <translation>Поріг відключення неправильно підєднаних пірів (стандартно: 100)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="76"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation>Максимальній розмір вхідного буферу на одне з&apos;єднання (за замовчуванням 86400)</translation>
+        <translation>Максимальній розмір вхідного буферу на одне з&apos;єднання (стандартно: 86400)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="79"/>
         <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 10000)</source>
-        <translation>Максимальоий буфер , &lt;n&gt; * 1000 байт (за умовчанням: 10000)</translation>
+        <translation>Максимальоий буфер , &lt;n&gt; * 1000 байт (стандартно: 10000)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="80"/>
         <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 10000)</source>
-        <translation>Максимальній розмір виіхідного буферу на одне з&apos;єднання (за замовчуванням 10000)</translation>
+        <translation>Максимальній розмір виіхідного буферу на одне з&apos;єднання (стандартно: 10000)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="83"/>
@@ -2170,8 +2170,8 @@ Address: %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="95"/>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 8332)</source>
-        <translation>Прослуховувати &lt;port&gt; для JSON-RPC-з’єднань (за промовчуванням: 8332)
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 9554 or testnet: 19554)</source>
+        <translation>Прослуховувати &lt;порт&gt; для JSON-RPC-з’єднань (стандартно: 9554 або в тестовій мережі: 19554)
 </translation>
     </message>
     <message>
@@ -2183,7 +2183,7 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="97"/>
         <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
-        <translation>Відправляти команди на вузол, запущений на &lt;ip&gt; (за промовчуванням: 127.0.0.1)
+        <translation>Відправляти команди на вузол, запущений на &lt;ip&gt; (стандартно: 127.0.0.1)
 </translation>
     </message>
     <message>
@@ -2199,7 +2199,7 @@ Address: %4
     <message>
         <location filename="../bitcoinstrings.cpp" line="102"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation>Встановити розмір пулу ключів &lt;n&gt; (за промовчуванням: 100)
+        <translation>Встановити розмір пулу ключів &lt;n&gt; (стандартно: 100)
 </translation>
     </message>
     <message>
@@ -2240,19 +2240,19 @@ SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
     <message>
         <location filename="../bitcoinstrings.cpp" line="112"/>
         <source>Server certificate file (default: server.cert)</source>
-        <translation>Сертифікату сервера (за промовчуванням: server.cert)
+        <translation>Сертифікату сервера (стандартно: server.cert)
 </translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="113"/>
         <source>Server private key (default: server.pem)</source>
-        <translation>Закритий ключ сервера (за промовчуванням: server.pem)
+        <translation>Закритий ключ сервера (стандартно: server.pem)
 </translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="114"/>
         <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
-        <translation>Допустимі шифри (за промовчуванням: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)
+        <translation>Допустимі шифри (стандартно: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)
 </translation>
     </message>
     <message>
