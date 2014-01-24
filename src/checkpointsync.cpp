@@ -445,8 +445,12 @@ bool CSyncCheckpoint::CheckSignature()
 // ppcoin: process synchronized checkpoint
 bool CSyncCheckpoint::ProcessSyncCheckpoint(CNode* pfrom)
 {
-    if (!CheckSignature())
+    if(!CheckSignature()) {
+        // DDoS protection
+        printf("ProcessSyncCheckpoint: bad signature received from peer %s\n", pfrom->addr.ToString().c_str());
+        pfrom->Misbehaving(10);
         return false;
+    }
 
     LOCK(cs_hashSyncCheckpoint);
     if (!mapBlockIndex.count(hashCheckpoint))
@@ -466,6 +470,7 @@ bool CSyncCheckpoint::ProcessSyncCheckpoint(CNode* pfrom)
         return false;
     }
 
+    // Old valid checkpoints are also reported as invalid
     if (!ValidateSyncCheckpoint(hashCheckpoint))
         return false;
 

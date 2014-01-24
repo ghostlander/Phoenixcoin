@@ -2560,22 +2560,13 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         uint64 nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
-        // Do not connect to these clients as they're not Phoenixcoin ones
-        if(pfrom->nVersion > MAX_PROTOCOL_VERSION) {
-            printf("peer %s reports incompatible version %i; disconnecting\n", pfrom->addr.ToString().c_str(), pfrom->nVersion);
-            pfrom->fDisconnect = true;
-            return false;
-        }
-
         // Do not connect to these clients as they're not Phoenixcoin ones or too old
-        if(pfrom->nVersion < MIN_PROTOCOL_VERSION) {
+        if((pfrom->nVersion > MAX_PROTOCOL_VERSION) || (pfrom->nVersion < MIN_PROTOCOL_VERSION)) {
             printf("peer %s reports incompatible version %i; disconnecting\n", pfrom->addr.ToString().c_str(), pfrom->nVersion);
             pfrom->fDisconnect = true;
             return false;
         }
 
-        if (pfrom->nVersion == 10300)
-            pfrom->nVersion = 300;
         if (!vRecv.empty())
             vRecv >> addrFrom >> nNonce;
         if (!vRecv.empty())
@@ -2592,7 +2583,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // Disconnect if we connected to ourself
         if (nNonce == nLocalHostNonce && nNonce > 1)
         {
-            printf("connected to self at %s, disconnecting\n", pfrom->addr.ToString().c_str());
+            printf("connected to self at %s; disconnecting\n", pfrom->addr.ToString().c_str());
             pfrom->fDisconnect = true;
             return true;
         }
@@ -2639,12 +2630,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // if their nStartingHeight is much higher of what we estimate it
         // to be, disconnect them.
         // nRefHeight and nRefTime should be updated periodically
-        long nRefHeight = 180000, nRefTime = 1387011672; // block #180000
+        long nRefHeight = 200000, nRefTime = 1388828071; // block #200000
         long nOurTime = GetAdjustedTime();
         long nHeightOffset = (nOurTime - nRefTime) / nTargetSpacingFour;
         // Add 10000 blocks to be safe
         if(pfrom->nStartingHeight > (nRefHeight + nHeightOffset + 10000)) {
-            printf("partner %s reporting block chain height %i, estimated height is %i; disconnecting\n",
+            printf("peer %s reports height %i, estimated height is %i; disconnecting\n",
               pfrom->addr.ToString().c_str(), pfrom->nStartingHeight, nRefHeight + nHeightOffset);
             pfrom->fDisconnect = true;
             return false;
@@ -2677,7 +2668,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
         pfrom->fSuccessfullyConnected = true;
 
-        printf("receive version message: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", pfrom->nVersion, pfrom->nStartingHeight, addrMe.ToString().c_str(), addrFrom.ToString().c_str(), pfrom->addr.ToString().c_str());
+        printf("received version message from %s, version %d, blocks=%d, us=%s, them=%s\n",
+          pfrom->addr.ToString().c_str(), pfrom->nVersion, pfrom->nStartingHeight, addrMe.ToString().c_str(), addrFrom.ToString().c_str());
 
         cPeerBlockCounts.input(pfrom->nStartingHeight);
 
@@ -3115,6 +3107,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     else if (strCommand == "alert")
     {
+        if(pfrom->fDisconnect) {
+            printf("alert received from a disconnected peer %s of version %i; ignoring\n",
+              pfrom->addr.ToString().c_str(), pfrom->nVersion);
+            return false;
+        }
+
         CAlert alert;
         vRecv >> alert;
 
@@ -3127,6 +3125,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 BOOST_FOREACH(CNode* pnode, vNodes)
                     alert.RelayTo(pnode);
             }
+        } else {
+             // DDoS protection
+             pfrom->Misbehaving(20);
         }
     }
 
@@ -3134,6 +3135,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     // Advanced checkpoint
     else if (strCommand == "checkpoint")
     {
+        if(pfrom->fDisconnect) {
+            printf("sync-checkpoint received from a disconnected peer %s of version %i; ignoring\n",
+              pfrom->addr.ToString().c_str(), pfrom->nVersion);
+            return false;
+        }
+
         CSyncCheckpoint checkpoint;
         vRecv >> checkpoint;
 
