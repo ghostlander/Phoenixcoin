@@ -2003,13 +2003,13 @@ Osoite: %4</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="50"/>
-        <source>Specify configuration file (default: bitcoin.conf)</source>
-        <translation>Määritä asetustiedosto (oletus: bitcoin.conf)</translation>
+        <source>Specify configuration file (default: phoenixcoin.conf)</source>
+        <translation>Määritä asetustiedosto (oletus: phoenixcoin.conf)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="51"/>
-        <source>Specify pid file (default: bitcoind.pid)</source>
-        <translation>Määritä pid-tiedosto (oletus: bitcoin.pid)</translation>
+        <source>Specify pid file (default: phoenixcoind.pid)</source>
+        <translation>Määritä pid-tiedosto (oletus: phoenixcoind.pid)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="52"/>
@@ -2475,18 +2475,18 @@ TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="9"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
+        <source>%s, you must set up the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (you do not need to remember this password)
 If the file does not exist, create it with owner-readable-only file permissions.
 </source>
-        <translation>%s, sinun täytyy asettaa rpcpassword asetustiedostoon:
-%s
+        <translation>%s, sinun täytyy luoda asetustiedosto:
+ %s
 On suositeltavaa käyttää seuraavaan satunnaista salasanaa:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (sinun ei tarvitse muistaa tätä salasanaa)
 Jos tiedostoa ei ole, niin luo se ainoastaan omistajan kirjoitusoikeuksin.

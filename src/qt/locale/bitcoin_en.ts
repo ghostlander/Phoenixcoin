@@ -1673,11 +1673,11 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Specify configuration file (default: bitcoin.conf)</source>
+        <source>Specify configuration file (default: phoenixcoin.conf)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Specify pid file (default: bitcoind.pid)</source>
+        <source>Specify pid file (default: phoenixcoind.pid)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2054,10 +2054,10 @@ SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%s, you must set a rpcpassword in the configuration file:
+        <source>%s, you must set up the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (you do not need to remember this password)
 If the file does not exist, create it with owner-readable-only file permissions.

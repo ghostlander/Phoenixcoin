@@ -39,7 +39,8 @@ static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
 // The min. transaction fee (0.1 PXC)
 static const int64 MIN_TX_FEE = 10000000;
 static const int64 MIN_RELAY_TX_FEE = MIN_TX_FEE;
-// The max. amount of coins to exist, in PXC satoshi (100 million PXC)
+// The max. amount for a single transaction, in PXC satoshi;
+// set to the total coin supply in our case (100 million PXC)
 static const int64 MAX_MONEY = 100000000 * COIN;
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 // Confirmation limit for mining rewards to become spendable, in blocks

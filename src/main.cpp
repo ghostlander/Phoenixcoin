@@ -2588,6 +2588,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
             return true;
         }
 
+        // Our external IP for getinfo
+        if(addrFrom.IsRoutable() && addrMe.IsRoutable()) addrExternal = addrMe;
+
         // Be shy and don't send version until we hear
         if (pfrom->fInbound)
             pfrom->PushVersion();

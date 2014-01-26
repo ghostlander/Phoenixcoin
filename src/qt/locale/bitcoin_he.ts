@@ -2002,13 +2002,13 @@ Address: %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="50"/>
-        <source>Specify configuration file (default: bitcoin.conf)</source>
-        <translation>ציין קובץ הגדרות (ברירת מחדל: bitcoin.conf)</translation>
+        <source>Specify configuration file (default: phoenixcoin.conf)</source>
+        <translation>ציין קובץ הגדרות (ברירת מחדל: phoenixcoin.conf)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="51"/>
-        <source>Specify pid file (default: bitcoind.pid)</source>
-        <translation>ציין קובץ pid (ברירת מחדל: bitcoind.pid)</translation>
+        <source>Specify pid file (default: phoenixcoind.pid)</source>
+        <translation>ציין קובץ pid (ברירת מחדל: phoenixcoind.pid)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="52"/>
@@ -2473,18 +2473,18 @@ SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="9"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
+        <source>%s, you must set up the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (you do not need to remember this password)
 If the file does not exist, create it with owner-readable-only file permissions.
 </source>
-        <translation>%s, עליך לקבוע את rpcpassword בקובץ ההגדרות:
-%s
+        <translation>%s, עליך ליצור את קובץ ההגדרות:
+ %s
 מומלץ להשתמש בסיסמה האקראית הבאה:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (אין צורך לזכור סיסמה זו)
 אם הקובץ אינו קיים, צור אותו עם הרשאות קריאה לבעלים בלבד.</translation>

@@ -2005,14 +2005,14 @@ Dirección: %4</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="50"/>
-        <source>Specify configuration file (default: bitcoin.conf)</source>
-        <translation>Especifica archivo de configuración (predeterminado: bitcoin.conf)
+        <source>Specify configuration file (default: phoenixcoin.conf)</source>
+        <translation>Especifica archivo de configuración (predeterminado: phoenixcoin.conf)
 </translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="51"/>
-        <source>Specify pid file (default: bitcoind.pid)</source>
-        <translation>Especifica archivo pid (predeterminado: bitcoin.pid)
+        <source>Specify pid file (default: phoenixcoind.pid)</source>
+        <translation>Especifica archivo pid (predeterminado: phoenixcoind.pid)
 </translation>
     </message>
     <message>
@@ -2496,18 +2496,18 @@ SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="9"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
+        <source>%s, you must set up the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (you do not need to remember this password)
 If the file does not exist, create it with owner-readable-only file permissions.
 </source>
-        <translation>%s, tiene que establecer rpcpassword en el archivo de configuración: ⏎
-%s ⏎
+        <translation>%s, tiene que establecer el archivo de configuración: ⏎
+ %s ⏎
 Se recomienda utilizar la siguiente contraseña aleatoria: ⏎
-rpcuser = bitcoinrpc ⏎
+rpcuser = phoenixcoinrpc ⏎
 rpcpassword =%s ⏎
 (no es necesario para recordar esta contraseña) ⏎
 Si el archivo no existe se crea con los permisos de lectura y escritura solamente del propietario. ⏎</translation>

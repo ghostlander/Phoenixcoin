@@ -2003,13 +2003,13 @@ Adresse : %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="50"/>
-        <source>Specify configuration file (default: bitcoin.conf)</source>
-        <translation>Spécifier le fichier de configuration (par défaut : bitcoin.conf)</translation>
+        <source>Specify configuration file (default: phoenixcoin.conf)</source>
+        <translation>Spécifier le fichier de configuration (par défaut : phoenixcoin.conf)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="51"/>
-        <source>Specify pid file (default: bitcoind.pid)</source>
-        <translation>Spécifier le fichier pid (par défaut : bitcoind.pid)</translation>
+        <source>Specify pid file (default: phoenixcoind.pid)</source>
+        <translation>Spécifier le fichier pid (par défaut : phoenixcoind.pid)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="52"/>
@@ -2475,18 +2475,18 @@ Options SSL : (cf. le wiki Bitcoin pour les réglages SSL)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="9"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
+        <source>%s, you must set up the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (you do not need to remember this password)
 If the file does not exist, create it with owner-readable-only file permissions.
 </source>
-        <translation>%s, vous devez établir un mot de passe rpc dans le fichier de configuration :
+        <translation>%s, vous devez établir le fichier de configuration:
  %s
-Il est recommandé d&apos;utiliser le mot de passe aléatoire suivant :
-rcpuser=bitcoinrpc
+Il est recommandé d&apos;utiliser le mot de passe aléatoire suivant:
+rcpuser=phoenixcoinrpc
 rpcpassword=%s
 (vous n&apos;avez pas besoin de mémoriser ce mot de passe)
 Si le fichier n&apos;existe pas, créez-le avec les droits de lecture accordés au propriétaire.

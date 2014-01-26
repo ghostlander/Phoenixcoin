@@ -151,7 +151,7 @@ double GetDifficulty(const CBlockIndex* blockindex = NULL)
 int64 AmountFromValue(const Value& value)
 {
     double dAmount = value.get_real();
-    if (dAmount <= 0.0 || dAmount > 100000000.0)
+    if (dAmount <= 0.0 || dAmount > (double)MAX_MONEY)
         throw JSONRPCError(-3, "Invalid amount");
     int64 nAmount = roundint64(dAmount * COIN);
     if (!MoneyRange(nAmount))
@@ -327,38 +327,30 @@ Value getdifficulty(const Array& params, bool fHelp)
 }
 
 
-// Returns average network hashes per second based on the last number of blocks
-Value GetNetworkHashPS(int lookup) {
-    if (pindexBest == NULL)
-        return 0;
+Value getnetworkhashps(const Array& params, bool fHelp) {
+
+    if(fHelp || params.size() > 1) throw runtime_error(
+      "getnetworkhashps [blocks]\n"
+      "Calculates estimated network hashes per second based on the last 30 blocks.\n"
+      "Pass in [blocks] to override the default value; zero specifies # of blocks since the last retarget.");
+
+    int lookup = params.size() > 0 ? params[0].get_int() : 30;
+
+    if(pindexBest == NULL) return 0;
 
     // If look-up is zero or negative value, then use blocks since the last retarget
-    if (lookup <= 0)
-        lookup = pindexBest->nHeight % 20 + 1;
+    if(lookup <= 0) lookup = pindexBest->nHeight % 20 + 1;
 
     // If look-up is larger than block chain, then set it to the maximum allowed
-    if (lookup > pindexBest->nHeight)
-        lookup = pindexBest->nHeight;
+    if(lookup > pindexBest->nHeight) lookup = pindexBest->nHeight;
 
     CBlockIndex* pindexPrev = pindexBest;
-    for (int i = 0; i < lookup; i++)
-        pindexPrev = pindexPrev->pprev;
+    for(int i = 0; i < lookup; i++) pindexPrev = pindexPrev->pprev;
 
     double timeDiff = pindexBest->GetBlockTime() - pindexPrev->GetBlockTime();
     double timePerBlock = timeDiff / lookup;
 
     return (boost::int64_t)(((double)GetDifficulty() * pow(2.0, 32)) / timePerBlock);
-}
-
-Value getnetworkhashps(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() > 1)
-        throw runtime_error(
-            "getnetworkhashps [blocks]\n"
-            "Returns estimated network hashes per second based on the last 30 blocks.\n"
-            "Pass in [blocks] to override the default value; zero specifies # of blocks since the last retarget.");
-
-    return GetNetworkHashPS(params.size() > 0 ? atoi(params[0].get_str()) : 30);
 }
 
 
@@ -429,7 +421,9 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
     obj.push_back(Pair("blocks",        (int)nBestHeight));
     obj.push_back(Pair("connections",   (int)vNodes.size()));
+    obj.push_back(Pair("timeoffset",    (boost::int64_t)GetTimeOffset()));
     obj.push_back(Pair("proxy",         (addrProxy.IsValid() ? addrProxy.ToStringIPPort() : string())));
+    obj.push_back(Pair("ip",            addrExternal.ToStringIP()));
     obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
     obj.push_back(Pair("testnet",       fTestNet));
     obj.push_back(Pair("keypoololdest", (boost::int64_t)pwalletMain->GetOldestKeyPoolTime()));
@@ -549,7 +543,6 @@ Value getaccountaddress(const Array& params, bool fHelp)
 
     return ret;
 }
-
 
 
 Value setaccount(const Array& params, bool fHelp)
@@ -2933,7 +2926,7 @@ void ThreadRPCServer2(void* parg)
         else if (mapArgs.count("-daemon"))
             strWhatAmI = strprintf(_("To use the %s option"), "\"-daemon\"");
         uiInterface.ThreadSafeMessageBox(strprintf(
-            _("%s, you must set a rpcpassword in the configuration file:\n %s\n"
+            _("%s, you must set up the configuration file:\n %s\n"
               "It is recommended you use the following random password:\n"
               "rpcuser=phoenixcoinrpc\n"
               "rpcpassword=%s\n"
@@ -2998,14 +2991,14 @@ void ThreadRPCServer2(void* parg)
                     static_cast<void (ip::tcp::acceptor::*)()>(&ip::tcp::acceptor::close), acceptor.get())
                 .track(acceptor));
 
-            fListening = true;
-        }
-        catch(boost::system::system_error &e)
-        {
-            strerr = strprintf(_("An error occurred while setting up the RPC port %i for listening on IPv6, falling back to IPv4: %s"), endpoint.port(), e.what());
-        }
+        fListening = true;
+    }
+    catch(boost::system::system_error &e)
+    {
+        strerr = strprintf(_("An error occurred while setting up the RPC port %i for listening on IPv6, falling back to IPv4: %s"), endpoint.port(), e.what());
+    }
 
-        try {
+    try {
         // If dual IPv6/IPv4 failed (or we're opening loopback interfaces only), open IPv4 separately
         if (!fListening || loopback || v6_only_error)
         {
@@ -3373,6 +3366,7 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "signrawtransaction"     && n > 1) ConvertTo<Array>(params[1]);
     if (strMethod == "signrawtransaction"     && n > 2) ConvertTo<Array>(params[2]);
     if (strMethod == "getaddednodeinfo"       && n > 0) ConvertTo<bool>(params[0]);
+    if (strMethod == "getnetworkhashps"       && n > 0) ConvertTo<boost::int64_t>(params[0]);
 
     return params;
 }

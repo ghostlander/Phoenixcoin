@@ -2008,14 +2008,14 @@ Address: %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="50"/>
-        <source>Specify configuration file (default: bitcoin.conf)</source>
-        <translation>指定配置文件 (默认为 bitcoin.conf)
+        <source>Specify configuration file (default: phoenixcoin.conf)</source>
+        <translation>指定配置文件 (默认为 phoenixcoin.conf)
 </translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="51"/>
-        <source>Specify pid file (default: bitcoind.pid)</source>
-        <translation>指定 pid 文件 (默认为 bitcoind.pid)
+        <source>Specify pid file (default: phoenixcoind.pid)</source>
+        <translation>指定 pid 文件 (默认为 phoenixcoind.pid)
 </translation>
     </message>
     <message>
@@ -2503,18 +2503,18 @@ SSL 选项: (SSL 安装教程具体见比特币维基百科)
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="9"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
+        <source>%s, you must set up the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (you do not need to remember this password)
 If the file does not exist, create it with owner-readable-only file permissions.
 </source>
-        <translation>%s, 您必须在配置文件中加入选项 rpcpassword :
+        <translation>%s, 你必須創建配置文件 :
  %s
 建议您使用下面的随机密码:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (您无需记忆该密码)
 如果配置文件不存在，请新建，并将文件权限设置为仅允许文件所有者读取.</translation>

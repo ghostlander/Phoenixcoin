@@ -2009,14 +2009,14 @@ Adres: %4
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="50"/>
-        <source>Specify configuration file (default: bitcoin.conf)</source>
-        <translation>Specifieer configuratiebestand (standaard: bitcoin.conf)
+        <source>Specify configuration file (default: phoenixcoin.conf)</source>
+        <translation>Specifieer configuratiebestand (standaard: phoenixcoin.conf)
 </translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="51"/>
-        <source>Specify pid file (default: bitcoind.pid)</source>
-        <translation>Specifieer pid-bestand (standaard: bitcoind.pid)
+        <source>Specify pid file (default: phoenixcoind.pid)</source>
+        <translation>Specifieer pid-bestand (standaard: phoenixcoind.pid)
 </translation>
     </message>
     <message>
@@ -2501,18 +2501,18 @@ SSL-opties: (zie de Bitcoin wiki voor SSL-instructies)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="9"/>
-        <source>%s, you must set a rpcpassword in the configuration file:
+        <source>%s, you must set up the configuration file:
  %s
 It is recommended you use the following random password:
-rpcuser=bitcoinrpc
+rpcuser=phoenixcoinrpc
 rpcpassword=%s
 (you do not need to remember this password)
 If the file does not exist, create it with owner-readable-only file permissions.
 </source>
-        <translation>%s, je moet een rpcpassword instellen in het configuratie bestand:
+        <translation>%s, je moet de configuratie bestand te instellen:
  %s
 Het is aangeraden het volgende willekeurig wachtwoord te gebruiken:
-rpccuser=bitcoinrpc
+rpccuser=phoenixcoinrpc
 rpcpassword=%s
 (het is niet nodig om het wachtwoord te onthouden)
 Als het bestand niet bestaat, maak het aan, met een alleen-lezen permissie.

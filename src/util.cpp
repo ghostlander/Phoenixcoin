@@ -977,7 +977,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Windows < Vista: C:\Documents and Settings\Username\Application Data\Phoenixcoin
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\Phoenixcoin
 //    return GetSpecialFolderPath(CSIDL_APPDATA) / "Phoenixcoin";
-    // Windows: current directory \ data
+    // Windows: current directory \ data for livenet
     return boost::filesystem::current_path() / "data";
 #else
     fs::path pathRet;
@@ -986,15 +986,8 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path("/");
     else
         pathRet = fs::path(pszHome);
-#ifdef MAC_OSX
-    // Mac OS X: ~/Library/Application Support/Phoenixcoin
-    pathRet /= "Library/Application Support";
-    fs::create_directory(pathRet);
-    return pathRet / "Phoenixcoin";
-#else
-    // Linux, *BSD and so on: ~/.phoenixcoin
+    // Linux, Mac OS X, *BSD and so on: ~/.phoenixcoin
     return pathRet / ".phoenixcoin";
-#endif
 #endif
 }
 
@@ -1035,8 +1028,17 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
 
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "phoenixcoin.conf"));
-    if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
+    namespace fs = boost::filesystem;
+
+    fs::path pathConfigFile;
+    if(mapArgs.count("-conf")) pathConfigFile = fs::path(mapArgs["-conf"]);
+    else pathConfigFile = fs::path("phoenixcoin.conf");
+    if(!pathConfigFile.is_absolute()) {
+        if(!GetBoolArg("-testnet", false)) 
+          pathConfigFile = GetDataDir(false) / pathConfigFile;
+        else
+          pathConfigFile = GetDataDir(false) / "testnet3" / pathConfigFile;
+    }
     return pathConfigFile;
 }
 
@@ -1163,6 +1165,11 @@ void SetMockTime(int64 nMockTimeIn)
 }
 
 static int64 nTimeOffset = 0;
+
+int64 GetTimeOffset() {
+
+    return nTimeOffset;
+}
 
 int64 GetAdjustedTime()
 {
