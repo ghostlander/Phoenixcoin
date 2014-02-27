@@ -28,6 +28,7 @@
 #include <boost/asio/ssl.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/assign/list_of.hpp>
 #include <list>
 
 #define printf OutputDebugStringF
@@ -35,6 +36,7 @@
 using namespace std;
 using namespace boost;
 using namespace boost::asio;
+using namespace boost::assign;
 using namespace json_spirit;
 
 void ThreadRPCServer2(void* parg);
@@ -54,6 +56,8 @@ extern Value createrawtransaction(const Array& params, bool fHelp);
 extern Value decoderawtransaction(const Array& params, bool fHelp);
 extern Value signrawtransaction(const Array& params, bool fHelp);
 extern Value sendrawtransaction(const Array& params, bool fHelp);
+extern Value lockunspent(const Array& params, bool fHelp);
+extern Value listlockunspent(const Array& params, bool fHelp);
 
 extern json_spirit::Value addnode(const json_spirit::Array& params, bool fHelp); // in rpcnet.cpp
 extern json_spirit::Value getaddednodeinfo(const json_spirit::Array& params, bool fHelp);
@@ -1865,6 +1869,77 @@ Value validateaddress(const Array& params, bool fHelp)
     return ret;
 }
 
+Value lockunspent(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 1 || params.size() > 2)
+        throw runtime_error(
+            "lockunspent unlock? [array-of-Objects]\n"
+            "Updates list of temporarily unspendable outputs.");
+
+    if (params.size() == 1)
+        RPCTypeCheck(params, list_of(bool_type));
+    else
+        RPCTypeCheck(params, list_of(bool_type)(array_type));
+
+    bool fUnlock = params[0].get_bool();
+
+    if (params.size() == 1) {
+        if (fUnlock)
+            pwalletMain->UnlockAllCoins();
+        return true;
+    }
+
+    Array outputs = params[1].get_array();
+    BOOST_FOREACH(Value& output, outputs)
+    {
+        if (output.type() != obj_type)
+            throw JSONRPCError(-8, "Invalid parameter, expected object");
+        const Object& o = output.get_obj();
+
+        RPCTypeCheck(o, map_list_of("txid", str_type)("vout", int_type));
+
+        string txid = find_value(o, "txid").get_str();
+        if (!IsHex(txid))
+            throw JSONRPCError(-8, "Invalid parameter, expected hex txid");
+
+        int nOutput = find_value(o, "vout").get_int();
+        if (nOutput < 0)
+            throw JSONRPCError(-8, "Invalid parameter, vout must be positive");
+
+        COutPoint outpt(uint256(txid), nOutput);
+
+        if (fUnlock)
+            pwalletMain->UnlockCoin(outpt);
+        else
+            pwalletMain->LockCoin(outpt);
+    }
+
+    return true;
+}
+
+Value listlockunspent(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 0)
+        throw runtime_error(
+            "listlockunspent\n"
+            "Returns list of temporarily unspendable outputs.");
+
+    vector<COutPoint> vOutpts;
+    pwalletMain->ListLockedCoins(vOutpts);
+
+    Array ret;
+
+    BOOST_FOREACH(COutPoint &outpt, vOutpts) {
+        Object o;
+
+        o.push_back(Pair("txid", outpt.hash.GetHex()));
+        o.push_back(Pair("vout", (int)outpt.n));
+        ret.push_back(o);
+    }
+
+    return ret;
+}
+
 Value getworkex(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 2)
@@ -2453,6 +2528,8 @@ static const CRPCCommand vRPCCommands[] =
     { "signrawtransaction",     &signrawtransaction,     false },
     { "sendrawtransaction",     &sendrawtransaction,     false },
     { "sendalert",              &sendalert,              false },
+    { "lockunspent",            &lockunspent,            false },
+    { "listlockunspent",        &listlockunspent,        false },
 };
 
 CRPCTable::CRPCTable()
@@ -3367,6 +3444,8 @@ Array RPCConvertValues(const std::string &strMethod, const std::vector<std::stri
     if (strMethod == "signrawtransaction"     && n > 2) ConvertTo<Array>(params[2]);
     if (strMethod == "getaddednodeinfo"       && n > 0) ConvertTo<bool>(params[0]);
     if (strMethod == "getnetworkhashps"       && n > 0) ConvertTo<boost::int64_t>(params[0]);
+    if (strMethod == "lockunspent"            && n > 0) ConvertTo<bool>(params[0]);
+    if (strMethod == "lockunspent"            && n > 1) ConvertTo<Array>(params[1]);
 
     return params;
 }

@@ -4,9 +4,7 @@
 #include "bitcoinunits.h"
 #include "util.h"
 #include "init.h"
-#include "base58.h"
 
-#include <QString>
 #include <QDateTime>
 #include <QDoubleValidator>
 #include <QFont>
@@ -81,11 +79,6 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
     if(uri.scheme() != QString("phoenixcoin"))
         return false;
 
-    // check if the address is valid
-    CBitcoinAddress addressFromUri(uri.path().toStdString());
-    if (!addressFromUri.IsValid())
-        return false;
-
     SendCoinsRecipient rv;
     rv.address = uri.path();
     rv.amount = 0;
@@ -142,7 +135,11 @@ bool parseBitcoinURI(QString uri, SendCoinsRecipient *out)
 
 QString HtmlEscape(const QString& str, bool fMultiLine)
 {
+#if QT_VERSION < 0x050000
     QString escaped = Qt::escape(str);
+#else
+    QString escaped = str.toHtmlEscaped();
+#endif
     if(fMultiLine)
     {
         escaped = escaped.replace("\n", "<br>\n");
@@ -166,6 +163,12 @@ void copyEntryData(QAbstractItemView *view, int column, int role)
         // Copy first item
         QApplication::clipboard()->setText(selection.at(0).data(role).toString());
     }
+}
+
+void setClipboard(const QString& str)
+{
+    QApplication::clipboard()->setText(str, QClipboard::Clipboard);
+    QApplication::clipboard()->setText(str, QClipboard::Selection);
 }
 
 QString getSaveFileName(QWidget *parent, const QString &caption,

@@ -478,6 +478,7 @@ bool CTransaction::CheckTransaction() const
     return true;
 }
 
+
 bool CTxMemPool::accept(CTxDB& txdb, CTransaction &tx, bool fCheckInputs,
                         bool* pfMissingInputs)
 {
@@ -561,10 +562,10 @@ bool CTxMemPool::accept(CTxDB& txdb, CTransaction &tx, bool fCheckInputs,
         // reasonable number of ECDSA signature verifications.
 
         int64 nFees = tx.GetValueIn(mapInputs)-tx.GetValueOut();
-        unsigned int nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+        unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
 
         // Don't accept it if it can't get into a block
-        if (nFees < tx.GetMinFee(1000, true, GMF_RELAY))
+        if(nFees < tx.GetMinFee(nTxSize, true, GMF_RELAY))
             return error("CTxMemPool::accept() : not enough fees");
 
         // Continuously rate-limit free transactions
@@ -587,8 +588,8 @@ bool CTxMemPool::accept(CTxDB& txdb, CTransaction &tx, bool fCheckInputs,
                 if (dFreeCount > GetArg("-limitfreerelay", 15)*10*1000 && !IsFromMe(tx))
                     return error("CTxMemPool::accept() : free transaction rejected by rate limiter");
                 if (fDebug)
-                    printf("Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount+nSize);
-                dFreeCount += nSize;
+                    printf("Rate limit dFreeCount: %g => %g\n", dFreeCount, dFreeCount+nTxSize);
+                dFreeCount += nTxSize;
             }
         }
 
@@ -3642,9 +3643,10 @@ CBlock* CreateNewBlock(CReserveKey& reservekey)
                 continue;
 
             // Transaction fee required depends on block size
-            // Phoenixcoin: transactions up to 500 bytes in size are free 
-            bool fAllowFree = (nBlockSize + nTxSize < 1500 || CTransaction::AllowFree(dPriority));
-            int64 nMinFee = tx.GetMinFee(nBlockSize, fAllowFree, GMF_BLOCK);
+            // Phoenixcoin: low priority transactions up to 500 bytes in size
+            // are free unless they get caught by the dust spam filter
+            bool fAllowFree = ((nBlockSize + nTxSize < 1500) || CTransaction::AllowFree(dPriority));
+            int64 nMinFee = tx.GetMinFee(nTxSize, fAllowFree, GMF_BLOCK);
 
             // Connecting shouldn't fail due to dependency on other memory pool transactions
             // because we're already processing them in order of dependency

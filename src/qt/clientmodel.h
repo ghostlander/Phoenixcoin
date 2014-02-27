@@ -17,6 +17,7 @@ QT_END_NAMESPACE
 class ClientModel : public QObject
 {
     Q_OBJECT
+
 public:
     explicit ClientModel(OptionsModel *optionsModel, QObject *parent = 0);
     ~ClientModel();
@@ -93,6 +94,7 @@ private:
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
+
 signals:
     void numConnectionsChanged(int count);
     void numBlocksChanged(int count, int countOfPeers);

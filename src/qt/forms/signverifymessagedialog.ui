@@ -145,7 +145,7 @@
          <item>
           <widget class="QPushButton" name="signMessageButton_SM">
            <property name="toolTip">
-            <string>Sign the message to prove you own this Bitcoin address</string>
+            <string>Sign the message to prove you own this Phoenixcoin address</string>
            </property>
            <property name="text">
             <string>&amp;Sign Message</string>

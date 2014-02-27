@@ -17,8 +17,6 @@
 #include <QLocale>
 #include <QMessageBox>
 #include <QPushButton>
-#include <QRegExp>
-#include <QRegExpValidator>
 #include <QTabWidget>
 #include <QWidget>
 
@@ -152,6 +150,7 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->lang, OptionsModel::Language);
     mapper->addMapping(ui->unit, OptionsModel::DisplayUnit);
     mapper->addMapping(ui->displayAddresses, OptionsModel::DisplayAddresses);
+    mapper->addMapping(ui->coinControlFeatures, OptionsModel::CoinControlFeatures);
 }
 
 void OptionsDialog::enableSaveButtons()

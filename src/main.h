@@ -36,12 +36,15 @@ static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
 static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
 // The max. number of orphan transactions kept in memory
 static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
-// The min. transaction fee (0.1 PXC)
+// The min. transaction fee (0.1 PXC) if required
 static const int64 MIN_TX_FEE = 10000000;
-static const int64 MIN_RELAY_TX_FEE = MIN_TX_FEE;
-// The max. amount for a single transaction, in PXC satoshi;
-// set to the total coin supply in our case (100 million PXC)
-static const int64 MAX_MONEY = 100000000 * COIN;
+// Fees below this value (0.05 PXC) are considered absent while relaying
+static const int64 MIN_RELAY_TX_FEE = 5000000;
+// The dust threshold (0.01 PXC)
+static const int64 TX_DUST = 1000000;
+// The max. amount for a single transaction;
+// set to ~10% of the total coin supply in our case (10 million PXC)
+static const int64 MAX_MONEY = 10000000 * COIN;
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 // Confirmation limit for mining rewards to become spendable, in blocks
 static const int COINBASE_MATURITY = 100;
@@ -550,55 +553,44 @@ public:
 
     static bool AllowFree(double dPriority)
     {
-        // Large (in bytes) low-priority (new, small-coin) transactions need a fee
-        // Phoenixcoin: 960 blocks per day target, priority cutoff is 1 PXC day / 250 bytes
+        // High priority transactions are exempt of mandatory fees usually
+        // Phoenixcoin: 960 blocks per day target, priority boundary is 1 PXC day / 250 bytes
         return dPriority > COIN * 960 / 250;
     }
 
-    int64 GetMinFee(unsigned int nBlockSize=1, bool fAllowFree=true, enum GetMinFee_mode mode=GMF_BLOCK) const
-    {
+    int64 GetMinFee(unsigned int nTxSize, bool fAllowFree, enum GetMinFee_mode mode) const {
+
         // Base fee is either MIN_TX_FEE or MIN_RELAY_TX_FEE
         int64 nBaseFee = (mode == GMF_RELAY) ? MIN_RELAY_TX_FEE : MIN_TX_FEE;
 
-        unsigned int nBytes = ::GetSerializeSize(*this, SER_NETWORK, PROTOCOL_VERSION);
-        unsigned int nNewBlockSize = nBlockSize + nBytes;
-        int64 nMinFee = (1 + (int64)nBytes / 1000) * nBaseFee;
+        unsigned int nNewBlockSize = (mode == GMF_SEND) ? nTxSize : 1000 + nTxSize;
+        // Add a base fee per every 1000 bytes of transaction data
+        int64 nMinFee = (1 + (int64)nTxSize / 1000) * nBaseFee;
 
-        if (fAllowFree)
-        {
-            if (nBlockSize == 1)
-            {
-                // Transactions under 10K are free
-                // (about 4500bc if made of 50bc inputs)
-                if (nBytes < 10000)
-                    nMinFee = 0;
-            }
-            else
-            {
-                // Free transaction area
-                if (nNewBlockSize < 27000)
-                    nMinFee = 0;
+        if(fAllowFree) {
+            if(mode == GMF_SEND) {
+                // Limit size of free high priority transactions
+                if(nTxSize < 2000) nMinFee = 0;
+            } else {
+                // GMF_BLOCK, GMF_RELAY:
+                // Limit block space for free transactions
+                if(nNewBlockSize < 16000) nMinFee = 0;
             }
         }
 
-        // To limit dust spam, add MIN_TX_FEE/MIN_RELAY_TX_FEE for any output that is less than 0.01
+        // Dust spam filter: require a base fee for any micro output
         BOOST_FOREACH(const CTxOut& txout, vout)
-            if (txout.nValue < CENT)
-                nMinFee += nBaseFee;
+          if(txout.nValue < TX_DUST) nMinFee += nBaseFee;
 
         // Raise the price as the block approaches full
-        if (nBlockSize != 1 && nNewBlockSize >= MAX_BLOCK_SIZE_GEN/2)
-        {
-            if (nNewBlockSize >= MAX_BLOCK_SIZE_GEN)
-                return MAX_MONEY;
+        if((mode != GMF_SEND) && (nNewBlockSize >= MAX_BLOCK_SIZE_GEN/2)) {
+            if(nNewBlockSize >= MAX_BLOCK_SIZE_GEN) return MAX_MONEY;
             nMinFee *= MAX_BLOCK_SIZE_GEN / (MAX_BLOCK_SIZE_GEN - nNewBlockSize);
+            if(!MoneyRange(nMinFee)) nMinFee = MAX_MONEY;
         }
 
-        if (!MoneyRange(nMinFee))
-            nMinFee = MAX_MONEY;
         return nMinFee;
     }
-
 
     bool ReadFromDisk(CDiskTxPos pos, FILE** pfileRet=NULL)
     {

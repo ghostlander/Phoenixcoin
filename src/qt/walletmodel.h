@@ -2,13 +2,24 @@
 #define WALLETMODEL_H
 
 #include <QObject>
+#include <vector>
+#include <map>
 
 #include "allocators.h" /* for SecureString */
+#include "wallet.h"
+#include "walletmodeltransaction.h"
 
 class OptionsModel;
 class AddressTableModel;
 class TransactionTableModel;
 class CWallet;
+class WalletModelTransaction;
+class CKeyID;
+class CPubKey;
+class COutput;
+class COutPoint;
+class uint256;
+class CCoinControl;
 
 QT_BEGIN_NAMESPACE
 class QTimer;
@@ -26,6 +37,7 @@ public:
 class WalletModel : public QObject
 {
     Q_OBJECT
+
 public:
     explicit WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent = 0);
     ~WalletModel();
@@ -54,7 +66,7 @@ public:
     AddressTableModel *getAddressTableModel();
     TransactionTableModel *getTransactionTableModel();
 
-    qint64 getBalance() const;
+    qint64 getBalance(const CCoinControl *coinControl=NULL) const;
     qint64 getUnconfirmedBalance() const;
     qint64 getImmatureBalance() const;
     int getNumTransactions() const;
@@ -66,17 +78,15 @@ public:
     // Return status record for SendCoins, contains error id + information
     struct SendCoinsReturn
     {
-        SendCoinsReturn(StatusCode status,
-                         qint64 fee=0,
-                         QString hex=QString()):
-            status(status), fee(fee), hex(hex) {}
+        SendCoinsReturn(StatusCode status=Aborted) : status(status) {}
         StatusCode status;
-        qint64 fee; // is used in case status is "AmountWithFeeExceedsBalance"
-        QString hex; // is filled with the transaction hash if status is "OK"
     };
 
+    // Prepare a transaction to get a fee estimate
+    SendCoinsReturn prepareTransaction(WalletModelTransaction &transaction, const CCoinControl *coinControl=NULL);
+
     // Send coins to a list of recipients
-    SendCoinsReturn sendCoins(const QList<SendCoinsRecipient> &recipients);
+    SendCoinsReturn sendCoins(WalletModelTransaction &transaction);
 
     // Wallet encryption
     bool setWalletEncrypted(bool encrypted, const SecureString &passphrase);
@@ -107,6 +117,15 @@ public:
     };
 
     UnlockContext requestUnlock();
+
+    bool getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const;
+    void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
+    void listCoins(std::map<QString, std::vector<COutput> >& mapCoins) const;
+
+    bool isLockedCoin(uint256 hash, unsigned int n) const;
+    void lockCoin(COutPoint& output);
+    void unlockCoin(COutPoint& output);
+    void listLockedCoins(std::vector<COutPoint>& vOutpts);
 
 private:
     CWallet *wallet;
@@ -160,6 +179,5 @@ public slots:
     /* Current, immature or unconfirmed balance might have changed - emit 'balanceChanged' if so */
     void pollBalanceChanged();
 };
-
 
 #endif // WALLETMODEL_H

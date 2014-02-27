@@ -111,6 +111,7 @@ HEADERS += src/qt/bitcoingui.h \
     src/bignum.h \
     src/checkpoints.h \
     src/checkpointsync.h \
+    src/coincontrol.h \
     src/compat.h \
     src/sync.h \
     src/util.h \
@@ -166,7 +167,10 @@ HEADERS += src/qt/bitcoingui.h \
     src/scrypt.h \
     src/qt/miningpage.h \
     src/version.h \
-    src/qt/rpcconsole.h
+    src/qt/rpcconsole.h \
+    src/qt/walletmodeltransaction.h \
+    src/qt/coincontroldialog.h \
+    src/qt/coincontroltreewidget.h
 
 SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/transactiontablemodel.cpp \
@@ -228,7 +232,10 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/rpcconsole.cpp \
     src/scrypt.c \
     src/qt/miningpage.cpp \
-    src/noui.cpp
+    src/noui.cpp \
+    src/qt/walletmodeltransaction.cpp \
+    src/qt/coincontroldialog.cpp \
+    src/qt/coincontroltreewidget.cpp
 
 RESOURCES += \
     src/qt/bitcoin.qrc
@@ -245,7 +252,8 @@ FORMS += \
     src/qt/forms/askpassphrasedialog.ui \
     src/qt/forms/rpcconsole.ui \
     src/qt/forms/miningpage.ui \
-    src/qt/forms/optionsdialog.ui
+    src/qt/forms/optionsdialog.ui \
+    src/qt/forms/coincontroldialog.ui
 
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h
