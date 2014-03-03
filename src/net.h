@@ -146,6 +146,8 @@ public:
     bool fInbound;
     int64 nReleaseTime;
     int nStartingHeight;
+    uint64 nTxBytes;
+    uint64 nRxBytes;
     int nMisbehavior;
 };
 
@@ -168,6 +170,8 @@ public:
     int64 nLastRecv;
     int64 nLastSendEmpty;
     int64 nTimeConnected;
+    int64 nTxBytes;
+    int64 nRxBytes;
     int nHeaderStart;
     unsigned int nMessageStart;
     CAddress addr;
@@ -221,6 +225,8 @@ public:
         nLastRecv = 0;
         nLastSendEmpty = GetTime();
         nTimeConnected = GetTime();
+        nTxBytes  = 0;
+        nRxBytes  = 0;
         nHeaderStart = -1;
         nMessageStart = -1;
         addr = addrIn;
