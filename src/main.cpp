@@ -2942,6 +2942,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CInv inv(MSG_TX, tx.GetHash());
         pfrom->AddInventoryKnown(inv);
 
+        // Truncate a message to the actual transaction size
+        unsigned int nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+        unsigned int oldSize = vMsg.size();
+        if(nSize < oldSize) {
+            printf("truncating oversized transaction message %s (%u -> %u)\n",
+              tx.GetHash().ToString().c_str(), oldSize, nSize);
+            vMsg.resize(nSize);
+        }
+
         bool fMissingInputs = false;
         if (tx.AcceptToMemoryPool(txdb, true, &fMissingInputs))
         {
