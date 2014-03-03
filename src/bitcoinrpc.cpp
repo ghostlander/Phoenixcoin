@@ -2708,6 +2708,7 @@ int ReadHTTP(std::basic_istream<char>& stream, map<string, string>& mapHeadersRe
     return nStatus;
 }
 
+// Compares provided and correct rpcuser:rpcpassword strings
 bool HTTPAuthorized(map<string, string>& mapHeaders)
 {
     string strAuth = mapHeaders["authorization"];
@@ -2715,7 +2716,16 @@ bool HTTPAuthorized(map<string, string>& mapHeaders)
         return false;
     string strUserPass64 = strAuth.substr(6); boost::trim(strUserPass64);
     string strUserPass = DecodeBase64(strUserPass64);
-    return strUserPass == strRPCUserColonPass;
+    unsigned int nResult = 0;
+
+    if(strUserPass.length() != strRPCUserColonPass.length())
+      return false;
+
+    // Bitwise XOR chars of each password with bitwise OR assignment;
+    // any single bit mismatch results in a positive value
+    for(size_t i = 0; i < strUserPass.length(); i++)
+      nResult |= strUserPass.at(i) ^ strRPCUserColonPass.at(i); 
+    return nResult == 0;
 }
 
 //
