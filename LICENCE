@@ -1,6 +1,6 @@
 Copyright (c) 2009-2012 Bitcoin Developers
 Copyright (c) 2011-2012 Litecoin Developers
-Copyright (c) 2013 Phoenixcoin Developers
+Copyright (c) 2013-2014 Phoenixcoin Developers
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,4 +21,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 Includes Advanced Checkpointing developed by Sunny King for PPC/XPM;
-see src/checkpointsync.c for further details
+see src/checkpointsync.cpp for further details

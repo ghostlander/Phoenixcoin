@@ -1,5 +1,6 @@
 // Copyright (c) 2012-2013 PPCoin developers
 // Copyright (c) 2013 Primecoin developers
+// Copyright (c) 2014 Phoenixcoin Developers
 //
 // A perpetual use license of this advanced checkpoint technology is granted
 // to Phoenixcoin by Sunny King on behalf of PPCoin developers and Primecoin

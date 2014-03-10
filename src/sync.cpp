@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2012 The Bitcoin developers
 // Copyright (c) 2011-2012 Litecoin Developers
-// Copyright (c) 2013 Phoenixcoin Developers
+// Copyright (c) 2013-2014 Phoenixcoin Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file LICENCE or http://www.opensource.org/licenses/mit-license.php
 
