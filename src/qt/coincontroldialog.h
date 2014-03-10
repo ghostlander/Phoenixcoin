@@ -25,11 +25,11 @@ public:
     ~CoinControlDialog();
 
     void setModel(WalletModel *model);
-    
+
     // static because also called from sendcoinsdialog
     static void updateLabels(WalletModel*, QDialog*);
     static QString getPriorityLabel(double);
-    
+
     static QList<qint64> payAmounts;
     static CCoinControl *coinControl;
 
@@ -38,17 +38,17 @@ private:
     WalletModel *model;
     int sortColumn;
     Qt::SortOrder sortOrder;
-    
+
     QMenu *contextMenu;
     QTreeWidgetItem *contextMenuItem;
     QAction *copyTransactionHashAction;
     QAction *lockAction;
     QAction *unlockAction;
-    
+
     QString strPad(QString, int, QString);
     void sortView(int, Qt::SortOrder);
     void updateView();
-    
+
     enum
     {
         COLUMN_CHECKBOX,
@@ -63,7 +63,7 @@ private:
         COLUMN_AMOUNT_INT64,
         COLUMN_PRIORITY_INT64
     };
-    
+
 private slots:
     void showMenu(const QPoint &);
     void copyAmount();

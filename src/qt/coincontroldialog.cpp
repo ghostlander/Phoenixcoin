@@ -367,10 +367,10 @@ void CoinControlDialog::radioListMode(bool checked)
 void CoinControlDialog::viewItemChanged(QTreeWidgetItem* item, int column)
 {
     if (column == COLUMN_CHECKBOX && item->text(COLUMN_TXHASH).length() == 64) // transaction hash is 64 characters (this means its a child node, so its not a parent node in tree mode)
-    { 
+    {
         COutPoint outpt(uint256(item->text(COLUMN_TXHASH).toStdString()), item->text(COLUMN_VOUT_INDEX).toUInt());
 
-        if (item->checkState(COLUMN_CHECKBOX) == Qt::Unchecked)              
+        if (item->checkState(COLUMN_CHECKBOX) == Qt::Unchecked)
             coinControl->UnSelect(outpt);
         else if (item->isDisabled()) // locked (this happens if "check all" through parent node)
             item->setCheckState(COLUMN_CHECKBOX, Qt::Unchecked);
@@ -409,7 +409,7 @@ void CoinControlDialog::updateLabelLocked()
     if (vOutpts.size() > 0)
     {
        ui->labelLocked->setText(tr("(%1 locked)").arg(vOutpts.size()));
-       ui->labelLocked->setVisible(true); 
+       ui->labelLocked->setVisible(true);
     }
     else ui->labelLocked->setVisible(false);
 }
@@ -505,7 +505,7 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog) {
 
             // To avoid dust outputs, any change smaller
             // than TX_DUST is added to transaction fees
-            if(nChange < TX_DUST) {
+            if(nChange && (nChange < TX_DUST)) {
                 nPayFee += nChange;
                 nChange = 0;
                 fDustChange = true;
@@ -549,16 +549,15 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog) {
     l8->setText(BitcoinUnits::formatWithUnit(nDisplayUnit, nChange));        // Change
 
     // Turn the labels "red"
-    l5->setStyleSheet((nBytes >= 1000) ? "color:red;" : "");                // Large transaction
+    l5->setStyleSheet((nBytes >= 2000) ? "color:red;" : "");                // Large transaction
     l6->setStyleSheet((!tx.AllowFree(dPriority)) ? "color:red;" : "");      // Low priority
     l7->setStyleSheet((fLowOutput) ? "color:red;" : "");                    // Low output
     l8->setStyleSheet((fDustChange) ? "color:red;" : "");                   // Dust change
 
     // Set up the tool tips
-    l5->setToolTip(tr("This label turns red if the transaction size is bigger than 1000 bytes.\n\n It means a fee of at least %1 per KB is required.").arg(BitcoinUnits::formatWithUnit(nDisplayUnit, MIN_TX_FEE)));
-    l6->setToolTip(tr("Transactions with a higher priority are more likely to get accepted into a block.\n\nThis label turns red if the priority is below \"medium\".\n\n It means a fee of at least %1 per KB is required.").arg(BitcoinUnits::formatWithUnit(nDisplayUnit, MIN_TX_FEE)));
-    l7->setToolTip(tr("This label turns red if any recipient receives an amount smaller than %1.\n\n A fee may be required to spend this amount later.\n\n Amounts below %2 are displayed as dust.").arg(BitcoinUnits::formatWithUnit(nDisplayUnit, MIN_TX_FEE)).arg(BitcoinUnits::formatWithUnit(nDisplayUnit, TX_DUST)));
-    l8->setToolTip(tr("This label turns red if the change is smaller than %1.\n\n It is moved to the transaction fees.").arg(BitcoinUnits::formatWithUnit(nDisplayUnit, TX_DUST)));
+    l5->setToolTip(tr("This label turns red if the transaction size is over 2000 bytes.\n\n It means a fee of at least %1 per KB is required.").arg(BitcoinUnits::formatWithUnit(nDisplayUnit, MIN_TX_FEE)));    l6->setToolTip(tr("Transactions with a higher priority are more likely to get accepted into a block.\n\nThis label turns red if the priority is below \"medium\".\n\n It means a fee of at least %1 per KB is required.").arg(BitcoinUnits::formatWithUnit(nDisplayUnit, MIN_TX_FEE)));
+    l7->setToolTip(tr("This label turns red if any recipient receives an amount less than %1.\n\n A fee may be required to spend this amount later.\n\n Amounts below %2 are displayed as dust.").arg(BitcoinUnits::formatWithUnit(nDisplayUnit, MIN_TX_FEE)).arg(BitcoinUnits::formatWithUnit(nDisplayUnit, TX_DUST)));
+    l8->setToolTip(tr("This label turns red if the change is less than %1.\n\n It is moved to the transaction fees.").arg(BitcoinUnits::formatWithUnit(nDisplayUnit, TX_DUST)));
     dialog->findChild<QLabel *>("labelCoinControlBytesText")    ->setToolTip(l5->toolTip());
     dialog->findChild<QLabel *>("labelCoinControlPriorityText") ->setToolTip(l6->toolTip());
     dialog->findChild<QLabel *>("labelCoinControlLowOutputText")->setToolTip(l7->toolTip());
