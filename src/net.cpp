@@ -358,8 +358,8 @@ bool GetMyExternalIP2(const CService& addrConnect, const char* pszGet, const cha
 bool GetMyExternalIP(CNetAddr& ipRet)
 {
     CService addrConnect;
-    const char* pszGet;
-    const char* pszKeyword;
+    const char* pszGet = NULL;
+    const char* pszKeyword = NULL;
 
     for (int nLookup = 0; nLookup <= 1; nLookup++)
     for (int nHost = 1; nHost <= 2; nHost++)

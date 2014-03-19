@@ -160,7 +160,7 @@ std::string EncodeBase32(const std::string& str);
 void ParseParameters(int argc, const char*const argv[]);
 bool WildcardMatch(const char* psz, const char* mask);
 bool WildcardMatch(const std::string& str, const std::string& mask);
-void FileCommit(FILE *fileout);
+int FileCommit(FILE *fileout);
 int GetFilesize(FILE* file);
 bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest);
 boost::filesystem::path GetDefaultDataDir();

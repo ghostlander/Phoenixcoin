@@ -54,7 +54,7 @@ namespace boost {
 #include <io.h> /* for _commit */
 #include "shlobj.h"
 #elif defined(__linux__)
-# include <sys/prctl.h>
+#include <sys/prctl.h>
 #endif
 
 using namespace std;
@@ -1094,14 +1094,29 @@ bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest)
 #endif /* WINDOWS */
 }
 
-void FileCommit(FILE *fileout)
-{
-    fflush(fileout);                // harmless if redundantly called
-#ifdef WINDOWS
-    _commit(_fileno(fileout));
+int FileCommit(FILE *fileout) {
+    int ret, fd;
+
+    /* fflush() is a caller's responsibility */
+
+    /* Get a file descriptor and perform the synchronisation */
+#if defined WINDOWS
+    fd = _fileno(fileout);
+    ret = _commit(fd);
 #else
-    fsync(fileno(fileout));
+    fd = fileno(fileout);
+#if defined __linux__
+    ret = fdatasync(fd);
+#elif defined __APPLE__ && defined F_FULLFSYNC
+    /* F_FULLFSYNC means fsync with device flush to medium;
+     * works with HFS only as of 10.4, so fail over to fsync */
+    ret = fcntl(fd, F_FULLFSYNC, 0);
+    if(!ret) ret = fsync(fd);
+#else
+    ret = fsync(fd);
 #endif
+#endif /* WINDOWS */
+    return(ret);
 }
 
 int GetFilesize(FILE* file)
@@ -1295,8 +1310,9 @@ void RenameThread(const char* name)
     //       on FreeBSD or OpenBSD first. When verified the '0 &&' part can be
     //       removed.
     pthread_set_name_np(pthread_self(), name);
-#elif defined(MAC_OSX)
-    pthread_setname_np(name);
+//#elif defined(__APPLE__)
+// Disabled because works for 10.6+
+//    pthread_setname_np(name);
 #else
     // Prevent warnings for unused parameters...
     (void)name;

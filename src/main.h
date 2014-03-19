@@ -957,8 +957,8 @@ public:
     {
         // Open history file to append
         CAutoFile fileout = CAutoFile(AppendBlockFile(nFileRet), SER_DISK, CLIENT_VERSION);
-        if (!fileout)
-            return error("CBlock::WriteToDisk() : AppendBlockFile failed");
+        if(!fileout)
+          return error("CBlock::WriteToDisk() : AppendBlockFile() failed");
 
         // Write index header
         unsigned int nSize = fileout.GetSerializeSize(*this);
@@ -966,15 +966,17 @@ public:
 
         // Write block
         long fileOutPos = ftell(fileout);
-        if (fileOutPos < 0)
-            return error("CBlock::WriteToDisk() : ftell failed");
+        if(fileOutPos < 0)
+          return error("CBlock::WriteToDisk() : ftell() failed");
         nBlockPosRet = fileOutPos;
         fileout << *this;
 
         // Flush stdio buffers and commit to disk before returning
         fflush(fileout);
-        if (!IsInitialBlockDownload() || (nBestHeight+1) % 500 == 0)
-            FileCommit(fileout);
+        if(!IsInitialBlockDownload() || ((nBestHeight+1) % 100 == 0)) {
+            if(FileCommit(fileout) != 0)
+              return error("CBlock::WriteToDisk() : FileCommit() failed");
+        }
 
         return true;
     }
@@ -985,22 +987,21 @@ public:
 
         // Open history file to read
         CAutoFile filein = CAutoFile(OpenBlockFile(nFile, nBlockPos, "rb"), SER_DISK, CLIENT_VERSION);
-        if (!filein)
-            return error("CBlock::ReadFromDisk() : OpenBlockFile failed");
-        if (!fReadTransactions)
-            filein.nType |= SER_BLOCKHEADERONLY;
+        if(!filein)
+          return error("CBlock::ReadFromDisk() : OpenBlockFile() failed");
+        if(!fReadTransactions) filein.nType |= SER_BLOCKHEADERONLY;
 
         // Read block
         try {
             filein >> *this;
         }
-        catch (std::exception &e) {
-            return error("%s() : deserialize or I/O error", __PRETTY_FUNCTION__);
+        catch(std::exception &e) {
+            return error("CBlock::ReadFromDisk() : I/O error");
         }
 
         // Check the header
-        if (!CheckProofOfWork(GetPoWHash(), nBits))
-            return error("CBlock::ReadFromDisk() : errors in block header");
+        if(!CheckProofOfWork(GetPoWHash(), nBits))
+          return error("CBlock::ReadFromDisk() : block verification failed");
 
         return true;
     }
