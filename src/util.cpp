@@ -1094,6 +1094,7 @@ bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest)
 #endif /* WINDOWS */
 }
 
+/* Returns zero on success and -1 on failure */
 int FileCommit(FILE *fileout) {
     int ret, fd;
 

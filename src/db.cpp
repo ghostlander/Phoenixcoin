@@ -788,7 +788,7 @@ bool CAddrDB::Write(const CAddrMan& addr)
         return error("CAddrman::Write() : I/O error");
     }
     fflush(fileout);
-    if(!FileCommit(fileout))
+    if(FileCommit(fileout))
       return error("CAddrDB::Write() : FileCommit() failed");
     fileout.fclose();
 

@@ -974,7 +974,7 @@ public:
         // Flush stdio buffers and commit to disk before returning
         fflush(fileout);
         if(!IsInitialBlockDownload() || ((nBestHeight+1) % 100 == 0)) {
-            if(FileCommit(fileout) != 0)
+            if(FileCommit(fileout))
               return error("CBlock::WriteToDisk() : FileCommit() failed");
         }
 
