@@ -851,6 +851,9 @@ static const int nTargetTimespanFour   = 20   * nTargetSpacingFour;  // 0.5 hour
 // Testnet can do a hard fork, too
 static const int nTestnetForkOne = 600;
 
+static const int nSoftForkOne           = 270000;
+static const int nTestnetSoftForkOne    = 3400;
+
 int64 static GetBlockValue(int nHeight, int64 nFees) {
 
     int64 nSubsidy = 50 * COIN;
@@ -1410,12 +1413,16 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex)
     // This logic is not necessary for memory pool transactions, as AcceptToMemoryPool
     // already refuses previously-known transaction id's entirely.
     // This rule applies to all blocks whose timestamp is after October 1, 2012, 0:00 UTC.
-    int64 nBIP30SwitchTime = 1349049600;
-    bool fEnforceBIP30 = (pindex->nTime > nBIP30SwitchTime);
+//    int64 nBIP30SwitchTime = 1349049600;
+//    bool fEnforceBIP30 = (pindex->nTime > nBIP30SwitchTime);
+    /* always active for Phoenixcoin */
+    bool fEnforceBIP30 = true;
 
     // BIP16 didn't become active until October 1 2012
-    int64 nBIP16SwitchTime = 1349049600;
-    bool fStrictPayToScriptHash = (pindex->nTime >= nBIP16SwitchTime);
+//    int64 nBIP16SwitchTime = 1349049600;
+//    bool fStrictPayToScriptHash = (pindex->nTime >= nBIP16SwitchTime);
+    /* always active for Phoenixcoin */
+    bool fStrictPayToScriptHash = true;
 
     //// issue here: it doesn't know the version
     unsigned int nTxPos = pindex->nBlockPos + ::GetSerializeSize(CBlock(), SER_DISK, CLIENT_VERSION) - 1 + GetSizeOfCompactSize(vtx.size());
@@ -1876,6 +1883,20 @@ bool CBlock::AcceptBlock()
     if((fTestNet || (nHeight >= nForkFour)) &&
       (GetBlockTime() <= pindexPrev->GetBlockTime() - 30 * 60))
         return error("AcceptBlock() : block %d has a time stamp too far in the past", nHeight);
+
+    // Soft fork 1: further restrictions
+    if((fTestNet && (nHeight >= nTestnetSoftForkOne)) || (nHeight >= nSoftForkOne)) {
+
+        if(GetBlockTime() > (GetAdjustedTime() + 10 * 60))
+          return error("AcceptBlock() [Soft Fork 1] : block %d has a time stamp too far in the future", nHeight);
+
+        if(GetBlockTime() <= (pindexPrev->GetMedianTimePast() + 120))
+          return error("AcceptBlock() [Soft Fork 1] : block %d rejected by the block limiter", nHeight);
+
+        if(GetBlockTime() <= (pindexPrev->GetBlockTime() - 10 * 60))
+          return error("AcceptBlock() [Soft Fork 1] : block %d has a time stamp too far in the past", nHeight);
+
+    }
 
     // Check that all transactions are finalized
     BOOST_FOREACH(const CTransaction& tx, vtx)
