@@ -124,6 +124,7 @@ extern bool fTestNet;
 extern bool fNoListen;
 extern bool fLogTimestamps;
 extern bool fReopenDebugLog;
+extern bool fDefaultKey;
 
 void RandAddSeed();
 void RandAddSeedPerfmon();

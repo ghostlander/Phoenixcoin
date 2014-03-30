@@ -1579,18 +1579,18 @@ int64 CWallet::GetOldestKeyPoolTime()
 
 CPubKey CReserveKey::GetReservedKey()
 {
-    if (nIndex == -1)
-    {
-        CKeyPool keypool;
-        pwallet->ReserveKeyFromKeyPool(nIndex, keypool);
-        if (nIndex != -1)
-            vchPubKey = keypool.vchPubKey;
-        else
-        {
-            printf("CReserveKey::GetReservedKey(): Warning: using default key instead of a new key, top up your keypool.");
-            vchPubKey = pwallet->vchDefaultKey;
+    if(nIndex == -1) {
+        if(fDefaultKey) vchPubKey = pwallet->vchDefaultKey;
+        else {
+            CKeyPool keypool;
+            pwallet->ReserveKeyFromKeyPool(nIndex, keypool);
+            if(nIndex != -1) vchPubKey = keypool.vchPubKey;
+            else {
+                printf("CReserveKey::GetReservedKey(): key pool is empty, using the default key\n");
+                vchPubKey = pwallet->vchDefaultKey;
+            }
         }
-    }
+    } 
     assert(vchPubKey.IsValid());
     return vchPubKey;
 }

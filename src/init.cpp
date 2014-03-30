@@ -280,6 +280,7 @@ std::string HelpMessage()
         "  -blocknotify=<cmd>     " + _("Execute command when the best block changes (%s in cmd is replaced by block hash)") + "\n" +
         "  -upgradewallet         " + _("Upgrade wallet to latest format") + "\n" +
         "  -keypool=<n>           " + _("Set key pool size to <n> (default: 100)") + "\n" +
+        "  -defaultkey            " + _("Use the default key instead of a key pool entry if possible (default: 0 = disabled)") + "\n" +
         "  -rescan                " + _("Rescan the block chain for missing wallet transactions") + "\n" +
         "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 2500, 0 = all)") + "\n" +
         "  -checklevel=<n>        " + _("How thorough the block verification is (0-6, default: 1)") + "\n" +
@@ -433,6 +434,10 @@ bool AppInit2()
         if (!SetCheckpointPrivKey(GetArg("-checkpointkey", "")))
             return InitError(_("Unable to sign a checkpoint, incorrect private key?"));
     }
+
+    // If enabled, re-use the default key instead of an unused key pool entry
+    // for solo mining and transaction change
+    fDefaultKey = GetBoolArg("-defaultkey");
 
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
