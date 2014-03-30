@@ -30,7 +30,8 @@ using namespace boost;
 static const int MAX_OUTBOUND_CONNECTIONS = 16;
 // Polling delay in milliseconds for message handling
 static const int64 MSG_DELAY = 50;
-
+// Polling delay in milliseconds for address flushes to peers.dat
+static const int64 ADDR_FLUSH_DELAY = 1200000;
 
 void ThreadMessageHandler2(void* parg);
 void ThreadSocketHandler2(void* parg);
@@ -1254,7 +1255,7 @@ void ThreadDumpAddress2(void* parg)
     {
         DumpAddresses();
         vnThreadsRunning[THREAD_DUMPADDRESS]--;
-        Sleep(100000);
+        Sleep(ADDR_FLUSH_DELAY);
         vnThreadsRunning[THREAD_DUMPADDRESS]++;
     }
     vnThreadsRunning[THREAD_DUMPADDRESS]--;
@@ -1265,7 +1266,7 @@ void ThreadDumpAddress(void* parg)
     IMPLEMENT_RANDOMIZE_STACK(ThreadDumpAddress(parg));
 
     // Make this thread recognisable as the address dumping thread
-    RenameThread("pxc-adrdump");
+    RenameThread("pxc-addrdump");
 
     try
     {
