@@ -5,26 +5,14 @@
 
 /* Return positive answer if transaction should be shown in list.
  */
-bool TransactionRecord::showTransaction(const CWalletTx &wtx)
+bool TransactionRecord::showTransaction(const CWalletTx &wtx, bool ShowOrphans)
 {
-    if (wtx.IsCoinBase())
-    {
-        // Don't show generated coin until confirmed by at least one block after it
-        // so we don't get the user's hopes up until it looks like it's probably accepted.
-        //
-        // It is not an error when generated blocks are not accepted.  By design,
-        // some percentage of blocks, like 10% or more, will end up not accepted.
-        // This is the normal mechanism by which the network copes with latency.
-        //
-        // We display regular transactions right away before any confirmation
-        // because they can always get into some block eventually.  Generated coins
-        // are special because if their block is not accepted, they are not valid.
-        //
-        if (wtx.GetDepthInMainChain() < 2)
-        {
-            return false;
-        }
-    }
+    /* The default behaviour is to show all transactions as they come
+     * including orphans, but show confirmed only after a client restart */
+    if(ShowOrphans) return true;
+    /* Don't display PoW base transactions with no single confirmation */
+    if(wtx.IsCoinBase() && (wtx.GetDepthInMainChain() < 1)) return false;
+    /* All other transactions are displayed always and immediately */
     return true;
 }
 
