@@ -344,8 +344,13 @@ void ThreadIRCSeed2(void* parg)
                 if (DecodeAddress(pszName, addr))
                 {
                     addr.nTime = GetAdjustedTime();
-                    if (addrman.Add(addr, addrConnect, 51 * 60))
-                        printf("IRC got new address: %s\n", addr.ToString().c_str());
+                    bool fAddStatus = false;
+                    if(fBerkeleyAddrDB)
+                      fAddStatus = AddAddress(addr, 51 * 60);
+                    else
+                      fAddStatus = addrman.Add(addr, addrConnect, 51 * 60);
+                    if(fAddStatus)
+                      printf("IRC got new address: %s\n", addr.ToString().c_str());
                     nGotIRCAddresses++;
                 }
                 else

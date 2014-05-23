@@ -27,11 +27,10 @@
 using namespace std;
 using namespace boost;
 
-static const int MAX_OUTBOUND_CONNECTIONS = 16;
+
 // Polling delay in milliseconds for message handling
 static const int64 MSG_DELAY = 50;
-// Polling delay in milliseconds for address flushes to peers.dat
-static const int64 ADDR_FLUSH_DELAY = 1200000;
+
 
 void ThreadMessageHandler2(void* parg);
 void ThreadSocketHandler2(void* parg);
@@ -69,6 +68,9 @@ CAddrMan addrman;
 
 vector<CNode*> vNodes;
 CCriticalSection cs_vNodes;
+
+map<vector<uchar>, CAddress> mapAddresses;
+CCriticalSection cs_mapAddresses;
 map<CInv, CDataStream> mapRelay;
 deque<pair<int64, CInv> > vRelayExpiration;
 CCriticalSection cs_mapRelay;
@@ -428,19 +430,88 @@ void ThreadGetMyExternalIP(void* parg)
     }
 }
 
+bool AddAddress(CAddress addr, int64 nTimePenalty, CBerkeleyAddrDB *pAddrDB) {
 
+    if(!addr.IsRoutable())
+      return(false);
 
+    if((CService)addr == (CService)addrExternal)
+      return(false);
 
+    /* Store IPv4 addresses only to keep the data base compact */
+    if(!addr.IsIPv4())
+      return(true);
 
-void AddressCurrentlyConnected(const CService& addr)
-{
-    addrman.Connected(addr);
+    addr.nTime = max((int64)0, (int64)addr.nTime - nTimePenalty);
+    bool fUpdated = false;
+    bool fNew = false;
+    CAddress addrFound = addr;
+
+    LOCK(cs_mapAddresses);
+    map<vector<uchar>, CAddress>::iterator it = mapAddresses.find(addr.GetKey());
+    if(it == mapAddresses.end()) {
+        // New address
+        printf("AddAddress(%s)\n", addr.ToString().c_str());
+        mapAddresses.insert(make_pair(addr.GetKey(), addr));
+        fUpdated = true;
+        fNew = true;
+    } else {
+        addrFound = (*it).second;
+        if((addrFound.nServices | addr.nServices) != addrFound.nServices) {
+            // Services have been added
+            addrFound.nServices |= addr.nServices;
+            fUpdated = true;
+        }
+        bool fCurrentlyOnline = (GetAdjustedTime() - addr.nTime < 24 * 60 * 60);
+        int64 nUpdateInterval = (fCurrentlyOnline ? 60 * 60 : 24 * 60 * 60);
+        if(addrFound.nTime < addr.nTime - nUpdateInterval) {
+            // Periodically update most recently seen time
+            addrFound.nTime = addr.nTime;
+            fUpdated = true;
+        }
+    }
+
+    // There is a nasty deadlock bug if this is done inside the cs_mapAddresses LOCK:
+    //
+    // Thread 1:  begin db transaction (locks inside-db-mutex)
+    //            then AddAddress (locks cs_mapAddresses)
+    // Thread 2:  AddAddress (locks cs_mapAddresses)
+    //             ... then db operation hangs waiting for inside-db-mutex
+    if(fUpdated) {
+        if(pAddrDB)
+          pAddrDB->WriteAddress(addrFound);
+        else
+          CBerkeleyAddrDB().WriteAddress(addrFound);
+    }
+
+    return(fNew);
 }
 
+void AddressCurrentlyConnected(const CService& addr) {
 
+    if(!fBerkeleyAddrDB) {
+        addrman.Connected(addr);
+        return;
+    }
 
+    CAddress *paddrFound = NULL;
 
+    LOCK(cs_mapAddresses);
+    // Only if it's been published already
+    map<vector<uchar>, CAddress>::iterator it = mapAddresses.find(addr.GetKey());
+    if(it != mapAddresses.end())
+      paddrFound = &(*it).second;
 
+    if(paddrFound) {
+        int64 nUpdateInterval = ADDR_FLUSH_DELAY / 1000;
+        if(paddrFound->nTime < (GetAdjustedTime() - nUpdateInterval)) {
+            // Periodically update most recently seen time
+            paddrFound->nTime = GetAdjustedTime();
+            CBerkeleyAddrDB adb;
+            adb.WriteAddress(*paddrFound);
+        }
+    }
+}
 
 
 CNode* FindNode(const CNetAddr& ip)
@@ -492,17 +563,23 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest, int64 nTimeout)
         }
     }
 
+    if(fBerkeleyAddrDB) {
+        LOCK(cs_mapAddresses);
+        mapAddresses[addrConnect.GetKey()].nLastTry = GetAdjustedTime();
+    }
 
     /// debug print
-    printf("trying connection %s lastseen=%.1fhrs\n",
-        pszDest ? pszDest : addrConnect.ToString().c_str(),
-        pszDest ? 0 : (double)(GetAdjustedTime() - addrConnect.nTime)/3600.0);
+    printf("trying connection %s  last seen=%.1fhrs  last try=%.1fhrs\n",
+      pszDest ? pszDest : addrConnect.ToString().c_str(),
+      pszDest ? 0 : (double)(addrConnect.nTime - GetAdjustedTime())/3600.0,
+      pszDest ? 0 : (double)(addrConnect.nLastTry - GetAdjustedTime())/3600.0);
 
     // Connect
     SOCKET hSocket;
     if (pszDest ? ConnectSocketByName(addrConnect, hSocket, pszDest, GetDefaultPort()) : ConnectSocket(addrConnect, hSocket))
     {
-        addrman.Attempt(addrConnect);
+        if(!fBerkeleyAddrDB)
+          addrman.Attempt(addrConnect);
 
         /// debug print
         printf("connected %s\n", pszDest ? pszDest : addrConnect.ToString().c_str());
@@ -823,7 +900,7 @@ void ThreadSocketHandler2(void* parg)
             socklen_t len = sizeof(sockaddr);
             SOCKET hSocket = accept(hListenSocket, (struct sockaddr*)&sockaddr, &len);
             CAddress addr;
-            int nInbound = 0;
+            uint nInbound = 0;
 
             if (hSocket != INVALID_SOCKET)
                 if (!addr.SetSockAddr((const struct sockaddr*)&sockaddr))
@@ -841,7 +918,7 @@ void ThreadSocketHandler2(void* parg)
                 if (WSAGetLastError() != WSAEWOULDBLOCK)
                     printf("socket error accept failed: %d\n", WSAGetLastError());
             }
-            else if (nInbound >= GetArg("-maxconnections", 125) - MAX_OUTBOUND_CONNECTIONS)
+            else if (nInbound >= ((uint)GetArg("-maxconnections", MAX_CONNECTIONS) - MAX_OUTBOUND_CONNECTIONS))
             {
                 {
                     LOCK(cs_setservAddNodeAddresses);
@@ -1192,24 +1269,34 @@ void ThreadDNSAddressSeed2(void* parg)
     printf("ThreadDNSAddressSeed started\n");
     int found = 0;
 
-    if (!fTestNet)
-    {
-        printf("Loading addresses from DNS seeds (could take a while)\n");
-
-        for (unsigned int seed_idx = 0; seed_idx < ARRAYLEN(strDNSSeed); seed_idx++) {
-            if (GetNameProxy()) {
-                AddOneShot(strDNSSeed[seed_idx][1]);
+    for(uint seed_idx = 0; seed_idx < ARRAYLEN(strDNSSeed); seed_idx++) {
+        if(GetNameProxy()) AddOneShot(strDNSSeed[seed_idx][1]);
+        else {
+            vector<CNetAddr> vaddr;
+            if(fBerkeleyAddrDB) {
+                CBerkeleyAddrDB adb;
+                if(LookupHost(strDNSSeed[seed_idx][1], vaddr)) {
+                    adb.TxnBegin();
+                    BOOST_FOREACH(CNetAddr& ip, vaddr) {
+                        if(ip.IsRoutable()) {
+                            CAddress dbaddr = CAddress(CService(ip, GetDefaultPort()), NODE_NETWORK);
+                            dbaddr.nTime = 0;
+                            AddAddress(dbaddr, 0, &adb);
+                            found++;
+                        }
+                    }
+                    adb.TxnCommit();
+                }
             } else {
-                vector<CNetAddr> vaddr;
                 vector<CAddress> vAdd;
-                if (LookupHost(strDNSSeed[seed_idx][1], vaddr))
-                {
-                    BOOST_FOREACH(CNetAddr& ip, vaddr)
-                    {
-                        int nOneDay = 24*3600;
-                        CAddress addr = CAddress(CService(ip, GetDefaultPort()));
-                        addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
-                        vAdd.push_back(addr);
+                if(LookupHost(strDNSSeed[seed_idx][1], vaddr)) {
+                    BOOST_FOREACH(CNetAddr& ip, vaddr) {
+                        /* 1 day in seconds */
+                        int nOneDay = 86400;
+                        CAddress manaddr = CAddress(CService(ip, GetDefaultPort()));
+                        /* Random age between 3 and 7 days old */
+                        manaddr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay);
+                        vAdd.push_back(manaddr);
                         found++;
                     }
                 }
@@ -1218,34 +1305,21 @@ void ThreadDNSAddressSeed2(void* parg)
         }
     }
 
-    printf("%d addresses found from DNS seeds\n", found);
+    printf("DNS seeds: %d addresses loaded\n", found);
 }
 
 
+void DumpAddresses() {
 
+    if(fBerkeleyAddrDB) return;
 
-
-
-
-
-
-
-
-unsigned int pnSeed[] = {
-    // Hard coded IP addresses in hex of reliable seed nodes
-    // AA.BB.CC.DD = 0xDDCCBBAA
-    0xB68CB992, 0xB907E717
-};
-
-void DumpAddresses()
-{
     int64 nStart = GetTimeMillis();
 
     CAddrDB adb;
     adb.Write(addrman);
 
-    printf("Flushed %d addresses to peers.dat  %"PRI64d"ms\n",
-           addrman.size(), GetTimeMillis() - nStart);
+    printf("  %"PRI64d"ms  Flushed %d addresses to peers.dat\n",
+       GetTimeMillis() - nStart, addrman.size());
 }
 
 void ThreadDumpAddress2(void* parg)
@@ -1345,8 +1419,7 @@ void ThreadOpenConnections2(void* parg)
 
     // Initiate network connections
     int64 nStart = GetTime();
-    loop
-    {
+    while(true) {
         ProcessOneShot();
 
         vnThreadsRunning[THREAD_OPENCONNECTIONS]--;
@@ -1355,32 +1428,11 @@ void ThreadOpenConnections2(void* parg)
         if (fShutdown)
             return;
 
-
         vnThreadsRunning[THREAD_OPENCONNECTIONS]--;
         CSemaphoreGrant grant(*semOutbound);
         vnThreadsRunning[THREAD_OPENCONNECTIONS]++;
         if (fShutdown)
             return;
-
-        // Add seed nodes if IRC isn't working
-        if (addrman.size()==0 && (GetTime() - nStart > 60) && !fTestNet)
-        {
-            std::vector<CAddress> vAdd;
-            for (unsigned int i = 0; i < ARRAYLEN(pnSeed); i++)
-            {
-                // It'll only connect to one or two seed nodes because once it connects,
-                // it'll get a pile of addresses with newer timestamps.
-                // Seed nodes are given a random 'last seen time' of between one and two
-                // weeks ago.
-                const int64 nOneWeek = 7*24*60*60;
-                struct in_addr ip;
-                memcpy(&ip, &pnSeed[i], sizeof(ip));
-                CAddress addr(CService(ip, GetDefaultPort()));
-                addr.nTime = GetTime()-GetRand(nOneWeek)-nOneWeek;
-                vAdd.push_back(addr);
-            }
-            addrman.Add(vAdd, CNetAddr("127.0.0.1"));
-        }
 
         //
         // Choose an address to connect to based on most recently seen
@@ -1403,31 +1455,101 @@ void ThreadOpenConnections2(void* parg)
 
         int64 nANow = GetAdjustedTime();
 
-        int nTries = 0;
-        loop
-        {
-            // use an nUnkBias between 10 (no outgoing connections) and 90 (8 outgoing connections)
-            CAddress addr = addrman.Select(10 + min(nOutbound,8)*10);
+        if(fBerkeleyAddrDB) {
 
-            // if we selected an invalid address, restart
-            if (!addr.IsValid() || setConnected.count(addr.GetGroup()) || IsLocal(addr))
+            int64 nBest = std::numeric_limits<int64>::min();
+
+            LOCK(cs_mapAddresses);
+            BOOST_FOREACH(const PAIRTYPE(vector<unsigned char>, CAddress)& item, mapAddresses) {
+
+                const CAddress& dbaddr = item.second;
+
+                if(!dbaddr.IsValid() || setConnected.count(dbaddr.GetGroup()))
+                  continue;
+
+                int64 nSinceLastSeen = nANow - dbaddr.nTime;
+                int64 nSinceLastTry  = nANow - dbaddr.nLastTry;
+
+                // Randomize the order in a deterministic way, putting the standard port first
+                int64 nRandomizer =
+                  (uint64)(nStart * 4951 + dbaddr.nLastTry * 9567851 + dbaddr.GetHash()) % (2 * 60 * 60);
+                if(dbaddr.GetPort() != GetDefaultPort())
+                  nRandomizer += 2 * 60 * 60;
+
+                // Last seen  Base retry frequency
+                //   <1 hour   10 min
+                //    1 hour    1 hour
+                //    4 hours   2 hours
+                //   24 hours   5 hours
+                //   48 hours   7 hours
+                //    7 days   13 hours
+                //   30 days   27 hours
+                //   90 days   46 hours
+                //  365 days   93 hours
+                int64 nDelay =
+                  (int64)(3600.0 * sqrt(fabs((double)nSinceLastSeen) / 3600.0) + nRandomizer);
+
+                // Fast reconnect for one hour after last seen
+                if(nSinceLastSeen < 60 * 60)
+                  nDelay = 10 * 60;
+
+                // Limit retry frequency
+                if(nSinceLastTry < nDelay)
+                  continue;
+
+                // If we have IRC, we'll be notified when they first come online,
+                // and again every 24 hours by the refresh broadcast.
+                if((nGotIRCAddresses > 0) &&
+                  (vNodes.size() >= (MAX_OUTBOUND_CONNECTIONS / 4)) &&
+                  (nSinceLastSeen > 24 * 60 * 60))
+                  continue;
+
+                // Only try the old stuff if we don't have enough connections
+                if((vNodes.size() >= MAX_OUTBOUND_CONNECTIONS) &&
+                  (nSinceLastSeen > 24 * 60 * 60))
+                  continue;
+
+                // If multiple addresses are ready, prioritize by time since
+                // last seen and time since last tried.
+                int64 nScore = min(nSinceLastTry, (int64)24 * 60 * 60) - nSinceLastSeen - nRandomizer;
+                if(nScore > nBest) {
+                    nBest = nScore;
+                    addrConnect = dbaddr;
+                }
+
+            }
+
+        } else {
+
+            int nTries = 0;
+
+            while(true) {
+
+                // use an nUnkBias between 10 (no outgoing connections) and 90 (8 outgoing connections)
+                CAddress manaddr = addrman.Select(10 + min(nOutbound,8)*10);
+
+                // if we selected an invalid address, restart
+                if(!manaddr.IsValid() || setConnected.count(manaddr.GetGroup()) || IsLocal(manaddr))
+                  break;
+
+                nTries++;
+
+                if(IsLimited(manaddr))
+                  continue;
+
+                // only consider very recently tried nodes after 30 failed attempts
+                if((nANow - manaddr.nLastTry < 600) && (nTries < 30))
+                  continue;
+
+                // do not allow non-default ports, unless after 50 invalid addresses selected already
+                if((manaddr.GetPort() != GetDefaultPort()) && (nTries < 50))
+                  continue;
+
+                addrConnect = manaddr;
                 break;
 
-            nTries++;
+            }
 
-            if (IsLimited(addr))
-                continue;
-
-            // only consider very recently tried nodes after 30 failed attempts
-            if (nANow - addr.nLastTry < 600 && nTries < 30)
-                continue;
-
-            // do not allow non-default ports, unless after 50 invalid addresses selected already
-            if (addr.GetPort() != GetDefaultPort() && nTries < 50)
-                continue;
-
-            addrConnect = addr;
-            break;
         }
 
         if (addrConnect.IsValid())
@@ -1839,7 +1961,7 @@ void StartNode(void* parg)
 
     if (semOutbound == NULL) {
         // initialize semaphore
-        int nMaxOutbound = min(MAX_OUTBOUND_CONNECTIONS, (int)GetArg("-maxconnections", 125));
+        uint nMaxOutbound = min(MAX_OUTBOUND_CONNECTIONS, (uint)GetArg("-maxconnections", MAX_CONNECTIONS));
         semOutbound = new CSemaphore(nMaxOutbound);
     }
 
@@ -1883,7 +2005,8 @@ void StartNode(void* parg)
         printf("Error: CreateThread(ThreadMessageHandler) failed\n");
 
     // Dump network addresses
-    if (!CreateThread(ThreadDumpAddress, NULL))
+    if(!fBerkeleyAddrDB)
+      if(!CreateThread(ThreadDumpAddress, NULL))
         printf("Error; CreateThread(ThreadDumpAddress) failed\n");
 
     // Generate coins in the background
@@ -1896,9 +2019,9 @@ bool StopNode()
     fShutdown = true;
     nTransactionsUpdated++;
     int64 nStart = GetTime();
-    if (semOutbound)
-        for (int i=0; i<MAX_OUTBOUND_CONNECTIONS; i++)
-            semOutbound->post();
+    if(semOutbound)
+      for(uint i = 0; i < MAX_OUTBOUND_CONNECTIONS; i++)
+        semOutbound->post();
     do
     {
         int nThreadsRunning = 0;
@@ -1925,7 +2048,7 @@ bool StopNode()
     while (vnThreadsRunning[THREAD_MESSAGEHANDLER] > 0 || vnThreadsRunning[THREAD_RPCHANDLER] > 0)
         Sleep(20);
     Sleep(50);
-    DumpAddresses();
+    if(!fBerkeleyAddrDB) DumpAddresses();
     return true;
 }
 

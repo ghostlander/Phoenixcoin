@@ -181,6 +181,13 @@ static bool IsChainFile(std::string strFile)
     return false;
 }
 
+static bool IsAddrFile(std::string strFile) {
+    if(strFile == "addr.dat")
+      return(true);
+    else
+      return(false);
+}
+
 void CDB::Close()
 {
     if (!pdb)
@@ -198,6 +205,8 @@ void CDB::Close()
         nMinutes = 2;
     if (IsChainFile(strFile) && IsInitialBlockDownload())
         nMinutes = 5;
+    if(fBerkeleyAddrDB && IsAddrFile(strFile))
+      nMinutes = ADDR_FLUSH_DELAY / (60 * 1000);
 
     bitdb.dbenv.txn_checkpoint(nMinutes ? GetArg("-dblogsize", 100)*1024 : 0, nMinutes, 0);
 
@@ -338,7 +347,7 @@ void CDBEnv::Flush(bool fShutdown)
                 CloseDb(strFile);
                 printf("%s checkpoint\n", strFile.c_str());
                 dbenv.txn_checkpoint(0, 0, 0);
-                if (!IsChainFile(strFile) || fDetachDB) {
+                if((!IsChainFile(strFile) && !IsAddrFile(strFile)) || fDetachDB) {
                     printf("%s detach\n", strFile.c_str());
                     dbenv.lsn_reset(strFile.c_str(), 0);
                 }
@@ -847,4 +856,55 @@ bool CAddrDB::Read(CAddrMan& addr)
 
     return true;
 }
+
+
+/*
+ * CBerkeleyAddrDB
+ */
+
+bool CBerkeleyAddrDB::WriteAddress(const CAddress& addr) {
+    return(Write(make_pair(string("addr"), addr.GetKey()), addr));
+}
+
+bool CBerkeleyAddrDB::EraseAddress(const CAddress& addr) {
+    return(Erase(make_pair(string("addr"), addr.GetKey())));
+}
+
+bool CBerkeleyAddrDB::LoadAddresses() {
+    int64 nStart = GetTimeMillis();
+
+    LOCK(cs_mapAddresses);
+    Dbc* pcursor = GetCursor();
+    if(!pcursor) return(false);
+
+    while(true) {
+
+        /* Read the next record */
+        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+        CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+        int ret = ReadAtCursor(pcursor, ssKey, ssValue);
+        if(ret == DB_NOTFOUND)
+          break;
+        else
+          if(ret) return(false);
+
+        /* Unserialise the record */
+        string strType;
+        ssKey >> strType;
+        if(strType == "addr") {
+            CAddress addr;
+            ssValue >> addr;
+            mapAddresses.insert(make_pair(addr.GetKey(), addr));
+        }
+
+    }
+
+    pcursor->close();
+
+    printf("  %"PRI64d"ms  Loaded %i addresses from addr.dat\n",
+      GetTimeMillis() - nStart, mapAddresses.size());
+
+    return(true);
+}
+
 

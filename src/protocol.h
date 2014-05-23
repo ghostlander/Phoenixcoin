@@ -89,8 +89,7 @@ class CAddress : public CService
                  pthis->Init();
              if (nType & SER_DISK)
                  READWRITE(nVersion);
-             if ((nType & SER_DISK) ||
-                 (nVersion >= CADDR_TIME_VERSION && !(nType & SER_GETHASH)))
+             if (nType & SER_DISK)
                  READWRITE(nTime);
              READWRITE(nServices);
              READWRITE(*pip);

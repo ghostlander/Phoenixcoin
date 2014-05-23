@@ -25,9 +25,11 @@
 class CRequestTracker;
 class CNode;
 class CBlockIndex;
+class CBerkeleyAddrDB;
 extern int nBestHeight;
 
-
+static const uint MAX_CONNECTIONS  = 150;
+static const uint MAX_OUTBOUND_CONNECTIONS = 16;
 
 inline unsigned int ReceiveBufferSize() { return 1000*GetArg("-maxreceivebuffer", 5*1000); }
 inline unsigned int SendBufferSize() { return 1000*GetArg("-maxsendbuffer", 1*1000); }
@@ -35,6 +37,7 @@ inline unsigned int SendBufferSize() { return 1000*GetArg("-maxsendbuffer", 1*10
 void AddOneShot(std::string strDest);
 bool RecvLine(SOCKET hSocket, std::string& strLine);
 bool GetMyExternalIP(CNetAddr& ipRet);
+bool AddAddress(CAddress addr, int64 nTimePenalty=0, CBerkeleyAddrDB *pAddrDB=NULL);
 void AddressCurrentlyConnected(const CService& addr);
 CNode* FindNode(const CNetAddr& ip);
 CNode* FindNode(const CService& ip);
@@ -124,6 +127,9 @@ extern CAddrMan addrman;
 
 extern std::vector<CNode*> vNodes;
 extern CCriticalSection cs_vNodes;
+
+extern std::map<std::vector<uchar>, CAddress> mapAddresses;
+extern CCriticalSection cs_mapAddresses;
 extern std::map<CInv, CDataStream> mapRelay;
 extern std::deque<std::pair<int64, CInv> > vRelayExpiration;
 extern CCriticalSection cs_mapRelay;

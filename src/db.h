@@ -27,6 +27,9 @@ class CTxIndex;
 class CWallet;
 class CWalletTx;
 
+/* Polling delay in milliseconds for address flushes to peers.dat or addr.dat */
+static const int64 ADDR_FLUSH_DELAY = 1200000;
+
 extern unsigned int nWalletDBUpdated;
 
 void ThreadFlushWalletDB(void* parg);
@@ -345,4 +348,19 @@ public:
     bool Read(CAddrMan& addr);
 };
 
+
+/* Access to the address (peer) data base (addr.dat) */
+class CBerkeleyAddrDB : public CDB {
+public:
+    CBerkeleyAddrDB(const char* pszMode="r+") : CDB("addr.dat", pszMode) { }
+private:
+    CBerkeleyAddrDB(const CBerkeleyAddrDB&);
+    void operator=(const CBerkeleyAddrDB&);
+public:
+    bool WriteAddress(const CAddress& addr);
+    bool EraseAddress(const CAddress& addr);
+    bool LoadAddresses();
+};
+
 #endif // BITCOIN_DB_H
+

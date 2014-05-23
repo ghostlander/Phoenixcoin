@@ -335,6 +335,9 @@ bool AppInit2()
     // ********************************************************* Step 2: parameter interactions
 
     fTestNet = GetBoolArg("-testnet");
+
+    fBerkeleyAddrDB = GetBoolArg("-addrdb", false);
+
     // Phoenixcoin: Keep irc seeding on by default for now.
 //    if (fTestNet)
 //    {
@@ -732,14 +735,17 @@ bool AppInit2()
     printf("Loading addresses...\n");
     nStart = GetTimeMillis();
 
-    {
+    if(fBerkeleyAddrDB) {
+        if(!CBerkeleyAddrDB("cr+").LoadAddresses())
+          printf("Couldn't load addr.dat\n");
+    } else {
         CAddrDB adb;
-        if (!adb.Read(addrman))
-            printf("Invalid or missing peers.dat; recreating\n");
+        if(!adb.Read(addrman))
+          printf("Invalid or missing peers.dat; re-created\n");
+        else
+          printf("  %"PRI64d"ms  Loaded %i addresses from peers.dat\n",
+           GetTimeMillis() - nStart, addrman.size());
     }
-
-    printf("Loaded %i addresses from peers.dat  %"PRI64d"ms\n",
-           addrman.size(), GetTimeMillis() - nStart);
 
     // ********************************************************* Step 10: start node
 
