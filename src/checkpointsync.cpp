@@ -228,14 +228,14 @@ bool AcceptPendingSyncCheckpoint()
     return false;
 }
 
-// Automatically select a suitable sync-checkpoint 
-uint256 AutoSelectSyncCheckpoint()
-{
-    // Search backward for a block with specified depth policy
+/* Checkpoint master: selects a block for checkpointing according to the policy */
+uint256 AutoSelectSyncCheckpoint() {
+    /* Select by depth in the main chain */
     const CBlockIndex *pindex = pindexBest;
-    while (pindex->pprev && pindex->nHeight + (int)GetArg("-checkpointdepth", -1) > pindexBest->nHeight)
-        pindex = pindex->pprev;
-    return pindex->GetBlockHash();
+    while(pindex->pprev &&
+      ((pindex->nHeight + (int)GetArg("-checkpointdepth", CHECKPOINT_DEFAULT_DEPTH)) > pindexBest->nHeight))
+      pindex = pindex->pprev;
+    return(pindex->GetBlockHash());
 }
 
 // Check against synchronized checkpoint

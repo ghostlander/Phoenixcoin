@@ -28,6 +28,7 @@ using namespace boost;
 
 CWallet* pwalletMain;
 CClientUIInterface uiInterface;
+uint nMsgSleep;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -337,6 +338,9 @@ bool AppInit2()
     fTestNet = GetBoolArg("-testnet");
 
     fBerkeleyAddrDB = GetBoolArg("-addrdb", false);
+
+    /* Polling delay for message handling, in milliseconds */
+    nMsgSleep = GetArg("-msgsleep", 20);
 
     // Phoenixcoin: Keep irc seeding on by default for now.
 //    if (fTestNet)

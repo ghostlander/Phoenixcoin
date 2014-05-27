@@ -955,7 +955,7 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
 
     // Go back by nInterval
     const CBlockIndex* pindexFirst = pindexLast;
-    for(int i = 0; pindexFirst && i < nInterval; i++)
+    for(int i = 0; pindexFirst && (i < nInterval); i++)
       pindexFirst = pindexFirst->pprev;
     assert(pindexFirst);
 
@@ -965,10 +965,9 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
 
     // Extended 500 blocks averaging after the 4th livenet or 1st testnet hard fork
     if((nHeight >= nForkFour) || (fTestNet && (nHeight >= nTestnetForkOne))) {
-        nInterval *= 5;
+        nInterval *= 4;
 
-        const CBlockIndex* pindexFirst = pindexLast;
-        for(int i = 0; pindexFirst && i < nInterval; i++)
+        for(int i = 0; pindexFirst && (i < nInterval); i++)
           pindexFirst = pindexFirst->pprev;
 
         int nActualTimespanExtended =
@@ -1913,9 +1912,12 @@ bool CBlock::AcceptBlock()
     if (!Checkpoints::CheckBlock(nHeight, hash))
         return DoS(100, error("AcceptBlock() : block %d is rejected by a regular checkpoint", nHeight));
 
-    // Check if the block complies with advanced checkpointing
-    if (IsSyncCheckpointEnforced() && !CheckSyncCheckpoint(hash, pindexPrev))
-        return error("AcceptBlock() : block %d is rejected by advanced checkpointing", nHeight);
+    /* Check against advanced checkpoints */
+    if(IsSyncCheckpointEnforced() &&
+      !CheckSyncCheckpoint(hash, pindexPrev) &&
+      !IsInitialBlockDownload())
+      return(error("AcceptBlock() : block %s height %d rejected by the ACP",
+        hash.ToString().substr(0,20).c_str(), nHeight));
 
     // Write block to history file
     if (!CheckDiskSpace(::GetSerializeSize(*this, SER_DISK, CLIENT_VERSION)))
@@ -1937,8 +1939,8 @@ bool CBlock::AcceptBlock()
                 pnode->PushInventory(CInv(MSG_BLOCK, hash));
     }
 
-    // Process advanced checkpoints pending
-    AcceptPendingSyncCheckpoint();
+    /* Process an advanced checkpoint pending */
+    if(!IsInitialBlockDownload()) AcceptPendingSyncCheckpoint();
 
     return true;
 }
@@ -1952,9 +1954,12 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
     if (mapOrphanBlocks.count(hash))
         return error("ProcessBlock() : already have block (orphan) %s", hash.ToString().substr(0,20).c_str());
 
-    // Preliminary checks
-    if (!pblock->CheckBlock())
-        return error("ProcessBlock() : CheckBlock FAILED");
+    /* Ask for a pending advanced checkpoint if any */
+    if(!IsInitialBlockDownload()) AskForPendingSyncCheckpoint(pfrom);
+
+    /* Basic block integrity checks */
+    if(!pblock->CheckBlock())
+      return(error("ProcessBlock() : CheckBlock FAILED"));
 
     CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(mapBlockIndex);
     if (pcheckpoint && pblock->hashPrevBlock != hashBestChain)
@@ -1970,10 +1975,6 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
         // across the hard forks for Phoenixcoin in particular
 
     }
-
-    // Check for any advanced checkpoint pending
-    if (!IsInitialBlockDownload())
-        AskForPendingSyncCheckpoint(pfrom);
 
     // If don't already have its previous block, shunt it off to holding area until we get it
     if (!mapBlockIndex.count(pblock->hashPrevBlock))
@@ -2014,10 +2015,10 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
 
     printf("ProcessBlock: ACCEPTED\n");
 
-    // Master node sends a new advanced checkpoint of a depth specified
-    if (pfrom && !CSyncCheckpoint::strMasterPrivKey.empty() &&
-        (int)GetArg("-checkpointdepth", -1) >= 0)
-        SendSyncCheckpoint(AutoSelectSyncCheckpoint());
+    /* Checkpoint master sends a new advanced checkpoint
+     * according to the depth specified by -checkpointdepth */
+    if(pfrom && !CSyncCheckpoint::strMasterPrivKey.empty())
+      SendSyncCheckpoint(AutoSelectSyncCheckpoint());
 
     return true;
 }

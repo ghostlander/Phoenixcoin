@@ -28,8 +28,7 @@ using namespace std;
 using namespace boost;
 
 
-// Polling delay in milliseconds for message handling
-static const int64 MSG_DELAY = 50;
+extern uint nMsgSleep;
 
 
 void ThreadMessageHandler2(void* parg);
@@ -1817,7 +1816,7 @@ void ThreadMessageHandler2(void* parg)
         // Reduce vnThreadsRunning so StopNode has permission to exit while
         // we're sleeping, but we must always check fShutdown after doing this.
         vnThreadsRunning[THREAD_MESSAGEHANDLER]--;
-        Sleep(MSG_DELAY);
+        Sleep(nMsgSleep);
         if (fRequestShutdown)
             StartShutdown();
         vnThreadsRunning[THREAD_MESSAGEHANDLER]++;
