@@ -655,15 +655,33 @@ void CNode::Cleanup()
 }
 
 
-void CNode::PushVersion()
-{
+void CNode::PushVersion() {
+
     /// when NTP implemented, change to just nTime = GetAdjustedTime()
     int64 nTime = (fInbound ? GetAdjustedTime() : GetTime());
     CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService("0.0.0.0",0)));
     CAddress addrMe = GetLocalAddress(&addr);
     RAND_bytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
-    PushMessage("version", PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
-                nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight);
+
+    if(nVersion) {
+        if(nVersion >= NEW_MAGIC_VERSION)
+          PushVersionMessage(true, PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
+            nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight);
+        else
+          PushVersionMessage(false, PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
+            nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight);
+    } else {
+        /* If a peer version isn't known, send two messages using both magic numbers the old 1st;
+         * dual magic peers decode both, process the 1st (old) and ignore the 2nd (new) with no consequences,
+         * old magic peers decode and process the old + "MESSAGESTART NOT FOUND" and "SKIPPED 24 BYTES",
+         * future new magic only peers decode and process the new + "SKIPPED 130 BYTES" */
+        PushVersionMessage(false, PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
+          nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight);
+        PushVersionMessage(true, PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
+          nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight);
+        printf("peer %s unknown, sending version using dual magic\n", addr.ToString().c_str());
+    }
+
     printf("sent version message to %s, version %d, blocks=%d, us=%s, them=%s\n",
       addr.ToString().c_str(), PROTOCOL_VERSION, nBestHeight, addrMe.ToString().c_str(), addrYou.ToString().c_str());
 }

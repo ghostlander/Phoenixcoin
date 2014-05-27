@@ -20,18 +20,18 @@ static const char* ppszTypeName[] =
     "block",
 };
 
-CMessageHeader::CMessageHeader()
-{
-    memcpy(pchMessageStart, ::pchMessageStart, sizeof(pchMessageStart));
+CMessageHeader::CMessageHeader(bool fMagic) {
+    fMagic ? memcpy(pchMessageStart, ::pchMessageStartNew, MESSAGE_START_SIZE) :
+      memcpy(pchMessageStart, ::pchMessageStart, MESSAGE_START_SIZE);
     memset(pchCommand, 0, sizeof(pchCommand));
     pchCommand[1] = 1;
     nMessageSize = -1;
     nChecksum = 0;
 }
 
-CMessageHeader::CMessageHeader(const char* pszCommand, unsigned int nMessageSizeIn)
-{
-    memcpy(pchMessageStart, ::pchMessageStart, sizeof(pchMessageStart));
+CMessageHeader::CMessageHeader(const char* pszCommand, unsigned int nMessageSizeIn, bool fMagic) {
+    fMagic ? memcpy(pchMessageStart, ::pchMessageStartNew, MESSAGE_START_SIZE) :
+      memcpy(pchMessageStart, ::pchMessageStart, MESSAGE_START_SIZE);
     strncpy(pchCommand, pszCommand, COMMAND_SIZE);
     nMessageSize = nMessageSizeIn;
     nChecksum = 0;
@@ -45,11 +45,16 @@ std::string CMessageHeader::GetCommand() const
         return std::string(pchCommand, pchCommand + COMMAND_SIZE);
 }
 
-bool CMessageHeader::IsValid() const
-{
-    // Check start string
-    if (memcmp(pchMessageStart, ::pchMessageStart, sizeof(pchMessageStart)) != 0)
-        return false;
+bool CMessageHeader::IsValid(bool fMagic) const {
+
+    /* Magic number verification */
+    if(fMagic) {
+        if(memcmp(pchMessageStart, ::pchMessageStartNew, MESSAGE_START_SIZE))
+          return(false);
+    } else {
+        if(memcmp(pchMessageStart, ::pchMessageStart, MESSAGE_START_SIZE))
+          return(false);
+    }
 
     // Check the command string for errors
     for (const char* p1 = pchCommand; p1 < pchCommand + COMMAND_SIZE; p1++)
@@ -74,7 +79,6 @@ bool CMessageHeader::IsValid() const
 
     return true;
 }
-
 
 
 CAddress::CAddress() : CService()

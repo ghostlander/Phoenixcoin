@@ -63,6 +63,12 @@ int64 nTransactionFee = 0;
 int64 nMinimumInputValue = CENT / 100;
 
 
+/* Old network magic number */
+uchar pchMessageStart[4]    = { 0xFB, 0xC0, 0xB6, 0xDB };
+/* New network magic number;
+ * 0xFE and ASCII 'P' 'X' 'C' mapped into extended characters */
+uchar pchMessageStartNew[4] = { 0xFE, 0xD0, 0xD8, 0xC3 };
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -2085,10 +2091,10 @@ FILE* AppendBlockFile(unsigned int& nFileRet)
 bool LoadBlockIndex(bool fAllowNew) {
 
     if(fTestNet) {
-        pchMessageStart[0] = 0xFF;
-        pchMessageStart[1] = 0xC4;
-        pchMessageStart[2] = 0xBA;
-        pchMessageStart[3] = 0xDF;
+        pchMessageStart[0] = pchMessageStartNew[0] = 0xFF;
+        pchMessageStart[1] = pchMessageStartNew[1] = 0xC4;
+        pchMessageStart[2] = pchMessageStartNew[2] = 0xBA;
+        pchMessageStart[3] = pchMessageStartNew[3] = 0xDF;
         hashGenesisBlock = uint256("0xecd47eee16536f7d03d64643cfc8c61b22093f8bf2c9358bf8b6f4dcb5f13192");
     }
 
@@ -2527,15 +2533,6 @@ bool static AlreadyHave(CTxDB& txdb, const CInv& inv)
 }
 
 
-
-
-// The message start string is designed to be unlikely to occur in normal data.
-// The characters are rarely used upper ascii, not valid as UTF-8, and produce
-// a large 4-byte int at any alignment.
-// Litecoin and Phoenixcoin: increase each by 2 over Bitcoin
-unsigned char pchMessageStart[4] = { 0xfb, 0xc0, 0xb6, 0xdb };
-
-
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 {
     static map<CService, CPubKey> mapReuseKey;
@@ -2554,12 +2551,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
     if (strCommand == "version")
     {
-        // Each connection can only send one version message
-        if (pfrom->nVersion != 0)
-        {
-            pfrom->Misbehaving(1);
-            return false;
-        }
+        /* Process the 1st version message received per connection
+         * and ignore the others if any */
+        if(pfrom->nVersion)
+          return(true);
 
         int64 nTime;
         CAddress addrMe;
@@ -3223,15 +3218,40 @@ bool ProcessMessages(CNode* pfrom)
     //  (x) data
     //
 
-    loop
-    {
+    while(true) {
+
         // Don't bother if send buffer is too full to respond anyway
         if (pfrom->vSend.size() >= SendBufferSize())
             break;
 
         // Scan for message start
-        CDataStream::iterator pstart = search(vRecv.begin(), vRecv.end(), BEGIN(pchMessageStart), END(pchMessageStart));
-        int nHeaderSize = vRecv.GetSerializeSize(CMessageHeader());
+        CDataStream::iterator pstart;
+        int nHeaderSize;
+        bool fMagic;
+
+        /* Message start detector */
+        if(pfrom->nVersion) {
+            /* If a protocol version is known, the detection is easy */
+            if(pfrom->nVersion >= NEW_MAGIC_VERSION) {
+                pstart = search(vRecv.begin(), vRecv.end(), BEGIN(pchMessageStartNew), END(pchMessageStartNew));
+                fMagic = true;
+            } else {
+                pstart = search(vRecv.begin(), vRecv.end(), BEGIN(pchMessageStart), END(pchMessageStart));
+                fMagic = false;
+            }
+        } else {
+            /* Check for the old magic number first */
+            pstart = search(vRecv.begin(), vRecv.end(), BEGIN(pchMessageStart), END(pchMessageStart));
+            fMagic = false;
+            if(vRecv.end() == pstart) {
+                /* Must be the new magic number */
+                pstart = search(vRecv.begin(), vRecv.end(), BEGIN(pchMessageStartNew), END(pchMessageStartNew));
+                fMagic = true;
+            }
+        }
+
+        nHeaderSize = vRecv.GetSerializeSize(CMessageHeader(fMagic));
+
         if (vRecv.end() - pstart < nHeaderSize)
         {
             if ((int)vRecv.size() > nHeaderSize)
@@ -3249,8 +3269,7 @@ bool ProcessMessages(CNode* pfrom)
         vector<char> vHeaderSave(vRecv.begin(), vRecv.begin() + nHeaderSize);
         CMessageHeader hdr;
         vRecv >> hdr;
-        if (!hdr.IsValid())
-        {
+        if(!hdr.IsValid(fMagic)) {
             printf("\n\nPROCESSMESSAGE: ERRORS IN HEADER %s\n\n\n", hdr.GetCommand().c_str());
             continue;
         }
