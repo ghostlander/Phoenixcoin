@@ -858,7 +858,9 @@ static const int nTargetTimespanFour   = 20   * nTargetSpacingFour;  // 0.5 hour
 static const int nTestnetForkOne = 600;
 
 static const int nSoftForkOne           = 270000;
+static const int nSoftForkTwo           = 340000;
 static const int nTestnetSoftForkOne    = 3400;
+static const int nTestnetSoftForkTwo    = 3500;
 
 int64 static GetBlockValue(int nHeight, int64 nFees) {
 
@@ -1086,7 +1088,7 @@ void static InvalidChainFound(CBlockIndex* pindexNew)
 
 void CBlock::UpdateTime(const CBlockIndex* pindexPrev)
 {
-    nTime = max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
+    nTime = max((pindexPrev->GetMedianTimePast() + BLOCK_LIMITER_TIME + 1), GetAdjustedTime());
 
     // Updating time can change work required on testnet:
     if (fTestNet)
@@ -1876,30 +1878,45 @@ bool CBlock::AcceptBlock()
     if (nBits != GetNextWorkRequired(pindexPrev, this))
         return DoS(100, error("AcceptBlock() : incorrect proof of work for block %d", nHeight));
 
-    // Check for time stamp (future limit)
-    if (GetBlockTime() > GetAdjustedTime() + 30 * 60)
-        return error("AcceptBlock() : block %d has a time stamp too far in the future", nHeight);
+    uint nBlockTime = this->nTime;
+    uint nOurTime   = (uint)GetAdjustedTime();
 
     // Check for time stamp (past limit #1)
-    if (GetBlockTime() <= pindexPrev->GetMedianTimePast())
-        return error("AcceptBlock() : block %d has a time stamp behind the median", nHeight);
-
-    // Check for time stamp (past limit #2)
-    if((fTestNet || (nHeight >= nForkFour)) &&
-      (GetBlockTime() <= pindexPrev->GetBlockTime() - 30 * 60))
-        return error("AcceptBlock() : block %d has a time stamp too far in the past", nHeight);
+    if(nBlockTime <= (uint)pindexPrev->GetMedianTimePast())
+      return(DoS(20, error("AcceptBlock() : block %s height %d has a time stamp behind the median",
+        hash.ToString().substr(0,20).c_str(), nHeight)));
 
     // Soft fork 1: further restrictions
     if((fTestNet && (nHeight >= nTestnetSoftForkOne)) || (nHeight >= nSoftForkOne)) {
 
-        if(GetBlockTime() > (GetAdjustedTime() + 10 * 60))
-          return error("AcceptBlock() [Soft Fork 1] : block %d has a time stamp too far in the future", nHeight);
+        if(nBlockTime > (nOurTime + 10 * 60))
+          return(DoS(5, error("AcceptBlock() : block %s height %d has a time stamp too far in the future",
+            hash.ToString().substr(0,20).c_str(), nHeight)));
 
-        if(GetBlockTime() <= (pindexPrev->GetMedianTimePast() + 120))
-          return error("AcceptBlock() [Soft Fork 1] : block %d rejected by the block limiter", nHeight);
+        if(nBlockTime <= (pindexPrev->GetMedianTimePast() + BLOCK_LIMITER_TIME))
+          return(DoS(5, error("AcceptBlock() : block %s height %d rejected by the block limiter",
+            hash.ToString().substr(0,20).c_str(), nHeight)));
 
-        if(GetBlockTime() <= (pindexPrev->GetBlockTime() - 10 * 60))
-          return error("AcceptBlock() [Soft Fork 1] : block %d has a time stamp too far in the past", nHeight);
+        if(nBlockTime <= (pindexPrev->GetBlockTime() - 10 * 60))
+          return(DoS(20, error("AcceptBlock() : block %s height %d has a time stamp too far in the past",
+            hash.ToString().substr(0,20).c_str(), nHeight)));
+
+    }
+
+    /* Soft fork 2 */
+    if(!IsInitialBlockDownload() &&
+      ((fTestNet && (nHeight >= nTestnetSoftForkTwo)) || (nHeight >= nSoftForkTwo))) {
+
+        /* Check for time stamp (future limit) */
+        if(nBlockTime > (nOurTime + 5 * 60))
+          return(DoS(5, error("AcceptBlock() [Soft Fork 2] : block %s height %d has a time stamp too far in the future",
+            hash.ToString().substr(0,20).c_str(), nHeight)));
+
+        /* Future travel detector for the block limiter */
+        if((nBlockTime > (nOurTime + 60)) &&
+          ((pindexPrev->GetAverageTimePast(5, 45) + BLOCK_LIMITER_TIME) > nOurTime))
+          return(DoS(5, error("AcceptBlock() : block %s height %d rejected by the future travel detector",
+            hash.ToString().substr(0,20).c_str(), nHeight)));
 
     }
 

@@ -36,6 +36,8 @@ static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
 static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
 // The max. number of orphan transactions kept in memory
 static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
+/* The current time frame of block limiter */
+static const int64 BLOCK_LIMITER_TIME = 120;
 // The min. transaction fee (0.1 PXC) if required
 static const int64 MIN_TX_FEE = 10000000;
 // Fees below this value (0.05 PXC) are considered absent while relaying
@@ -1177,7 +1179,42 @@ public:
         return pindex->GetMedianTimePast();
     }
 
+    /* Advanced average block time calculator */
+    uint GetAverageTimePast(uint nAvgTimeSpan, uint nMinDelay) const {
+        uint avg[nAvgTimeSpan], nTempTime, i;
+        uint64 nAvgAccum;
+        const CBlockIndex* pindex = this;
 
+        /* Keep it fail safe */
+        if(!nAvgTimeSpan) return(0);
+
+        /* Initialise the elements to zero */
+        for(i = 0; i < nAvgTimeSpan; i++)
+          avg[i] = 0;
+
+        /* Fill with the time stamps */
+        for(i = nAvgTimeSpan; i && pindex; i--, pindex = pindex->pprev)
+          avg[i-1] = pindex->nTime;
+
+        /* Not enough input blocks */
+        if(!avg[0]) return(0);
+
+        /* Time travel aware accumulator */
+        nTempTime = avg[0];
+        for(i = 1, nAvgAccum = nTempTime; i < nAvgTimeSpan; i++) { 
+            /* Update the accumulator either with an actual or minimal
+             * delay supplied to prevent extremely fast blocks */
+            if(avg[i] < (nTempTime + nMinDelay))
+              nTempTime += nMinDelay;
+            else
+              nTempTime  = avg[i];
+            nAvgAccum += nTempTime;
+        }
+
+        nTempTime = (uint)(nAvgAccum/(uint64)nAvgTimeSpan);
+
+        return(nTempTime);
+    }
 
     std::string ToString() const
     {
