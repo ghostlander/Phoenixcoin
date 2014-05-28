@@ -2657,7 +2657,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // if their nStartingHeight is much higher of what we estimate it
         // to be, disconnect them.
         // nRefHeight and nRefTime should be updated periodically
-        long nRefHeight = 266666, nRefTime = 1395213579; // block #266666
+        long nRefHeight = 331333, nRefTime = 1401271957; // block #331333
         long nOurTime = GetAdjustedTime();
         long nHeightOffset = (nOurTime - nRefTime) / nTargetSpacingFour;
         // Add 10000 blocks to be safe
