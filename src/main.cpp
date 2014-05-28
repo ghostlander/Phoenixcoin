@@ -2551,6 +2551,36 @@ bool static AlreadyHave(CTxDB& txdb, const CInv& inv)
 }
 
 
+/* Relays an address to a limited number of nodes connected */
+void static RelayAddress(CAddress& addr, bool fReachable) {
+
+    LOCK(cs_vNodes);
+
+    // Use deterministic randomness to send to the same nodes for 12 hours
+    // at a time so the setAddrKnowns of the chosen nodes prevent repeats
+    static uint256 hashSalt;
+    if(hashSalt == 0)
+      RAND_bytes((uchar*)&hashSalt, sizeof(hashSalt));
+    int64 hashAddr = addr.GetHash();
+    uint256 hashRand = hashSalt ^ (hashAddr << 32) ^ ((GetTime() + hashAddr) / (12 * 60 * 60));
+    hashRand = Hash(BEGIN(hashRand), END(hashRand));
+    multimap<uint256, CNode*> mapMix;
+    BOOST_FOREACH(CNode* pnode, vNodes) {
+        uint nPointer;
+        memcpy(&nPointer, &pnode, sizeof(nPointer));
+        uint256 hashKey = hashRand ^ nPointer;
+        hashKey = Hash(BEGIN(hashKey), END(hashKey));
+        mapMix.insert(make_pair(hashKey, pnode));
+    }
+    int nRelayNodes = fReachable ? 2 : 1;
+    for(multimap<uint256, CNode*>::iterator mi = mapMix.begin();
+      mi != mapMix.end() && nRelayNodes-- > 0; ++mi) {
+        ((*mi).second)->PushAddress(addr);
+        if(fDebug) printf("relaying: address %s\n", addr.ToString().c_str());
+    }
+}
+
+
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 {
     static map<CService, CPubKey> mapReuseKey;
@@ -2732,69 +2762,78 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
 
         int64 nNow = GetAdjustedTime();
         int64 nSince = nNow - 10 * 60;
+        bool fReachable;
 
-        CBerkeleyAddrDB adb;
-        if(fBerkeleyAddrDB) adb.TxnBegin();
-        vector<CAddress> vAddrOk;
+        if(fBerkeleyAddrDB) {
 
-        BOOST_FOREACH(CAddress& addr, vAddr) {
+            CBerkeleyAddrDB adb;
+            adb.TxnBegin();
 
-            if(fShutdown)
-              return(true);
+            BOOST_FOREACH(CAddress& addr, vAddr) {
 
-            /* Simple port filter */
-            ushort nPort = addr.GetPort();
-            if(nPort != GetDefaultPort())
-              continue;
+                if(fShutdown)
+                  return(true);
 
-            bool fReachable = IsReachable(addr);
+                /* Simple port filter */
+                ushort nPort = addr.GetPort();
+                if(nPort != GetDefaultPort())
+                  continue;
 
-            if((addr.nTime <= 100000000) || (addr.nTime > nNow + 10 * 60))
-              addr.nTime = nNow - 5 * 24 * 60 * 60;
-            if(fBerkeleyAddrDB && fReachable)
-              AddAddress(addr, 2 * 60 * 60, &adb);
-            pfrom->AddAddressKnown(addr);
+                if((addr.nTime <= 100000000) || (addr.nTime > nNow + 10 * 60))
+                  addr.nTime = nNow - 5 * 24 * 60 * 60;
 
-            if((addr.nTime > nSince) && !pfrom->fGetAddr &&
-              (vAddr.size() <= 10) && addr.IsRoutable()) {
+                fReachable = IsReachable(addr);
 
-                // Relay to a limited number of other nodes
-                LOCK(cs_vNodes);
+                if(fReachable)
+                  AddAddress(addr, 2 * 60 * 60, &adb);
 
-                // Use deterministic randomness to send to the same nodes for 24 hours
-                // at a time so the setAddrKnowns of the chosen nodes prevent repeats
-                static uint256 hashSalt;
-                if(hashSalt == 0)
-                  RAND_bytes((uchar*)&hashSalt, sizeof(hashSalt));
-                int64 hashAddr = addr.GetHash();
-                uint256 hashRand = hashSalt ^ (hashAddr << 32) ^ ((GetTime()+hashAddr) / (24 * 60 * 60));
-                hashRand = Hash(BEGIN(hashRand), END(hashRand));
-                multimap<uint256, CNode*> mapMix;
-                BOOST_FOREACH(CNode* pnode, vNodes) {
-                    uint nPointer;
-                    memcpy(&nPointer, &pnode, sizeof(nPointer));
-                    uint256 hashKey = hashRand ^ nPointer;
-                    hashKey = Hash(BEGIN(hashKey), END(hashKey));
-                    mapMix.insert(make_pair(hashKey, pnode));
-                }
-                int nRelayNodes = fReachable ? 2 : 1;
-                for(multimap<uint256, CNode*>::iterator mi = mapMix.begin();
-                  mi != mapMix.end() && nRelayNodes-- > 0; ++mi)
-                  ((*mi).second)->PushAddress(addr);
+                pfrom->AddAddressKnown(addr);
+
+                if((addr.nTime > nSince) && !pfrom->fGetAddr &&
+                  (vAddr.size() <= 10) && addr.IsRoutable())
+                  RelayAddress(addr, fReachable);
 
             }
 
-            // Do not store addresses outside our network
-            if(!fBerkeleyAddrDB && fReachable)
-              vAddrOk.push_back(addr);
+            adb.TxnCommit();
+
+        } else {
+
+            vector<CAddress> vAddrOk;
+
+            BOOST_FOREACH(CAddress& addr, vAddr) {
+
+                if(fShutdown)
+                  return(true);
+
+                /* Simple port filter */
+                ushort nPort = addr.GetPort();
+                if(nPort != GetDefaultPort())
+                  continue;
+
+                if((addr.nTime <= 100000000) || (addr.nTime > nNow + 10 * 60))
+                  addr.nTime = nNow - 5 * 24 * 60 * 60;
+
+                fReachable = IsReachable(addr);
+
+                if(fReachable)
+                  vAddrOk.push_back(addr);
+
+                pfrom->AddAddressKnown(addr);
+
+                if((addr.nTime > nSince) && !pfrom->fGetAddr &&
+                  (vAddr.size() <= 10) && addr.IsRoutable())
+                  RelayAddress(addr, fReachable);
+
+            }
+
+            addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);
 
         }
 
-        if(fBerkeleyAddrDB) adb.TxnCommit();
-        else addrman.Add(vAddrOk, pfrom->addr, 2 * 60 * 60);
-
         if(vAddr.size() < 1000)
           pfrom->fGetAddr = false;
+
         if(pfrom->fOneShot)
           pfrom->fDisconnect = true;
 
