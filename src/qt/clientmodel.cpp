@@ -20,32 +20,17 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
     numBlocksAtStartup = -1;
 
     pollTimer = new QTimer(this);
-    // Read our specific settings from the wallet db
-    /*
-    CWalletDB walletdb(optionsModel->getWallet()->strWalletFile);
-    walletdb.ReadSetting("miningDebug", miningDebug);
-    walletdb.ReadSetting("miningScanTime", miningScanTime);
-    std::string str;
-    walletdb.ReadSetting("miningServer", str);
-    miningServer = QString::fromStdString(str);
-    walletdb.ReadSetting("miningPort", str);
-    miningPort = QString::fromStdString(str);
-    walletdb.ReadSetting("miningUsername", str);
-    miningUsername = QString::fromStdString(str);
-    walletdb.ReadSetting("miningPassword", str);
-    miningPassword = QString::fromStdString(str);
-    */
-//    if (fGenerateBitcoins)
-//    {
-        miningType = SoloMining;
-        miningStarted = true;
-//    }
-//    else
-//    {
-//        miningType = PoolMining;
-//        walletdb.ReadSetting("miningStarted", miningStarted);
-//    }
-//    miningThreads = nLimitProcessors;
+
+    /* Disable mining even if user enabled */
+    fGenerateCoins = false;
+    mapArgs["-gen"] = "0";
+
+    /* Set to -1 by default */
+    miningThreads = (int)GetArg("-genproclimit", -1);
+    if(miningThreads < 0) miningThreads = 1;
+
+    miningType = PoolMining;
+    miningStarted = false;
 
     pollTimer->setInterval(MODEL_UPDATE_DELAY);
     pollTimer->start();
@@ -98,7 +83,6 @@ bool ClientModel::getMiningDebug() const
 void ClientModel::setMiningDebug(bool debug)
 {
     miningDebug = debug;
-//    WriteSetting("miningDebug", miningDebug);
 }
 
 int ClientModel::getMiningScanTime() const
@@ -109,7 +93,6 @@ int ClientModel::getMiningScanTime() const
 void ClientModel::setMiningScanTime(int scantime)
 {
     miningScanTime = scantime;
-//    WriteSetting("miningScanTime", miningScanTime);
 }
 
 QString ClientModel::getMiningServer() const
@@ -120,7 +103,6 @@ QString ClientModel::getMiningServer() const
 void ClientModel::setMiningServer(QString server)
 {
     miningServer = server;
-//    WriteSetting("miningServer", miningServer.toStdString());
 }
 
 QString ClientModel::getMiningPort() const
@@ -131,7 +113,6 @@ QString ClientModel::getMiningPort() const
 void ClientModel::setMiningPort(QString port)
 {
     miningPort = port;
-//    WriteSetting("miningPort", miningPort.toStdString());
 }
 
 QString ClientModel::getMiningUsername() const
@@ -142,7 +123,6 @@ QString ClientModel::getMiningUsername() const
 void ClientModel::setMiningUsername(QString username)
 {
     miningUsername = username;
-//    WriteSetting("miningUsername", miningUsername.toStdString());
 }
 
 QString ClientModel::getMiningPassword() const
@@ -153,7 +133,6 @@ QString ClientModel::getMiningPassword() const
 void ClientModel::setMiningPassword(QString password)
 {
     miningPassword = password;
-//    WriteSetting("miningPassword", miningPassword.toStdString());
 }
 
 int ClientModel::getHashrate() const
@@ -259,15 +238,13 @@ int ClientModel::getNumBlocksOfPeers() const
 
 void ClientModel::setMining(MiningType type, bool mining, int threads, int hashrate)
 {
-    if (type == SoloMining && mining != miningStarted)
-    {
-        GenerateBitcoins(mining ? 1 : 0, pwalletMain);
+    if((type == SoloMining) && (mining != miningStarted)) {
+        if(threads != (int)GetArg("-genproclimit", -1))
+          mapArgs["-genproclimit"] = itostr(threads);
+        GenerateCoins(mining ? 1 : 0, pwalletMain);
     }
     miningType = type;
     miningStarted = mining;
-//    WriteSetting("miningStarted", mining);
-//    WriteSetting("fLimitProcessors", 1);
-//    WriteSetting("nLimitProcessors", threads);
     emit miningChanged(mining, hashrate);
 }
 

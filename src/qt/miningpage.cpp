@@ -50,9 +50,7 @@ void MiningPage::setModel(ClientModel *model)
 
     bool pool = model->getMiningType() == ClientModel::PoolMining;
     ui->threadsBox->setValue(model->getMiningThreads());
-    ui->typeBox->setCurrentIndex(pool ? 1 : 0);
-//    if (model->getMiningStarted())
-//        startPressed();
+    ui->typeBox->setCurrentIndex(pool ? 0 : 1);
 }
 
 void MiningPage::startPressed()
@@ -343,49 +341,42 @@ QString MiningPage::getTime(QString time)
         return NULL;
 }
 
-void MiningPage::enableMiningControls(bool enable)
-{
-    ui->typeBox->setEnabled(enable);
-    ui->threadsBox->setEnabled(enable);
-    ui->scantimeBox->setEnabled(enable);
-    ui->serverLine->setEnabled(enable);
-    ui->portLine->setEnabled(enable);
-    ui->usernameLine->setEnabled(enable);
-    ui->passwordLine->setEnabled(enable);
+/* 0 = disable all controls;
+ * 1 = enable pool controls;
+ * 2 = enable solo controls */
+void MiningPage::setMiningControls(uint mode) {
+    bool a, b;
+
+    if(mode == 2) {
+        a = true;
+        b = false;
+    }
+    else if(mode) a = b = true;
+    else a = b = false; 
+
+    ui->typeBox->setEnabled(a);
+    ui->threadsBox->setEnabled(a);
+    ui->scantimeBox->setEnabled(b);
+    ui->serverLine->setEnabled(b);
+    ui->portLine->setEnabled(b);
+    ui->usernameLine->setEnabled(b);
+    ui->passwordLine->setEnabled(b);
 }
 
-void MiningPage::enablePoolMiningControls(bool enable)
-{
-    ui->scantimeBox->setEnabled(enable);
-    ui->serverLine->setEnabled(enable);
-    ui->portLine->setEnabled(enable);
-    ui->usernameLine->setEnabled(enable);
-    ui->passwordLine->setEnabled(enable);
+ClientModel::MiningType MiningPage::getMiningType() {
+    if(ui->typeBox->currentIndex() == 1)
+      return(ClientModel::SoloMining);
+    else
+      return(ClientModel::PoolMining);
 }
 
-ClientModel::MiningType MiningPage::getMiningType()
-{
-    if (ui->typeBox->currentIndex() == 1)  // Solo Mining
-    {
-        return ClientModel::SoloMining;
-    }
-    else if (ui->typeBox->currentIndex() == 0)  // Pool Mining
-    {
-        return ClientModel::PoolMining;
-    }
-    return ClientModel::SoloMining;
-}
-
-void MiningPage::typeChanged(int index)
-{
-    if (index == 1)  // Solo Mining
-    {
-        enablePoolMiningControls(false);
-    }
-    else if (index == 0)  // Pool Mining
-    {
-        enablePoolMiningControls(true);
-    }
+/* 0 = pool mining selected;
+ * 1 = solo mining selected */
+void MiningPage::typeChanged(int index) {
+    if(index == 1)
+      setMiningControls(2);
+    else
+      setMiningControls(1);
 }
 
 void MiningPage::debugToggled(bool checked)
@@ -396,5 +387,12 @@ void MiningPage::debugToggled(bool checked)
 void MiningPage::resetMiningButton()
 {
     ui->startButton->setText(minerActive ? "Stop Mining" : "Start Mining");
-    enableMiningControls(!minerActive);
+    if(minerActive) setMiningControls(0);
+    else {
+        if(getMiningType() == ClientModel::SoloMining)
+          setMiningControls(2);
+        else
+          setMiningControls(1);
+    }
 }
+

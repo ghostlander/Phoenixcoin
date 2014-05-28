@@ -129,6 +129,7 @@ extern bool fLogTimestamps;
 extern bool fReopenDebugLog;
 extern bool fDefaultKey;
 extern bool fBerkeleyAddrDB;
+extern bool fGenerateCoins;
 
 void RandAddSeed();
 void RandAddSeedPerfmon();

@@ -40,6 +40,8 @@ endif
 
 LIBS += -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l winmm -l shell32 -l comctl32 -l ole32 -l oleaut32 -l uuid -l rpcrt4 -l advapi32 -l ws2_32 -l mswsock -l shlwapi
 
+LDFLAGS += -Wl,-s -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware -static -static-libgcc -static-libstdc++
+
 # TODO: make the mingw builds smarter about dependencies, like the linux/osx builds are
 HEADERS = $(wildcard *.h)
 
@@ -80,7 +82,7 @@ obj/%.o: %.cpp $(HEADERS)
 	g++ -c $(CFLAGS) -o $@ $<
 
 phoenixcoind.exe: $(OBJS:obj/%=obj/%)
-	g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
+	g++ $(CFLAGS) -o $@ $(LIBPATHS) $^ $(LDFLAGS) $(LIBS)
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 

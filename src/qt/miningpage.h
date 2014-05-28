@@ -74,8 +74,7 @@ public slots:
     void readProcessOutput();
 
     QString getTime(QString);
-    void enableMiningControls(bool enable);
-    void enablePoolMiningControls(bool enable);
+    void setMiningControls(uint mode);
     ClientModel::MiningType getMiningType();
     void typeChanged(int index);
     void debugToggled(bool checked);

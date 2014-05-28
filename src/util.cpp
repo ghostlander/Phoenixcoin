@@ -78,6 +78,7 @@ CMedianFilter<int64> vTimeOffsets(200,0);
 bool fReopenDebugLog = false;
 bool fDefaultKey = false;
 bool fBerkeleyAddrDB = false;
+bool fGenerateCoins = false;
 
 // Init openssl library multithreading support
 static CCriticalSection** ppmutexOpenSSL;

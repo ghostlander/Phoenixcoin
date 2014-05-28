@@ -78,14 +78,14 @@
              <string notr="true">font-weight:bold;</string>
             </property>
             <property name="text">
-             <string>Coin Control Inputs...</string>
+             <string>Coin Control</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="labelCoinControlAutomaticallySelected">
             <property name="text">
-             <string>automatically selected</string>
+             <string>inputs selected automatically</string>
             </property>
             <property name="margin">
              <number>5</number>
