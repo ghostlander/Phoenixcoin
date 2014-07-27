@@ -159,6 +159,12 @@ int main(int argc, char *argv[])
     // Command-line options take precedence:
     ParseParameters(argc, argv);
 
+    /* Allows to start up with testnet by default */
+    if(fTestNetInit) {
+       fTestNet = true;
+       SoftSetBoolArg("-testnet", true);
+    }
+
     // ... then bitcoin.conf:
     if (!boost::filesystem::is_directory(GetDataDir(false)))
     {

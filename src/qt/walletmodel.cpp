@@ -14,7 +14,7 @@
 WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
     QObject(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
     transactionTableModel(0),
-    cachedBalance(0), cachedUnconfirmedBalance(0), cachedImmatureBalance(0),
+    cachedBalance(0), cachedUnconfirmed(0), cachedImmature(0),
     cachedNumTransactions(0),
     cachedEncryptionStatus(Unencrypted),
     cachedNumBlocks(0)
@@ -47,17 +47,18 @@ qint64 WalletModel::getBalance(const CCoinControl *coinControl) const
         return nBalance;
     }
 
-    return wallet->GetBalance();
+    /* Available (confirmed) balance */
+    return(wallet->GetBalance(0x1));
 }
 
-qint64 WalletModel::getUnconfirmedBalance() const
-{
-    return wallet->GetUnconfirmedBalance();
+qint64 WalletModel::getUnconfirmed() const {
+    /* Unconfirmed balance (mined rewards excluded) */
+    return(wallet->GetBalance(0x2));
 }
 
-qint64 WalletModel::getImmatureBalance() const
-{
-    return wallet->GetImmatureBalance();
+qint64 WalletModel::getImmature() const {
+    /* Immature PoW rewards */
+    return(wallet->GetMinted(0x7));
 }
 
 int WalletModel::getNumTransactions() const
@@ -91,18 +92,17 @@ void WalletModel::pollBalanceChanged()
     }
 }
 
-void WalletModel::checkBalanceChanged()
-{
-    qint64 newBalance = getBalance();
-    qint64 newUnconfirmedBalance = getUnconfirmedBalance();
-    qint64 newImmatureBalance = getImmatureBalance();
+void WalletModel::checkBalanceChanged() {
+    qint64 newBalance     = getBalance();
+    qint64 newUnconfirmed = getUnconfirmed();
+    qint64 newImmature    = getImmature();
 
-    if(cachedBalance != newBalance || cachedUnconfirmedBalance != newUnconfirmedBalance || cachedImmatureBalance != newImmatureBalance)
-    {
-        cachedBalance = newBalance;
-        cachedUnconfirmedBalance = newUnconfirmedBalance;
-        cachedImmatureBalance = newImmatureBalance;
-        emit balanceChanged(newBalance, newUnconfirmedBalance, newImmatureBalance);
+    if((cachedBalance != newBalance) || (cachedUnconfirmed != newUnconfirmed) ||
+      (cachedImmature != newImmature)) {
+        cachedBalance     = newBalance;
+        cachedUnconfirmed = newUnconfirmed;
+        cachedImmature    = newImmature;
+        emit(balanceChanged(newBalance, newUnconfirmed, newImmature));
     }
 }
 
@@ -403,8 +403,10 @@ void WalletModel::getOutputs(const std::vector<COutPoint>& vOutpoints, std::vect
 {
     BOOST_FOREACH(const COutPoint& outpoint, vOutpoints)
     {
-        if (!wallet->mapWallet.count(outpoint.hash)) continue;
-        COutput out(&wallet->mapWallet[outpoint.hash], outpoint.n, wallet->mapWallet[outpoint.hash].GetDepthInMainChain());
+        if(!wallet->mapWallet.count(outpoint.hash)) continue;
+        int nDepth = wallet->mapWallet[outpoint.hash].GetDepthInMainChain();
+        if(nDepth < 0) continue;
+        COutput out(&wallet->mapWallet[outpoint.hash], outpoint.n, nDepth);
         vOutputs.push_back(out);
     }
 }
@@ -421,8 +423,10 @@ void WalletModel::listCoins(std::map<QString, std::vector<COutput> >& mapCoins) 
     // add locked coins
     BOOST_FOREACH(const COutPoint& outpoint, vLockedCoins)
     {
-        if (!wallet->mapWallet.count(outpoint.hash)) continue;
-        COutput out(&wallet->mapWallet[outpoint.hash], outpoint.n, wallet->mapWallet[outpoint.hash].GetDepthInMainChain());
+        if(!wallet->mapWallet.count(outpoint.hash)) continue;
+        int nDepth = wallet->mapWallet[outpoint.hash].GetDepthInMainChain();
+        if(nDepth < 0) continue;
+        COutput out(&wallet->mapWallet[outpoint.hash], outpoint.n, nDepth);
         vCoins.push_back(out);
     }
        

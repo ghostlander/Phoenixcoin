@@ -3,7 +3,7 @@ Phoenixcoin
 
 Phoenixcoin (PXC) is a decentralised open source digital currency.
 
- - standard scrypt (N = 1024, r = 1, p = 1, etc.)
+ - NeoScrypt (N = 128, r = 2, p = 1, etc.)
  - ~98 million total coins
  - block target is 1.5 minutes
  - block reward is 50 coins

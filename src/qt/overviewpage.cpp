@@ -93,8 +93,8 @@ OverviewPage::OverviewPage(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::OverviewPage),
     currentBalance(-1),
-    currentUnconfirmedBalance(-1),
-    currentImmatureBalance(-1),
+    currentUnconfirmed(-1),
+    currentImmature(-1),
     txdelegate(new TxViewDelegate()),
     filter(0)
 {
@@ -108,8 +108,6 @@ OverviewPage::OverviewPage(QWidget *parent) :
 
     connect(ui->listTransactions, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTransactionClicked(QModelIndex)));
 
-    // init "out of sync" warning labels
-    ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
     ui->labelTransactionsStatus->setText("(" + tr("out of sync") + ")");
 
     // start with displaying the "out of sync" warnings
@@ -127,21 +125,25 @@ OverviewPage::~OverviewPage()
     delete ui;
 }
 
-void OverviewPage::setBalance(qint64 balance, qint64 unconfirmedBalance, qint64 immatureBalance)
+void OverviewPage::setBalance(qint64 balance, qint64 unconfirmed, qint64 immature)
 {
     int unit = model->getOptionsModel()->getDisplayUnit();
     currentBalance = balance;
-    currentUnconfirmedBalance = unconfirmedBalance;
-    currentImmatureBalance = immatureBalance;
+    currentUnconfirmed = unconfirmed;
+    currentImmature = immature;
     ui->labelBalance->setText(BitcoinUnits::formatWithUnit(unit, balance));
-    ui->labelUnconfirmed->setText(BitcoinUnits::formatWithUnit(unit, unconfirmedBalance));
-    ui->labelImmature->setText(BitcoinUnits::formatWithUnit(unit, immatureBalance));
+    ui->labelUnconfirmed->setText(BitcoinUnits::formatWithUnit(unit, unconfirmed));
+    ui->labelImmature->setText(BitcoinUnits::formatWithUnit(unit, immature));
 
-    // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
-    // for the non-mining users
-    bool showImmature = immatureBalance != 0;
+    /* Do not show a non-existing balance if zero, but show the text to avoid an empty row */
+
+    bool showUnconfirmed = (unconfirmed != 0);
+    ui->labelUnconfirmed->setVisible(showUnconfirmed);
+/*    ui->labelUnconfirmedText->setVisible(showUnconfirmed); */
+
+    bool showImmature = (immature != 0);
     ui->labelImmature->setVisible(showImmature);
-    ui->labelImmatureText->setVisible(showImmature);
+/*    ui->labelImmatureText->setVisible(showImmature); */
 }
 
 void OverviewPage::setNumTransactions(int count)
@@ -161,12 +163,13 @@ void OverviewPage::setModel(WalletModel *model)
         filter->setDynamicSortFilter(true);
         filter->setSortRole(Qt::EditRole);
         filter->sort(TransactionTableModel::Status, Qt::DescendingOrder);
+        filter->setShowFailed(false);
 
         ui->listTransactions->setModel(filter);
         ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
 
         // Keep up to date with wallet
-        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance());
+        setBalance(model->getBalance(), model->getUnconfirmed(), model->getImmature());
         connect(model, SIGNAL(balanceChanged(qint64, qint64, qint64)), this, SLOT(setBalance(qint64, qint64, qint64)));
 
         setNumTransactions(model->getNumTransactions());
@@ -184,7 +187,7 @@ void OverviewPage::updateDisplayUnit()
     if(model && model->getOptionsModel())
     {
         if(currentBalance != -1)
-            setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance);
+            setBalance(currentBalance, currentUnconfirmed, currentImmature);
 
         // Update txdelegate->unit with the current unit
         txdelegate->unit = model->getOptionsModel()->getDisplayUnit();
@@ -193,8 +196,6 @@ void OverviewPage::updateDisplayUnit()
     }
 }
 
-void OverviewPage::showOutOfSyncWarning(bool fShow)
-{
-    ui->labelWalletStatus->setVisible(fShow);
+void OverviewPage::showOutOfSyncWarning(bool fShow) {
     ui->labelTransactionsStatus->setVisible(fShow);
 }

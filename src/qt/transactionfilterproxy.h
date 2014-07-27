@@ -32,6 +32,9 @@ public:
     /** Set maximum number of rows returned, -1 if unlimited. */
     void setLimit(int limit);
 
+    /* Whether to show failed transactions or not */
+    void setShowFailed(bool showFailed);
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
 protected:
@@ -44,6 +47,7 @@ private:
     quint32 typeFilter;
     qint64 minAmount;
     int limitRows;
+    bool showFailed;
 };
 
 #endif // TRANSACTIONFILTERPROXY_H

@@ -13,6 +13,7 @@
         <file alias="mining_active">res/icons/mining_active.png</file>
         <file alias="mining_inactive">res/icons/mining_inactive.png</file>
         <file alias="transaction_0">res/icons/transaction0.png</file>
+        <file alias="transaction_failed">res/icons/transaction1.png</file>
         <file alias="transaction_confirmed">res/icons/transaction2.png</file>
         <file alias="transaction_1">res/icons/clock1.png</file>
         <file alias="transaction_2">res/icons/clock2.png</file>

@@ -349,8 +349,8 @@ bool SetCheckpointPrivKey(std::string strPrivKey)
     checkpoint.vchMsg = std::vector<unsigned char>(sMsg.begin(), sMsg.end());
 
     CBitcoinSecret vchSecret;
-    if (!vchSecret.SetString(strPrivKey))
-        return error("SendSyncCheckpoint: Checkpoint master key invalid");
+    if(!vchSecret.SetString(strPrivKey))
+      return(error("SetCheckpointPrivKey: Checkpoint master key invalid"));
     CKey key;
     bool fCompressed;
     CSecret secret = vchSecret.GetSecret(fCompressed);
@@ -405,7 +405,7 @@ bool IsMatureSyncCheckpoint()
     // sync-checkpoint should always be accepted block
     assert(mapBlockIndex.count(hashSyncCheckpoint));
     const CBlockIndex* pindexSync = mapBlockIndex[hashSyncCheckpoint];
-    return (nBestHeight >= pindexSync->nHeight + COINBASE_MATURITY);
+    return (nBestHeight >= pindexSync->nHeight + nBaseMaturity);
 }
 
 // Is the sync-checkpoint too old?

@@ -5,15 +5,16 @@
 
 /* Return positive answer if transaction should be shown in list.
  */
-bool TransactionRecord::showTransaction(const CWalletTx &wtx, bool ShowOrphans)
-{
-    /* The default behaviour is to show all transactions as they come
-     * including orphans, but show confirmed only after a client restart */
-    if(ShowOrphans) return true;
-    /* Don't display PoW base transactions with no single confirmation */
-    if(wtx.IsCoinBase() && (wtx.GetDepthInMainChain() < 1)) return false;
+bool TransactionRecord::showTransaction(const CWalletTx &wtx, bool ShowFailed) {
+    /* The default behaviour is to show all transactions as they come including failed,
+     * but show pending and confirmed only after a client restart */
+    if(ShowFailed)
+      return(true);
+    /* Don't display failed transactions including PoW base orphans */
+    if(wtx.GetDepthInMainChain() < 0)
+      return(false);
     /* All other transactions are displayed always and immediately */
-    return true;
+    return(true);
 }
 
 /*
@@ -175,16 +176,16 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
     }
     else
     {
-        if (GetAdjustedTime() - wtx.nTimeReceived > 2 * 60 && wtx.GetRequestCount() == 0)
-        {
-            status.status = TransactionStatus::Offline;
+        if(!status.depth) {
+            status.status = TransactionStatus::Pending;
         }
-        else if (status.depth < NumConfirmations)
-        {
+        else if(status.depth < 0) {
+            status.status = TransactionStatus::Failed;
+        }
+        else if(status.depth < NumConfirmations) {
             status.status = TransactionStatus::Unconfirmed;
         }
-        else
-        {
+        else {
             status.status = TransactionStatus::HaveConfirmations;
         }
     }
@@ -207,7 +208,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
             }
             else
             {
-                status.maturity = TransactionStatus::NotAccepted;
+                status.maturity = TransactionStatus::Orphan;
             }
         }
         else

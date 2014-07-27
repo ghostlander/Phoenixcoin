@@ -72,6 +72,7 @@ bool fServer = false;
 bool fCommandLine = false;
 string strMiscWarning;
 bool fTestNet = false;
+bool fTestNetInit = false;
 bool fNoListen = false;
 bool fLogTimestamps = false;
 CMedianFilter<int64> vTimeOffsets(200,0);
@@ -79,6 +80,7 @@ bool fReopenDebugLog = false;
 bool fDefaultKey = false;
 bool fBerkeleyAddrDB = false;
 bool fGenerateCoins = false;
+bool fNeoScrypt = false;
 
 // Init openssl library multithreading support
 static CCriticalSection** ppmutexOpenSSL;
@@ -973,31 +975,27 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
     strMiscWarning = message;
 }
 
-boost::filesystem::path GetDefaultDataDir()
-{
+boost::filesystem::path GetDefaultDataDir() {
     namespace fs = boost::filesystem;
+    fs::path path;
+
 #ifdef WINDOWS
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Phoenixcoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Phoenixcoin
-//    return GetSpecialFolderPath(CSIDL_APPDATA) / "Phoenixcoin";
-    // Windows: current directory \ data for livenet
-    return boost::filesystem::current_path() / "data";
+    /* Windows: current directory \ data for livenet */
+    path = boost::filesystem::current_path() / "data";
 #else
-    fs::path pathRet;
+    /* Linux, Mac OS X, *BSD and so on: ~/.phoenixcoin */
     char* pszHome = getenv("HOME");
-    if (pszHome == NULL || strlen(pszHome) == 0)
-        pathRet = fs::path("/");
+    if((pszHome == NULL) || (strlen(pszHome) == 0))
+      path = fs::path("/.phoenixcoin");
     else
-        pathRet = fs::path(pszHome);
-    // Linux, Mac OS X, *BSD and so on: ~/.phoenixcoin
-    return pathRet / ".phoenixcoin";
+      path = fs::path(pszHome) / ".phoenixcoin";
 #endif
+
+    return(path);
 }
 
-const boost::filesystem::path &GetDataDir(bool fNetSpecific)
-{
+const boost::filesystem::path &GetDataDir(bool fNetSpecific) {
     namespace fs = boost::filesystem;
-
     static fs::path pathCached[2];
     static CCriticalSection csPathCached;
     static bool cachedPath[2] = {false, false};
@@ -1011,43 +1009,40 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
 
     LOCK(csPathCached);
 
-    if (mapArgs.count("-datadir")) {
+    if(mapArgs.count("-datadir")) {
         path = fs::system_complete(mapArgs["-datadir"]);
-        if (!fs::is_directory(path)) {
+        if(!fs::is_directory(path)) {
             path = "";
-            return path;
+            return(path);
         }
     } else {
         path = GetDefaultDataDir();
     }
-    if (fNetSpecific && GetBoolArg("-testnet", false))
-        path /= "testnet3";
+
+    if(GetBoolArg("-testnet", false))
+      path /= "testnet";
 
     fs::create_directory(path);
 
-    cachedPath[fNetSpecific]=true;
-    return path;
+    cachedPath[fNetSpecific] = true;
+
+    return(path);
 }
 
-boost::filesystem::path GetConfigFile()
-{
+boost::filesystem::path GetConfigFile() {
     namespace fs = boost::filesystem;
-
     fs::path pathConfigFile;
+
     if(mapArgs.count("-conf")) pathConfigFile = fs::path(mapArgs["-conf"]);
     else pathConfigFile = fs::path("phoenixcoin.conf");
-    if(!pathConfigFile.is_absolute()) {
-        if(!GetBoolArg("-testnet", false)) 
-          pathConfigFile = GetDataDir(false) / pathConfigFile;
-        else
-          pathConfigFile = GetDataDir(false) / "testnet3" / pathConfigFile;
-    }
-    return pathConfigFile;
+
+    if(!pathConfigFile.is_absolute())
+      pathConfigFile = GetDataDir(false) / pathConfigFile;
+
+    return(pathConfigFile);
 }
 
-void ReadConfigFile(map<string, string>& mapSettingsRet,
-                    map<string, vector<string> >& mapMultiSettingsRet)
-{
+void ReadConfigFile(map<string, string>& mapSettingsRet, map<string, vector<string> >& mapMultiSettingsRet) {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
         return; // No phoenixcoin.conf file is OK

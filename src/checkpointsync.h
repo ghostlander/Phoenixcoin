@@ -9,9 +9,10 @@
 #include "net.h"
 #include "util.h"
 
-/* Should be equal to the default number of confirmations for regular transactions
- * to avoid double spends; also defined by NumConfirmations in qt/transactionrecord.h */
-#define CHECKPOINT_DEFAULT_DEPTH 6
+/* Shouldn't be higher than the default number of confirmations for regular transactions
+ * to avoid double spends and other abuse;
+ * small value might lead to checkpointing of a fork with a lower cumulative difficulty */
+#define CHECKPOINT_DEFAULT_DEPTH TX_MATURITY
 
 class uint256;
 class CBlock;

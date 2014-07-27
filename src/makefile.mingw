@@ -26,7 +26,7 @@ LIBS= \
 DEFS=-D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE -DUSE_IPV6
 # Uncomment for MinGW64
 #DEFS+=-DWIN64
-CFLAGS=-mthreads -O2 -w -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
+CFLAGS=-mthreads -O2 -fomit-frame-pointer -w -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
 #DEBUGFLAGS=-g
 
 TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
@@ -58,6 +58,8 @@ OBJS= \
     obj/irc.o \
     obj/keystore.o \
     obj/main.o \
+    obj/neoscrypt.o \
+    obj/neoscrypt_asm.o \
     obj/net.o \
     obj/protocol.o \
     obj/bitcoinrpc.o \
@@ -75,8 +77,11 @@ OBJS= \
 
 all: phoenixcoind.exe
 
-obj/scrypt.o: scrypt.c
-	gcc -c $(CFLAGS) -o $@ $^
+obj/neoscrypt.o: neoscrypt.c
+	gcc -O2 -fomit-frame-pointer -DSHA256 -c -o $@ $^
+
+obj/neoscrypt_asm.o: neoscrypt_asm.S
+	gcc -c -o $@ $^
 
 obj/%.o: %.cpp $(HEADERS)
 	g++ -c $(CFLAGS) -o $@ $<
@@ -97,3 +102,4 @@ clean:
 	del /q obj\*
 	del /q obj-test\*
 	del /q build.h
+

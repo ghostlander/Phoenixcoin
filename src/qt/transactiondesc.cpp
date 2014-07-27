@@ -1,4 +1,5 @@
 #include "transactiondesc.h"
+#include "transactionrecord.h"
 
 #include "guiutil.h"
 #include "bitcoinunits.h"
@@ -23,12 +24,17 @@ QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
     else
     {
         int nDepth = wtx.GetDepthInMainChain();
-        if (GetAdjustedTime() - wtx.nTimeReceived > 2 * 60 && wtx.GetRequestCount() == 0)
-            return tr("%1/offline").arg(nDepth);
-        else if (nDepth < 6)
-            return tr("%1/unconfirmed").arg(nDepth);
-        else
-            return tr("%1 confirmations").arg(nDepth);
+        if(nDepth < 0) {
+            if(wtx.IsCoinBase())
+              return tr("orphan");
+            else
+              return tr("failed");
+        }
+        if(!nDepth)
+          return tr("pending");
+        if(nDepth < TransactionRecord::NumConfirmations)
+          return tr("%1/unconfirmed").arg(nDepth);
+        return tr("%1 confirmations").arg(nDepth);
     }
 }
 
@@ -219,7 +225,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx, int unit)
         strHTML += "<b>" + tr("Transaction ID") + ":</b> " + wtx.GetHash().ToString().c_str() + "<br>";
 
         if (wtx.IsCoinBase()) {
-            quint32 numBlocksToMaturity = COINBASE_MATURITY + COINBASE_MATURITY_OFFSET;
+            quint32 numBlocksToMaturity = nBaseMaturity + BASE_MATURITY_OFFSET;
             strHTML += "<br>" + tr("Generated coins must mature %1 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to \"not accepted\" and it won't be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.").arg(QString::number(numBlocksToMaturity)) + "<br>";
         }
 

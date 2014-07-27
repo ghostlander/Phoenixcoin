@@ -156,9 +156,8 @@ public:
     int ScanForWalletTransaction(const uint256& hashTx);
     void ReacceptWalletTransactions();
     void ResendWalletTransactions();
-    int64 GetBalance() const;
-    int64 GetUnconfirmedBalance() const;
-    int64 GetImmatureBalance() const;
+    int64 GetBalance(uint nSettings) const;
+    int64 GetMinted(uint nSettings) const;
     bool CreateTransaction(const std::vector<std::pair<CScript, int64> >& vecSend, CWalletTx& wtxNew, CReserveKey& reservekey, int64& nFeeRet, const CCoinControl *coinControl=NULL);
     bool CreateTransaction(CScript scriptPubKey, int64 nValue, CWalletTx& wtxNew, CReserveKey& reservekey, int64& nFeeRet, const CCoinControl *coinControl=NULL);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
@@ -563,12 +562,15 @@ public:
     bool IsConfirmed() const
     {
         // Quick answer in most cases
-        if (!IsFinal())
-            return false;
-        if (GetDepthInMainChain() >= 1)
-            return true;
-        if (!IsFromMe()) // using wtx's cached debit
-            return false;
+        if(!IsFinal())
+          return(false);
+        int nDepth = GetDepthInMainChain();
+        if(nDepth >= 1)
+          return(true);
+        if(nDepth < 0)
+          return(false);
+        if(!IsFromMe()) // using wtx's cached debit
+          return(false);
 
         // If no confirmations but it's from us, we can still
         // consider it confirmed if all dependencies are confirmed
@@ -580,12 +582,15 @@ public:
         {
             const CMerkleTx* ptx = vWorkQueue[i];
 
-            if (!ptx->IsFinal())
-                return false;
-            if (ptx->GetDepthInMainChain() >= 1)
-                continue;
-            if (!pwallet->IsFromMe(*ptx))
-                return false;
+            if(!ptx->IsFinal())
+              return(false);
+            nDepth = ptx->GetDepthInMainChain();
+            if(nDepth >= 1)
+              continue;
+            if(nDepth < 0)
+              return(false);
+            if(!pwallet->IsFromMe(*ptx))
+              return(false);
 
             if (mapPrev.empty())
             {

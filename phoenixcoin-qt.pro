@@ -1,9 +1,10 @@
 TEMPLATE = app
 TARGET = phoenixcoin-qt
-VERSION = 0.6.5.3
+VERSION = 0.6.6.0
 INCLUDEPATH += src src/json src/qt
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE USE_IPV6
 CONFIG += no_include_pwd
+QMAKE_CFLAGS += -DSHA256
 
 # for boost 1.54, add -mt to the boost libraries
 # use: qmake BOOST_LIB_SUFFIX=-mt
@@ -168,7 +169,7 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/qtipcserver.h \
     src/allocators.h \
     src/ui_interface.h \
-    src/scrypt.h \
+    src/neoscrypt.h \
     src/qt/miningpage.h \
     src/version.h \
     src/qt/rpcconsole.h \
@@ -234,7 +235,8 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/notificator.cpp \
     src/qt/qtipcserver.cpp \
     src/qt/rpcconsole.cpp \
-    src/scrypt.c \
+    src/neoscrypt.c \
+    src/neoscrypt_asm.S \
     src/qt/miningpage.cpp \
     src/noui.cpp \
     src/qt/walletmodeltransaction.cpp \

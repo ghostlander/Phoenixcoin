@@ -13,7 +13,7 @@
 #include "key.h"
 #include "script.h"
 #include "db.h"
-#include "scrypt.h"
+#include "neoscrypt.h"
 
 #include <list>
 
@@ -28,14 +28,23 @@ class CInv;
 class CRequestTracker;
 class CNode;
 
+/* Maturity threshold for PoW base transactions, in blocks (confirmations) */
+extern int nBaseMaturity;
+static const int BASE_MATURITY = 100;
+static const int BASE_MATURITY_TESTNET = 100;
+/* Offset for the above to allow safe network propagation, in blocks (confirmations) */
+static const int BASE_MATURITY_OFFSET = 1;
+/* Maturity threshold for regular transactions, in blocks (confirmations) */
+static const int TX_MATURITY = 6;
+
 // The max. allowed size for a serialised block, in bytes
-static const unsigned int MAX_BLOCK_SIZE = 250000;
+static const uint MAX_BLOCK_SIZE = 524288;
 // The max. allowed size for a mined block, in bytes
-static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
+static const uint MAX_BLOCK_SIZE_GEN = (MAX_BLOCK_SIZE >> 1);
 // The max. allowed number of signature check operations per block
-static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
+static const uint MAX_BLOCK_SIGOPS = (MAX_BLOCK_SIZE >> 6);
 // The max. number of orphan transactions kept in memory
-static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
+static const uint MAX_ORPHAN_TRANSACTIONS = (MAX_BLOCK_SIZE >> 8);
 /* The current time frame of block limiter */
 static const int64 BLOCK_LIMITER_TIME = 120;
 // The min. transaction fee (0.1 PXC) if required
@@ -48,10 +57,6 @@ static const int64 TX_DUST = 1000000;
 // set to ~10% of the total coin supply in our case (10 million PXC)
 static const int64 MAX_MONEY = 10000000 * COIN;
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
-// Confirmation limit for mining rewards to become spendable, in blocks
-static const int COINBASE_MATURITY = 100;
-// Offset for the above to allow safe network propagation, in blocks
-static const int COINBASE_MATURITY_OFFSET = 1;
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.
 static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 #ifdef USE_UPNP
@@ -61,12 +66,39 @@ static const int fHaveUPnP = false;
 #endif
 
 
+/* Hard & soft fork related data */
+static const int nForkOne   = 46500;   /* the 1st hard fork */
+static const int nForkTwo   = 69444;   /* the 2nd hard fork */
+static const int nForkThree = 74100;   /* the 3rd hard fork */
+static const int nForkFour  = 154000;  /* the 4th hard fork */
+static const int nForkFive  = 400000;  /* the 5th hard fork */
+
+static const int nSoftForkOne   = 270000;
+static const int nSoftForkTwo   = 340000;
+
+static const int nTestnetForkOne   = 600;
+static const int nTestnetForkTwo   = 3600;
+
+static const int nTestnetSoftForkOne   = 3400;
+static const int nTestnetSoftForkTwo   = 3500;
+
+static const uint nSwitchV2            = 1406851200;   /* 01 Aug 2014 00:00:00 GMT */
+static const uint nTestnetSwitchV2     = 1404777600;   /* 08 Jul 2014 00:00:00 GMT */
+
+static const int nTargetSpacingZero    = 90;  /* 1.5 minutes */
+static const int nTargetSpacingOne     = nTargetSpacingZero;
+static const int nTargetSpacingTwo     = 50;  /* 50 seconds */
+static const int nTargetSpacingThree   = 45;  /* 45 seconds */
+static const int nTargetSpacingFour    = 90;  /* 1.5 minutes */
+
+static const int nTargetTimespanZero   = 2400 * nTargetSpacingZero;  /* 60 hours */
+static const int nTargetTimespanOne    = 600  * nTargetSpacingOne;   /* 15 hours */
+static const int nTargetTimespanTwo    = 108  * nTargetSpacingTwo;   /* 1.5 hours */
+static const int nTargetTimespanThree  = 126  * nTargetSpacingThree; /* 1.575 hours */
+static const int nTargetTimespanFour   = 20   * nTargetSpacingFour;  /* 0.5 hours */
+
+
 extern CScript COINBASE_FLAGS;
-
-
-
-
-
 
 extern CCriticalSection cs_main;
 extern std::map<uint256, CBlockIndex*> mapBlockIndex;
@@ -116,15 +148,14 @@ bool LoadExternalBlockFile(FILE* fileIn);
 void GenerateCoins(bool fGenerate, CWallet* pwallet);
 CBlock* CreateNewBlock(CReserveKey& reservekey);
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
-void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash1);
+void FormatDataBuffer(CBlock *pblock, uint *pdata);
 bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey);
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
-unsigned int ComputeMinWork(unsigned int nBase, int64 nTime);
 int GetNumBlocksOfPeers();
 bool IsInitialBlockDownload();
 std::string GetWarnings(std::string strFor);
 bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock);
-
+int64 GetBlockValue(int nHeight, int64 nFees);
 
 
 
@@ -804,7 +835,6 @@ public:
     {
         return !(a == b);
     }
-    int GetDepthInMainChain() const;
  
 };
 
@@ -826,7 +856,7 @@ class CBlock
 {
 public:
     // header
-    static const int CURRENT_VERSION=1;
+    static const int CURRENT_VERSION = 2;
     int nVersion;
     uint256 hashPrevBlock;
     uint256 hashMerkleRoot;
@@ -889,11 +919,54 @@ public:
         return Hash(BEGIN(nVersion), END(nNonce));
     }
 
-    uint256 GetPoWHash() const
-    {
-        uint256 thash;
-        scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(thash));
-        return thash;
+    /* Calculates block proof-of-work hash using either NeoScrypt or Scrypt */
+    uint256 GetPoWHash() const {
+        uint profile = 0x0;
+        uint256 hash;
+
+        /* All blocks generated up to this time point are Scrypt only */
+        if((fTestNet && (nTime < nTestnetSwitchV2)) ||
+          (!fTestNet && (nTime < nSwitchV2))) {
+            profile = 0x3;
+        } else {
+            /* All these blocks must be v2+ with valid nHeight */
+            int nHeight = GetBlockHeight();
+            if(fTestNet) {
+                if(nHeight < nTestnetForkTwo)
+                  profile = 0x3;
+            } else {
+                if(nHeight < nForkFive)
+                  profile = 0x3;
+            }
+        }
+
+        neoscrypt((uchar *) &nVersion, (uchar *) &hash, profile);
+
+        return(hash);
+    }
+
+    /* Extracts block height from v2+ coin base;
+     * ignores nVersion because it's unrealiable */
+    int GetBlockHeight() const {
+        /* Prevents a crash if called on a block header alone */
+        if(vtx.size()) {
+            /* Serialised CScript */
+            std::vector<uchar>::const_iterator scriptsig = vtx[0].vin[0].scriptSig.begin();
+            uchar i, scount = scriptsig[0];
+            /* Optimise: nTime is 4 bytes always,
+             * nHeight must be less for a long time;
+             * check against a threshold when the time comes */
+            if(scount < 4) {
+                int height = 0;
+                uchar *pheight = (uchar *) &height;
+                for(i = 0; i < scount; i++)
+                  pheight[i] = scriptsig[i + 1];
+                /* v2+ block with nHeight in coin base */
+                return(height);
+            }
+        }
+        /* Not found */
+        return(-1);
     }
 
     int64 GetBlockTime() const
@@ -1000,10 +1073,6 @@ public:
         catch(std::exception &e) {
             return error("CBlock::ReadFromDisk() : I/O error");
         }
-
-        // Check the header
-        if(!CheckProofOfWork(GetPoWHash(), nBits))
-          return error("CBlock::ReadFromDisk() : block verification failed");
 
         return true;
     }

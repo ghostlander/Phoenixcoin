@@ -1,5 +1,6 @@
 #include "miningpage.h"
 #include "ui_miningpage.h"
+#include "util.h"
 
 MiningPage::MiningPage(QWidget *parent) :
     QWidget(parent),
@@ -83,7 +84,7 @@ void MiningPage::startPoolMining()
         url.prepend("stratum+tcp://");
     QString urlLine = QString("%1:%2").arg(url, ui->portLine->text());
     QString userpassLine = QString("%1:%2").arg(ui->usernameLine->text(), ui->passwordLine->text());
-    args << "-a" << "scrypt";
+    args << "-a" << (fNeoScrypt ? "neoscrypt" : "scrypt");
     args << "-s" << ui->scantimeBox->text().toAscii();
     args << "-o" << urlLine.toAscii();
     args << "-O" << userpassLine.toAscii();

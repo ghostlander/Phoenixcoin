@@ -1,6 +1,7 @@
 #ifndef TRANSACTIONRECORD_H
 #define TRANSACTIONRECORD_H
 
+#include "main.h"
 #include "uint256.h"
 
 #include <QList>
@@ -15,7 +16,7 @@ class TransactionStatus
 public:
     TransactionStatus():
         confirmed(false), sortKey(""), maturity(Mature),
-        matures_in(0), status(Offline), depth(0), open_for(0), cur_num_blocks(-1)
+        matures_in(0), status(Pending), depth(0), open_for(0), cur_num_blocks(-1)
     { }
 
     enum Maturity
@@ -23,15 +24,16 @@ public:
         Immature,
         Mature,
         MaturesWarning, /**< Transaction will likely not mature because no nodes have confirmed */
-        NotAccepted
+        Orphan
     };
 
     enum Status {
         OpenUntilDate,
         OpenUntilBlock,
-        Offline,
+        Pending,
         Unconfirmed,
-        HaveConfirmations
+        HaveConfirmations,
+        Failed
     };
 
     bool confirmed;
@@ -71,8 +73,8 @@ public:
         SendToSelf
     };
 
-    /** Number of confirmation needed for transaction */
-    static const int NumConfirmations = 6;
+    /* The default number of confirmations for regular transactions defined in main.h */
+    static const int NumConfirmations = TX_MATURITY;
 
     TransactionRecord():
             hash(), time(0), type(Other), address(""), debit(0), credit(0), idx(0)
@@ -95,7 +97,7 @@ public:
 
     /** Decompose CWallet transaction to model transaction records.
      */
-    static bool showTransaction(const CWalletTx &wtx, bool ShowOrphans);
+    static bool showTransaction(const CWalletTx &wtx, bool ShowFailed);
     static QList<TransactionRecord> decomposeTransaction(const CWallet *wallet, const CWalletTx &wtx);
 
     /** @name Immutable transaction attributes
