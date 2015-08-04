@@ -36,6 +36,7 @@ bool TransactionFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex &
 
     /* Don't display failed transactions including PoW base orphans */
     if(!showFailed && (status == TransactionStatus::Failed))
+      return(false);
 
     if(!(TYPE(type) & typeFilter))
         return false;

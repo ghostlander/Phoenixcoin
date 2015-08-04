@@ -866,7 +866,7 @@ int64 CWallet::GetBalance(uint nSettings) const {
         int nDepth = pcoin->GetDepthInMainChain();
         if((nSettings & 0x1) && (nDepth >= TX_MATURITY))
           nTotal += pcoin->GetAvailableCredit();
-        if((nSettings & 0x2) && (nDepth < TX_MATURITY) && (nDepth > 0))
+        if((nSettings & 0x2) && (nDepth < TX_MATURITY) && (nDepth >= 0))
           nTotal += pcoin->GetAvailableCredit();
     }
     return(nTotal);
