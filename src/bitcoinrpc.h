@@ -16,6 +16,8 @@
 #include "json/json_spirit_writer_template.h"
 #include "json/json_spirit_utils.h"
 
+#include "util.h"
+
 json_spirit::Object JSONRPCError(int code, const std::string& message);
 
 void ThreadRPCServer(void* parg);
@@ -71,5 +73,7 @@ public:
 };
 
 extern const CRPCTable tableRPC;
+
+extern json_spirit::Value ValueFromAmount(int64 amount);
 
 #endif

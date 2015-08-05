@@ -91,3 +91,59 @@ Value dumpprivkey(const Array& params, bool fHelp)
         throw JSONRPCError(-4,"Private key for address " + strAddress + " is not known");
     return CBitcoinSecret(vchSecret, fCompressed).ToString();
 }
+
+
+/* Wallet integrity check */
+Value checkwallet(const Array& params, bool fHelp) {
+
+    if(fHelp || (params.size() > 0)) throw runtime_error(
+      "checkwallet\n"
+      "Wallet integrity check.\n");
+
+    int nMismatchSpent;
+    int nOrphansFound;
+    int64 nBalanceInQuestion;
+    pwalletMain->FixSpentCoins(nMismatchSpent, nOrphansFound, nBalanceInQuestion, true);
+    Object result;
+    if(!nMismatchSpent && !nOrphansFound) {
+        result.push_back(Pair("wallet check passed", true));
+    } else {
+        if(nMismatchSpent) {
+            result.push_back(Pair("mismatched spent coins", nMismatchSpent));
+            result.push_back(Pair("amount in question", ValueFromAmount(nBalanceInQuestion)));
+        }
+        if(nOrphansFound) {
+            result.push_back(Pair("orphans found", nOrphansFound));
+        }
+    }
+
+    return(result);
+}
+
+
+/* Wallet repair (removal of failed and orphaned transactions) */
+Value repairwallet(const Array& params, bool fHelp) {
+
+    if(fHelp || (params.size() > 0)) throw runtime_error(
+      "repairwallet\n"
+      "Wallet repair if any mismatches found.\n");
+
+    int nMismatchSpent;
+    int nOrphansFound;
+    int64 nBalanceInQuestion;
+    pwalletMain->FixSpentCoins(nMismatchSpent, nOrphansFound, nBalanceInQuestion, false);
+    Object result;
+    if(!nMismatchSpent && !nOrphansFound) {
+        result.push_back(Pair("wallet check passed", true));
+    } else {
+        if(nMismatchSpent) {
+            result.push_back(Pair("mismatched spent coins", nMismatchSpent));
+            result.push_back(Pair("amount affected by repair", ValueFromAmount(nBalanceInQuestion)));
+        }
+        if(nOrphansFound) {
+            result.push_back(Pair("orphans removed", nOrphansFound));
+        }
+    }
+
+    return(result);
+}

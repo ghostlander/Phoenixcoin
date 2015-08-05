@@ -279,6 +279,8 @@ public:
     // get the current wallet format (the oldest client version guaranteed to understand this wallet)
     int GetVersion() { return nWalletVersion; }
 
+    void FixSpentCoins(int& nMismatchSpent, int& nOrphansFound, int64& nBalanceInQuestion, bool fCheckOnly = false);
+
     /** Address book entry changed.
      * @note called with lock cs_wallet held.
      */
@@ -474,6 +476,16 @@ public:
         if (!vfSpent[nOut])
         {
             vfSpent[nOut] = true;
+            fAvailableCreditCached = false;
+        }
+    }
+
+    void MarkUnspent(unsigned int nOut) {
+        if(nOut >= vout.size())
+          throw std::runtime_error("CWalletTx::MarkUnspent() : nOut out of range");
+        vfSpent.resize(vout.size());
+        if(vfSpent[nOut]) {
+            vfSpent[nOut] = false;
             fAvailableCreditCached = false;
         }
     }

@@ -1664,3 +1664,76 @@ void CWallet::ListLockedCoins(std::vector<COutPoint>& vOutpts)
         vOutpts.push_back(outpt);
     }
 }
+
+
+/* Checks for wallet vs. transaction index consistency;
+ * reports any spent state inconsistency found and
+ * (optionally) fixes the wallet according to the transaction index */
+void CWallet::FixSpentCoins(int& nMismatchFound, int& nOrphansFound, int64& nBalanceInQuestion,
+  bool fCheckOnly) {
+    nMismatchFound = 0;
+    nBalanceInQuestion = 0;
+    nOrphansFound = 0;
+
+    LOCK(cs_wallet);
+    vector<CWalletTx*> vCoins;
+    vCoins.reserve(mapWallet.size());
+    for(map<uint256, CWalletTx>::iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
+      vCoins.push_back(&(*it).second);
+
+    CTxDB txdb("r");
+    BOOST_FOREACH(CWalletTx* pcoin, vCoins) {
+        uint256 hash = pcoin->GetHash();
+        CTxIndex txindex;
+        uint n;
+
+        if(!txdb.ReadTxIndex(hash, txindex) && !pcoin->IsCoinBase())
+          continue;
+
+        for(n = 0; n < pcoin->vout.size(); n++) {
+            bool fUpdated = false;
+
+            if(IsMine(pcoin->vout[n])) {
+                if(pcoin->IsSpent(n) &&
+                  ((txindex.vSpent.size() <= n) || txindex.vSpent[n].IsNull())) {
+                    printf("FixSpentCoins() found lost coins %s %s[%d], %s\n",
+                      FormatMoney(pcoin->vout[n].nValue).c_str(), hash.ToString().c_str(), n,
+                        fCheckOnly? "repair not attempted" : "repairing");
+                    nMismatchFound++;
+                    nBalanceInQuestion += pcoin->vout[n].nValue;
+                    if(!fCheckOnly) {
+                        fUpdated = true;
+                        pcoin->MarkUnspent(n);
+                        pcoin->WriteToDisk();
+                    }
+                } else if(!pcoin->IsSpent(n) &&
+                  (txindex.vSpent.size() > n && !txindex.vSpent[n].IsNull())) {
+                    printf("FixSpentCoins() found spent coins %s %s[%d], %s\n",
+                      FormatMoney(pcoin->vout[n].nValue).c_str(), hash.ToString().c_str(), n,
+                        fCheckOnly? "repair not attempted" : "repairing");
+                    nMismatchFound++;
+                    nBalanceInQuestion += pcoin->vout[n].nValue;
+                    if(!fCheckOnly) {
+                        fUpdated = true;
+                        pcoin->MarkSpent(n);
+                        pcoin->WriteToDisk();
+                    }
+                }
+
+            }
+
+            if(fUpdated)
+              NotifyTransactionChanged(this, hash, CT_UPDATED);
+        }
+
+        if(pcoin->IsCoinBase() && (pcoin->GetDepthInMainChain() < 0)) {
+           nOrphansFound++;
+           if(!fCheckOnly) {
+               EraseFromWallet(hash);
+               NotifyTransactionChanged(this, hash, CT_DELETED);
+           }
+           printf("FixSpentCoins() %s orphaned generation tx %s\n",
+             fCheckOnly ? "found" : "removed", hash.ToString().c_str());
+        }
+    }
+}
