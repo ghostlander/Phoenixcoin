@@ -1044,8 +1044,8 @@ bool IsInitialBlockDownload()
         pindexLastBest = pindexBest;
         nLastUpdate = GetTime();
     }
-    return (GetTime() - nLastUpdate < 10 &&
-            pindexBest->GetBlockTime() < GetTime() - 24 * 60 * 60);
+    return(((GetTime() - nLastUpdate) < 10) &&
+      (pindexBest->GetBlockTime() < (GetTime() - 4 * 60 * 60)));
 }
 
 void static InvalidChainFound(CBlockIndex* pindexNew)
@@ -2940,7 +2940,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // Send the rest of the chain
         if (pindex)
             pindex = pindex->pnext;
-        int nLimit = 500;
+        int nLimit = 1000;
         printf("getblocks %d to %s limit %d\n", (pindex ? pindex->nHeight : -1), hashStop.ToString().substr(0,20).c_str(), nLimit);
         for (; pindex; pindex = pindex->pnext)
         {
@@ -3080,16 +3080,20 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
     {
         CBlock block;
         vRecv >> block;
+        uint256 hashBlock = block.GetHash();
+        int nBlockHeight = block.GetBlockHeight();
 
-        printf("received block %s\n", block.GetHash().ToString().substr(0,20).c_str());
-        // block.print();
+        printf("received block %s height %d\n",
+          hashBlock.ToString().substr(0,20).c_str(), nBlockHeight);
 
-        CInv inv(MSG_BLOCK, block.GetHash());
+        CInv inv(MSG_BLOCK, hashBlock);
         pfrom->AddInventoryKnown(inv);
 
-        if (ProcessBlock(pfrom, &block))
-            mapAlreadyAskedFor.erase(inv);
-        if (block.nDoS) pfrom->Misbehaving(block.nDoS);
+        if(ProcessBlock(pfrom, &block))
+          mapAlreadyAskedFor.erase(inv);
+
+        if(block.nDoS)
+          pfrom->Misbehaving(block.nDoS);
     }
 
 
