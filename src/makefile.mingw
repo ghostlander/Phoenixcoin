@@ -78,10 +78,10 @@ OBJS= \
 all: phoenixcoind.exe
 
 obj/neoscrypt.o: neoscrypt.c
-	gcc -O2 -fomit-frame-pointer -DSHA256 -c -o $@ $^
+	gcc -O2 -fomit-frame-pointer -DSHA256 -DASM -DOPT -c -o $@ $^
 
 obj/neoscrypt_asm.o: neoscrypt_asm.S
-	gcc -c -o $@ $^
+	gcc -DASM -DOPT -c -o $@ $^
 
 obj/%.o: %.cpp $(HEADERS)
 	g++ -c $(CFLAGS) -o $@ $<

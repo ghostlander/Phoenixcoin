@@ -112,10 +112,10 @@ all: phoenixcoind
 -include obj-test/*.P
 
 obj/neoscrypt.o: neoscrypt.c
-	$(CC) $(CFLAGS) -DSHA256 -c -o $@ $^
+	$(CC) $(CFLAGS) -DSHA256 -DASM -DOPT -c -o $@ $^
 
 obj/neoscrypt_asm.o: neoscrypt_asm.S
-	$(CC) -c -o $@ $^
+	$(CC) -DASM -DOPT -c -o $@ $^
 
 obj/build.h: FORCE
 	/bin/sh ../share/genbuild.sh obj/build.h
