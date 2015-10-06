@@ -6,7 +6,10 @@
 #include <map>
 
 #include "allocators.h" /* for SecureString */
+#ifndef Q_MOC_RUN
 #include "wallet.h"
+#endif
+
 #include "walletmodeltransaction.h"
 
 class OptionsModel;
