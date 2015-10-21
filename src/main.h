@@ -156,14 +156,7 @@ bool IsInitialBlockDownload();
 std::string GetWarnings(std::string strFor);
 bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock);
 int64 GetBlockValue(int nHeight, int64 nFees);
-
-
-
-
-
-
-
-
+void ResendWalletTransactions(bool fForce);
 
 
 bool GetWalletFile(CWallet* pwallet, std::string &strWalletFileOut);

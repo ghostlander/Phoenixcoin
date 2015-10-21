@@ -52,6 +52,7 @@ extern Value dumpprivkey(const Array& params, bool fHelp); // in rpcdump.cpp
 extern Value importprivkey(const Array& params, bool fHelp);
 extern Value checkwallet(const Array& params, bool fHelp);
 extern Value repairwallet(const Array& params, bool fHelp);
+extern Value resendtx(const json_spirit::Array& params, bool fHelp);
 extern Value getrawtransaction(const Array& params, bool fHelp); // in rcprawtransaction.cpp
 extern Value listunspent(const Array& params, bool fHelp);
 extern Value createrawtransaction(const Array& params, bool fHelp);
@@ -2568,6 +2569,7 @@ static const CRPCCommand vRPCCommands[] =
     { "sendalert",              &sendalert,              false },
     { "lockunspent",            &lockunspent,            false },
     { "listlockunspent",        &listlockunspent,        false },
+    { "resendtx",               &resendtx,               false },
 };
 
 CRPCTable::CRPCTable()

@@ -14,6 +14,7 @@
 
 using namespace std;
 
+static int64 nNextResendTxTime = 0;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -803,23 +804,15 @@ void CWalletTx::RelayWalletTransaction()
    RelayWalletTransaction(txdb);
 }
 
-void CWallet::ResendWalletTransactions()
-{
-    // Do this infrequently and randomly to avoid giving away
-    // that these are our transactions.
-    static int64 nNextTime;
-    if (GetTime() < nNextTime)
-        return;
-    bool fFirst = (nNextTime == 0);
-    nNextTime = GetTime() + GetRand(30 * 60);
-    if (fFirst)
-        return;
+void CWallet::ResendWalletTransactions(bool fForce) {
+    int64 nCurrentTime = GetTime();
 
-    // Only do it if there's been a new block since last time
-    static int64 nLastTime;
-    if (nTimeBestReceived < nLastTime)
-        return;
-    nLastTime = GetTime();
+    if(fForce || (nCurrentTime >= nNextResendTxTime)) {
+        /* Schedule the next resend time */
+        nNextResendTxTime = nCurrentTime + (5 * 60) + GetRand(30 * 60);
+    } else {
+        if(!fForce) return;
+    }
 
     // Rebroadcast any of our txes that aren't in a block yet
     printf("ResendWalletTransactions()\n");

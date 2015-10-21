@@ -147,3 +147,16 @@ Value repairwallet(const Array& params, bool fHelp) {
 
     return(result);
 }
+
+
+/* Resend unconfirmed wallet transactions immediately */
+Value resendtx(const Array& params, bool fHelp) {
+
+    if(fHelp || (params.size() > 1)) throw runtime_error(
+      "resendtx\n"
+      "Resend unconfirmed transactions immediately.\n");
+
+    ResendWalletTransactions(true);
+
+    return(Value::null);
+}
