@@ -80,7 +80,10 @@ bool fReopenDebugLog = false;
 bool fDefaultKey = false;
 bool fBerkeleyAddrDB = false;
 bool fGenerateCoins = false;
+
+/* NeoScrypt related */
 bool fNeoScrypt = false;
+uint nNeoScryptOptions = 0;
 
 // Init openssl library multithreading support
 static CCriticalSection** ppmutexOpenSSL;

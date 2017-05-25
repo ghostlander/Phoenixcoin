@@ -55,7 +55,7 @@ LDHARDENING+=-Wl,-s
 
 # CXXFLAGS can be specified on the make command line, so we use xCXXFLAGS that only
 # adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
-xCXXFLAGS=-O2 -fomit-frame-pointer -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
+xCXXFLAGS=-O2 -fomit-frame-pointer -fno-stack-protector -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
     $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
 
 # LDFLAGS can be specified on the make command line, so we use xLDFLAGS that only
@@ -98,10 +98,10 @@ all: phoenixcoind
 -include obj-test/*.P
 
 obj/neoscrypt.o: neoscrypt.c
-	gcc -O2 -fomit-frame-pointer -DSHA256 -DASM -DOPT -c -o $@ $^
+	gcc -O2 -fomit-frame-pointer -fno-stack-protector -DSHA256 -DASM -DOPT -c -o $@ $^
 
 obj/neoscrypt_asm.o: neoscrypt_asm.S
-	gcc -DASM -DOPT -c -o $@ $^
+	gcc -DSHA256 -DASM -DOPT -c -o $@ $^
 
 obj/build.h: FORCE
 	/bin/sh ../share/genbuild.sh obj/build.h

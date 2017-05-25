@@ -30,6 +30,9 @@ CWallet* pwalletMain;
 CClientUIInterface uiInterface;
 uint nMsgSleep;
 
+/* Assembly level processor optimisation features */
+uint opt_flags = 0;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Shutdown
@@ -336,6 +339,24 @@ bool AppInit2()
 
     // ********************************************************* Step 2: parameter interactions
 
+    printf("\n\n\n\n\n\n\n\n\n\n");
+    fPrintToConsole = GetBoolArg("-printtoconsole", false);
+    fPrintToDebugger = GetBoolArg("-printtodebugger", false);
+    fLogTimestamps = GetBoolArg("-logtimestamps", false);
+
+    opt_flags = cpu_vec_exts();
+    if(GetBoolArg("-sse2", true)) {
+        /* Verify hardware SSE2 support */
+        if(opt_flags & 0x00000020) {
+            printf("SSE2 optimisations enabled\n");
+            nNeoScryptOptions |= 0x1000;
+        } else {
+            printf("SSE2 unsupported, optimisations disabled\n");
+        }
+    } else {
+        printf("SSE2 optimisations disabled\n");
+    }
+
     fTestNet = GetBoolArg("-testnet", false);
 
     fBerkeleyAddrDB = GetBoolArg("-addrdb", false);
@@ -404,9 +425,6 @@ bool AppInit2()
 #if !defined(QT_GUI)
     fServer = true;
 #endif
-    fPrintToConsole = GetBoolArg("-printtoconsole");
-    fPrintToDebugger = GetBoolArg("-printtodebugger");
-    fLogTimestamps = GetBoolArg("-logtimestamps");
 
     if (mapArgs.count("-timeout"))
     {
@@ -481,7 +499,7 @@ bool AppInit2()
 
     if (!fDebug)
         ShrinkDebugFile();
-    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
     printf("Phoenixcoin version %s (%s)\n", FormatFullVersion().c_str(), CLIENT_DATE.c_str());
     printf("Startup time: %s\n", DateTimeStrFormat("%x %H:%M:%S", GetTime()).c_str());
     printf("Default data directory %s\n", GetDefaultDataDir().string().c_str());

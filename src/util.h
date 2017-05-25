@@ -131,7 +131,9 @@ extern bool fReopenDebugLog;
 extern bool fDefaultKey;
 extern bool fBerkeleyAddrDB;
 extern bool fGenerateCoins;
+
 extern bool fNeoScrypt;
+extern uint nNeoScryptOptions;
 
 void RandAddSeed();
 void RandAddSeedPerfmon();

@@ -81,7 +81,7 @@ obj/neoscrypt.o: neoscrypt.c
 	gcc -O2 -fomit-frame-pointer -DSHA256 -DASM -DOPT -c -o $@ $^
 
 obj/neoscrypt_asm.o: neoscrypt_asm.S
-	gcc -DASM -DOPT -c -o $@ $^
+	gcc -DSHA256 -DASM -DOPT -c -o $@ $^
 
 obj/%.o: %.cpp $(HEADERS)
 	g++ -c $(CFLAGS) -o $@ $<
