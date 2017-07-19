@@ -494,8 +494,8 @@ Value sendrawtransaction(const Array& params, bool fHelp)
     {
         // push to local node
         CTxDB txdb("r");
-        if (!tx.AcceptToMemoryPool(txdb))
-            throw JSONRPCError(-22, "TX rejected");
+        if(!tx.AcceptToMemoryPool(txdb, true, false))
+          throw(JSONRPCError(-22, "TX rejected"));
 
         SyncWithWallets(tx, NULL, true);
     }
