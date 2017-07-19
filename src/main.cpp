@@ -384,45 +384,35 @@ CTransaction::GetLegacySigOpCount() const
 }
 
 
-int CMerkleTx::SetMerkleBranch(const CBlock* pblock)
-{
-    if (fClient)
-    {
-        if (hashBlock == 0)
-            return 0;
+int CMerkleTx::SetMerkleBranch(const CBlock *pblock) {
+
+    CBlock blockTmp;
+    if(pblock == NULL) {
+        // Load the block this tx is in
+        CTxIndex txindex;
+        if(!CTxDB("r").ReadTxIndex(GetHash(), txindex))
+          return(0);
+        if(!blockTmp.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos))
+          return(0);
+        pblock = &blockTmp;
     }
-    else
-    {
-        CBlock blockTmp;
-        if (pblock == NULL)
-        {
-            // Load the block this tx is in
-            CTxIndex txindex;
-            if (!CTxDB("r").ReadTxIndex(GetHash(), txindex))
-                return 0;
-            if (!blockTmp.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos))
-                return 0;
-            pblock = &blockTmp;
-        }
 
-        // Update the tx's hashBlock
-        hashBlock = pblock->GetHash();
+    // Update the tx's hashBlock
+    hashBlock = pblock->GetHash();
 
-        // Locate the transaction
-        for (nIndex = 0; nIndex < (int)pblock->vtx.size(); nIndex++)
-            if (pblock->vtx[nIndex] == *(CTransaction*)this)
-                break;
-        if (nIndex == (int)pblock->vtx.size())
-        {
-            vMerkleBranch.clear();
-            nIndex = -1;
-            printf("ERROR: SetMerkleBranch() : couldn't find tx in block\n");
-            return 0;
-        }
+    // Locate the transaction
+    for(nIndex = 0; nIndex < (int)pblock->vtx.size(); nIndex++)
+      if(pblock->vtx[nIndex] == *(CTransaction *)this) break;
 
-        // Fill in merkle branch
-        vMerkleBranch = pblock->GetMerkleBranch(nIndex);
+    if(nIndex == (int)pblock->vtx.size()) {
+        vMerkleBranch.clear();
+        nIndex = -1;
+        printf("ERROR: SetMerkleBranch() : couldn't find tx in block\n");
+        return(0);
     }
+
+    // Fill in merkle branch
+    vMerkleBranch = pblock->GetMerkleBranch(nIndex);
 
     // Is the tx in a block that's in the main chain
     map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hashBlock);
@@ -652,22 +642,41 @@ bool CTxMemPool::addUnchecked(const uint256& hash, CTransaction &tx)
     return true;
 }
 
+/* Removes a transaction from the memory pool */
+bool CTxMemPool::remove(const CTransaction &tx, bool fRecursive) {
 
-bool CTxMemPool::remove(CTransaction &tx)
-{
-    // Remove transaction from memory pool
-    {
-        LOCK(cs);
-        uint256 hash = tx.GetHash();
-        if (mapTx.count(hash))
-        {
-            BOOST_FOREACH(const CTxIn& txin, tx.vin)
-                mapNextTx.erase(txin.prevout);
-            mapTx.erase(hash);
-            nTransactionsUpdated++;
+    LOCK(cs);
+    uint256 hash = tx.GetHash();
+    if(mapTx.count(hash)) {
+        if(fRecursive) {
+            uint i;
+            for(i = 0; i < tx.vout.size(); i++) {
+                std::map<COutPoint, CInPoint>::iterator it = mapNextTx.find(COutPoint(hash, i));
+                if(it != mapNextTx.end())
+                  remove(*it->second.ptx, true);
+            }
+        }
+        BOOST_FOREACH(const CTxIn &txin, tx.vin)
+          mapNextTx.erase(txin.prevout);
+        mapTx.erase(hash);
+        nTransactionsUpdated++;
+    }
+    return(true);
+}
+
+/* Removes transactions from the memory pool which depend on inputs of this transaction */
+bool CTxMemPool::removeConflicts(const CTransaction &tx) {
+
+    LOCK(cs);
+    BOOST_FOREACH(const CTxIn &txin, tx.vin) {
+        std::map<COutPoint, CInPoint>::iterator it = mapNextTx.find(txin.prevout);
+        if(it != mapNextTx.end()) {
+            const CTransaction &txConflict = *it->second.ptx;
+            if(txConflict != tx)
+              remove(txConflict, true);
         }
     }
-    return true;
+    return(true);
 }
 
 void CTxMemPool::queryHashes(std::vector<uint256>& vtxid)
@@ -721,18 +730,9 @@ int CMerkleTx::GetBlocksToMaturity() const
 }
 
 
-bool CMerkleTx::AcceptToMemoryPool(CTxDB& txdb, bool fCheckInputs)
-{
-    if (fClient)
-    {
-        if (!IsInMainChain() && !ClientConnectInputs())
-            return false;
-        return CTransaction::AcceptToMemoryPool(txdb, false);
-    }
-    else
-    {
-        return CTransaction::AcceptToMemoryPool(txdb, fCheckInputs);
-    }
+bool CMerkleTx::AcceptToMemoryPool(CTxDB &txdb, bool fCheckInputs) {
+
+    return(CTransaction::AcceptToMemoryPool(txdb, fCheckInputs));
 }
 
 bool CMerkleTx::AcceptToMemoryPool()
@@ -1584,8 +1584,10 @@ bool static Reorganize(CTxDB& txdb, CBlockIndex* pindexNew)
         tx.AcceptToMemoryPool(txdb, false);
 
     // Delete redundant memory transactions that are in the connected branch
-    BOOST_FOREACH(CTransaction& tx, vDelete)
+    BOOST_FOREACH(CTransaction &tx, vDelete) {
         mempool.remove(tx);
+        mempool.removeConflicts(tx);
+    }
 
     printf("REORGANIZE: done\n");
 

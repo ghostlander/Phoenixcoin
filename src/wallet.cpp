@@ -653,8 +653,7 @@ void CWalletTx::AddSupportingTransactions(CTxDB& txdb)
                 {
                     tx = *mapWalletPrev[hash];
                 }
-                else if (!fClient && txdb.ReadDiskTx(hash, tx))
-                {
+                else if(txdb.ReadDiskTx(hash, tx)) {
                     ;
                 }
                 else
