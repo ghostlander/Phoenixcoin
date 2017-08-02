@@ -193,7 +193,7 @@ void MiningPage::readProcessOutput()
                 reportToList("Authentication failed via Stratum. Please check your username and password.", ERROR, NULL);
             else if (line.contains("retry after 30 seconds"))
                 reportToList("Couldn't communicate with the server. Retrying in 30 seconds.", ERROR, NULL);
-            else if (line.contains("thread ") && line.contains("khash/s"))
+            else if (line.contains("thread ") && line.contains("KH/s"))
             {
                 QString threadIDstr = line.at(line.indexOf("thread ")+7);
                 int threadID = threadIDstr.toInt();
@@ -277,7 +277,7 @@ void MiningPage::updateSpeed()
     QString roundRejectedString = QString("%1").arg(roundRejectedShares);
 
     if (totalThreads == initThreads)
-        ui->mineSpeedLabel->setText(QString("Speed: %1 khash/sec - %2 thread(s)").arg(speedString, threadsString));
+        ui->mineSpeedLabel->setText(QString("Speed: %1 KH/s - %2 thread(s)").arg(speedString, threadsString));
     else
         ui->mineSpeedLabel->setText(QString("Speed: ~%1 khash/sec - %2 thread(s)").arg(speedString, threadsString));
 
