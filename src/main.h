@@ -149,7 +149,7 @@ void GenerateCoins(bool fGenerate, CWallet* pwallet);
 CBlock* CreateNewBlock(CReserveKey& reservekey);
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 void FormatDataBuffer(CBlock *pblock, uint *pdata);
-bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey);
+bool CheckWork(CBlock *pblock, CWallet &wallet, CReserveKey &reservekey, bool fGetWork);
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
 int GetNumBlocksOfPeers();
 bool IsInitialBlockDownload();
@@ -1073,16 +1073,12 @@ public:
 
 
 
-    void print() const
-    {
-        printf("CBlock(hash=%s, PoW=%s, ver=%d, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%d)\n",
-            GetHash().ToString().substr(0,20).c_str(),
-            GetPoWHash().ToString().substr(0,20).c_str(),
-            nVersion,
-            hashPrevBlock.ToString().substr(0,20).c_str(),
-            hashMerkleRoot.ToString().substr(0,10).c_str(),
-            nTime, nBits, nNonce,
-            vtx.size());
+    void print() const {
+        printf("CBlock(hash=%s)\n", GetHash().ToString().c_str());
+        printf("  (prevhash=%s)\n", hashPrevBlock.ToString().c_str());
+        printf("  (roothash=%s)\n", hashMerkleRoot.ToString().c_str());
+        printf("  (nVersion=%d, nTime=%u, nBits=0x%08X, nNonce=0x%08X, vtx=%d)\n",
+          nVersion, nTime, nBits, nNonce, vtx.size());
         for (unsigned int i = 0; i < vtx.size(); i++)
         {
             printf("  ");

@@ -3859,7 +3859,7 @@ void FormatDataBuffer(CBlock *pblock, uint *pdata) {
 }
 
 
-bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey) {
+bool CheckWork(CBlock *pblock, CWallet &wallet, CReserveKey &reservekey, bool fGetWork) {
     uint256 hash = pblock->GetPoWHash();
     uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
 
@@ -3867,8 +3867,9 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey) {
       return(false);
 
     //// debug print
-    printf("PhoenixcoinMiner:\n");
-    printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
+    printf("%sproof-of-work found\n   hash: %s\n target: %s\n",
+      fGetWork ? "GW " : "",
+      hash.GetHex().c_str(), hashTarget.GetHex().c_str());
     pblock->print();
     printf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue).c_str());
 
@@ -3957,7 +3958,7 @@ void static PhoenixcoinMiner(CWallet *pwallet)
                 if(hash <= hashTarget) {
                     // Found a solution
                     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                    CheckWork(pblock.get(), *pwalletMain, reservekey);
+                    CheckWork(pblock.get(), *pwalletMain, reservekey, false);
                     SetThreadPriority(THREAD_PRIORITY_LOWEST);
                     break;
                 }

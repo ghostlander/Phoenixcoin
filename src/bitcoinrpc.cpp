@@ -2051,6 +2051,16 @@ Value getwork(const Array& params, bool fHelp)
           result.push_back(Pair("algorithm", "neoscrypt"));
         else
           result.push_back(Pair("algorithm", "scrypt:1024,1,1"));
+
+#if 0
+        /* Dump block data sent */
+        uint i;
+        printf("Block data 80 bytes Tx: ");
+        for(i = 0; i < 80; i++)
+          printf("%02X", ((uchar *)&pdata[0])[i]);
+        printf("\n");
+#endif
+
         return(result);
 
     } else {
@@ -2062,6 +2072,16 @@ Value getwork(const Array& params, bool fHelp)
         if(vchData.size() < 80)
           throw(JSONRPCError(-8, "Invalid parameter"));
         CBlock* pdata = (CBlock*)&vchData[0];
+
+#if 0
+        /* Dump block data received */
+        uint i, size;
+        size = (uint)vchData.size();
+        printf("Block data %u bytes Rx: ", size);
+        for(i = 0; i < size; i++)
+          printf("%02X", ((uchar *)&vchData[0])[i]);
+        printf("\n");
+#endif
 
         if(!fNeoScrypt) {
             uint i;
@@ -2085,129 +2105,7 @@ Value getwork(const Array& params, bool fHelp)
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
         /* Verify the resulting hash against target */
-        return(CheckWork(pblock, *pwalletMain, reservekey));
-    }
-}
-
-/* Extended RPC getwork for pools */
-Value getworkex(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() > 2)
-        throw runtime_error(
-            "getworkex [data, coinbase]\n"
-            "If [data, coinbase] is not specified, returns extended work data.\n"
-        );
-
-    if (vNodes.empty())
-        throw JSONRPCError(-9, "Phoenixcoin is not connected!");
-
-    if (IsInitialBlockDownload())
-        throw JSONRPCError(-10, "Phoenixcoin is downloading blocks...");
-
-    typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
-    static mapNewBlock_t mapNewBlock;
-    static vector<CBlock*> vNewBlock;
-    static CReserveKey reservekey(pwalletMain);
-
-    if (params.size() == 0)
-    {
-        // Update block
-        static unsigned int nTransactionsUpdatedLast;
-        static CBlockIndex* pindexPrev;
-        static int64 nStart;
-        static CBlock* pblock;
-        if (pindexPrev != pindexBest ||
-            (nTransactionsUpdated != nTransactionsUpdatedLast && GetTime() - nStart > 60))
-        {
-            if (pindexPrev != pindexBest)
-            {
-                // Deallocate old blocks since they're obsolete now
-                mapNewBlock.clear();
-                BOOST_FOREACH(CBlock* pblock, vNewBlock)
-                    delete pblock;
-                vNewBlock.clear();
-            }
-            nTransactionsUpdatedLast = nTransactionsUpdated;
-            pindexPrev = pindexBest;
-            nStart = GetTime();
-
-            // Create new block
-            pblock = CreateNewBlock(reservekey);
-            if (!pblock)
-                throw JSONRPCError(-7, "Out of memory");
-            vNewBlock.push_back(pblock);
-        }
-
-        // Update nTime
-        pblock->nTime = max((pindexPrev->GetMedianTimePast() + BLOCK_LIMITER_TIME + 1), GetAdjustedTime());
-        pblock->nNonce = 0;
-
-        // Update nExtraNonce
-        static unsigned int nExtraNonce = 0;
-        IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
-
-        mapNewBlock[pblock->hashMerkleRoot] = make_pair(pblock, pblock->vtx[0].vin[0].scriptSig);
-
-        uint pdata[32];
-        FormatDataBuffer(pblock, pdata);
-
-        uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
-
-        CTransaction coinbaseTx = pblock->vtx[0];
-        std::vector<uint256> merkle = pblock->GetMerkleBranch(0);
-
-        Object result;
-        result.push_back(Pair("data",     HexStr(BEGIN(pdata), fNeoScrypt ? (char *) &pdata[21] : END(pdata))));
-        result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
-
-        CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
-        ssTx << coinbaseTx;
-        result.push_back(Pair("coinbase", HexStr(ssTx.begin(), ssTx.end())));
-
-        Array merkle_arr;
-
-        BOOST_FOREACH(uint256 merkleh, merkle) {
-            printf("%s\n", merkleh.ToString().c_str());
-            merkle_arr.push_back(HexStr(BEGIN(merkleh), END(merkleh)));
-        }
-
-        result.push_back(Pair("merkle", merkle_arr));
-
-        return(result);
-
-    } else {
-
-        vector<unsigned char> vchData = ParseHex(params[0].get_str());
-        vector<unsigned char> coinbase;
-
-        if(params.size() == 2)
-          coinbase = ParseHex(params[1].get_str());
-
-        if(vchData.size() < 80)
-          throw(JSONRPCError(-8, "Invalid parameter"));
-        CBlock* pdata = (CBlock*)&vchData[0];
-
-        if(!fNeoScrypt) {
-            uint i;
-            for(i = 9; i < 20; i++)
-              ((uint *) pdata)[i] = ByteReverse(((uint *) pdata)[i]);
-        }
-
-        if(!mapNewBlock.count(pdata->hashMerkleRoot))
-          return(false);
-        CBlock* pblock = mapNewBlock[pdata->hashMerkleRoot].first;
-
-        pblock->nTime = pdata->nTime;
-        pblock->nNonce = pdata->nNonce;
-
-        if(coinbase.size() == 0)
-          pblock->vtx[0].vin[0].scriptSig = mapNewBlock[pdata->hashMerkleRoot].second;
-        else
-          CDataStream(coinbase, SER_NETWORK, PROTOCOL_VERSION) >> pblock->vtx[0];
-
-        pblock->hashMerkleRoot = pblock->BuildMerkleTree();
-
-        return(CheckWork(pblock, *pwalletMain, reservekey));
+        return(CheckWork(pblock, *pwalletMain, reservekey, true));
     }
 }
 
@@ -2369,6 +2267,46 @@ Value getblocktemplate(const Array& params, bool fHelp)
     }
 
     throw JSONRPCError(-8, "Invalid mode");
+}
+
+Value submitblock(const Array& params, bool fHelp) {
+
+    if(fHelp || (params.size() < 1) || (params.size() > 2))
+      throw(runtime_error(
+        "submitblock <hex data> [workid]\n"
+        "[workid] parameter is optional and ignored.\n"
+        "Attempts to submit a new block to the network."));
+
+    vector<unsigned char> blockData(ParseHex(params[0].get_str()));
+    CDataStream ssBlock(blockData, SER_NETWORK, PROTOCOL_VERSION);
+    CBlock block;
+    try {
+        ssBlock >> block;
+    }
+    catch(std::exception &e) {
+        throw(JSONRPCError(-22, "Block decode failed"));
+    }
+
+    if(!ProcessBlock(NULL, &block)) {
+#if 0
+        /* Dump block data received */
+        uint i, size;
+        size = (uint)blockData.size();
+        printf("Block data %u bytes Rx: ", size);
+        for(i = 0; i < size; i++)
+          printf("%02X", ((uchar *)&blockData[0])[i]);
+        printf("\n");
+#endif
+        return("rejected");
+    }
+
+    printf("GBT proof-of-work found\n   hash: 0x%s\n target: 0x%s\n",
+      block.GetPoWHash().GetHex().c_str(),
+      CBigNum().SetCompact(block.nBits).getuint256().GetHex().c_str());
+    block.print();
+    printf("generated %s\n", FormatMoney(block.vtx[0].vout[0].nValue).c_str());
+
+    return(Value::null);
 }
 
 Value getrawmempool(const Array& params, bool fHelp)
@@ -2546,11 +2484,11 @@ static const CRPCCommand vRPCCommands[] =
     { "signmessage",            &signmessage,            false },
     { "verifymessage",          &verifymessage,          false },
     { "getwork",                &getwork,                true },
-    { "getworkex",              &getworkex,              true },
     { "listaccounts",           &listaccounts,           false },
     { "settxfee",               &settxfee,               false },
     { "setmininput",            &setmininput,            false },
     { "getblocktemplate",       &getblocktemplate,       true },
+    { "submitblock",            &submitblock,            false },
     { "listsinceblock",         &listsinceblock,         false },
     { "checkwallet",            &checkwallet,            false },
     { "repairwallet",           &repairwallet,           false },
