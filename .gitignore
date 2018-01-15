@@ -1,0 +1,23 @@
+phoenixcoin-qt
+Makefile
+build
+src/*.exe
+src/phoenixcoind
+src/test_phoenixcoin
+src/Makefile
+src/build.h
+.phoenixcoin
+.*.swp
+*.*~*
+*.bak
+*.rej
+*.orig
+*.o
+*.patch
+*.qm
+qrc_*.cpp
+*_plugin_import.cpp
+*.pro.user
+.qmake.stash
+# Mac specific
+.DS_Store

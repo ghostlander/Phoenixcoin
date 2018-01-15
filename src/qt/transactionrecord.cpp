@@ -182,7 +182,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
         else if(status.depth < 0) {
             status.status = TransactionStatus::Failed;
         }
-        else if(status.depth < NumConfirmations) {
+        else if(status.depth < TX_MATURITY) {
             status.status = TransactionStatus::Unconfirmed;
         }
         else {

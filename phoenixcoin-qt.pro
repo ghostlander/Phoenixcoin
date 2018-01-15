@@ -2,9 +2,19 @@ TEMPLATE = app
 TARGET = phoenixcoin-qt
 VERSION = 0.6.6.1
 INCLUDEPATH += src src/json src/qt
-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE USE_IPV6
+QT += core gui network
+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
+CONFIG += thread
+CONFIG += static
 QMAKE_CFLAGS += -DSHA256 -DASM -DOPT
+
+greaterThan(QT_MAJOR_VERSION, 4): {
+    QT += widgets
+    message("Building with the Qt v5 support$$escape_expand(\\n)")
+} else {
+    message("Building with the Qt v4 support$$escape_expand(\\n)")
+}
 
 # for boost 1.54, add -mt to the boost libraries
 # use: qmake BOOST_LIB_SUFFIX=-mt
@@ -20,25 +30,44 @@ OBJECTS_DIR = build
 MOC_DIR = build
 UI_DIR = build
 
-# use: qmake "RELEASE=1"
-contains(RELEASE, 1) {
-    # Mac: compile for maximum compatibility (10.5, 32-bit)
-    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
-    macx:QMAKE_CFLAGS += -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
-    macx:QMAKE_LFLAGS += -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
-
-    !windows:!macx {
-        # Linux: static link
-        LIBS += -Wl,-Bstatic
-    }
+# use: qmake RELEASE_I386=1
+contains(RELEASE_I386, 1) {
+    # Mac: optimised 32-bit x86
+    macx:QMAKE_CFLAGS += -arch i386 -fomit-frame-pointer -msse2 -mdynamic-no-pic -I/usr/local/i386/include
+    macx:QMAKE_CXXFLAGS += -arch i386 -fomit-frame-pointer -msse2 -mdynamic-no-pic -I/usr/local/i386/include
+    macx:QMAKE_LFLAGS += -arch i386 -L/usr/local/i386/lib
+    # Mac: 10.5+ compatibility; Qt with Cocoa is broken on 10.4
+    macx:QMAKE_CFLAGS += -mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk
+    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk
+    macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.5
+    # Windows: optimised 32-bit x86
+    win32:QMAKE_CFLAGS += -march=i686 -fomit-frame-pointer
+    win32:QMAKE_CXXFLAGS += -march=i686 -fomit-frame-pointer
 }
 
-# Windows: enable ASLR and DEP via GCC linker flags
-windows:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
-# Windows: enable GCC large address aware linker flag
-windows:QMAKE_LFLAGS *= -Wl,--large-address-aware
-# Windows: static linking
-windows:QMAKE_LFLAGS *= -static -static-libgcc -static-libstdc++
+# use: qmake RELEASE_AMD64=1
+contains(RELEASE_AMD64, 1) {
+    # Mac: optimised 64-bit x86
+    macx:QMAKE_CFLAGS += -DMOVQ_FIX -arch x86_64 -fomit-frame-pointer -mdynamic-no-pic -I/usr/local/amd64/include
+    macx:QMAKE_CXXFLAGS += -arch x86_64 -fomit-frame-pointer -mdynamic-no-pic -I/usr/local/amd64/include
+    macx:QMAKE_LFLAGS += -arch x86_64 -L/usr/local/amd64/lib
+    # Mac: 10.8+ compatibility
+    macx:QMAKE_CFLAGS += -mmacosx-version-min=10.8 -isysroot /Developer/SDKs/MacOSX10.8.sdk
+    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.8 -isysroot /Developer/SDKs/MacOSX10.8.sdk
+    macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.8
+}
+
+# strip symbols
+!macx:QMAKE_LFLAGS += -Wl,-s
+macx:QMAKE_LFLAGS += -dead_strip
+# disable debug builds on Windows
+win32:CONFIG -= debug_and_release debug_and_release_target
+# for extra security on Windows: enable ASLR and DEP via GCC linker flags
+win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
+# on Windows: enable GCC large address aware linker flag; breaks MinGW-w64
+#win32:QMAKE_LFLAGS *= -Wl,--large-address-aware
+# i686-w64-mingw32
+win32:QMAKE_LFLAGS *= -static -static-libgcc -static-libstdc++
 
 windows:DEFINES += WINDOWS
 # Windows: uncomment for MinGW64
@@ -57,9 +86,9 @@ contains(USE_QRCODE, 1) {
 #  or: qmake "USE_UPNP=-" (not supported)
 # miniupnpc (http://miniupnp.free.fr/files/) must be installed for support
 contains(USE_UPNP, -) {
-    message(Building without UPNP support)
+    message("Building without UPnP support$$escape_expand(\\n)")
 } else {
-    message(Building with UPNP support)
+    message("Building with the UPnP support$$escape_expand(\\n)")
     count(USE_UPNP, 0) {
         USE_UPNP=1
     }
@@ -71,9 +100,22 @@ contains(USE_UPNP, -) {
 
 # use: qmake "USE_DBUS=1"
 contains(USE_DBUS, 1) {
-    message(Building with DBUS (Freedesktop notifications) support)
+    message("Building with the D-Bus support$$escape_expand(\\n)")
     DEFINES += USE_DBUS
     QT += dbus
+}
+
+# use: qmake "USE_IPV6=1" (compiled and enabled by default)
+#  or: qmake "USE_IPV6=0" (compiled and disabled by default)
+#  or: qmake "USE_IPV6=-" (not compiled)
+contains(USE_IPV6, -) {
+    message("Building without IPv6 support$$escape_expand(\\n)")
+} else {
+    message("Building with the IPv6 support$$escape_expand(\\n)")
+    count(USE_IPV6, 0) {
+        USE_IPV6=1
+    }
+    DEFINES += USE_IPV6=$$USE_IPV6
 }
 
 # use: qmake "FIRST_CLASS_MESSAGING=1"
@@ -365,13 +407,5 @@ LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
 windows:LIBS += -lws2_32 -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 
-contains(RELEASE, 1) {
-    !windows:!macx {
-        # Linux: turn dynamic linking back on for c/c++ runtime libraries
-        LIBS += -Wl,-Bdynamic
-    }
-}
-
 system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
-
 

@@ -85,10 +85,10 @@ void MiningPage::startPoolMining()
     QString urlLine = QString("%1:%2").arg(url, ui->portLine->text());
     QString userpassLine = QString("%1:%2").arg(ui->usernameLine->text(), ui->passwordLine->text());
     args << "-a" << (fNeoScrypt ? "neoscrypt" : "scrypt");
-    args << "-s" << ui->scantimeBox->text().toAscii();
-    args << "-o" << urlLine.toAscii();
-    args << "-O" << userpassLine.toAscii();
-    args << "-t" << ui->threadsBox->text().toAscii();
+    args << "-s" << ui->scantimeBox->text().toUtf8();
+    args << "-o" << urlLine.toUtf8();
+    args << "-O" << userpassLine.toUtf8();
+    args << "-t" << ui->threadsBox->text().toUtf8();
     args << "-r" << "-1"; // Retry forever.
     args << "-P"; // This is needed for this to work correctly on Windows. Extra protocol dump helps flush the buffer quicker.
 

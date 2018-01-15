@@ -99,15 +99,6 @@ void UnregisterWallet(CWallet* pwalletIn)
     }
 }
 
-// check whether the passed transaction is from us
-bool static IsFromMe(CTransaction& tx)
-{
-    BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
-        if (pwallet->IsFromMe(tx))
-            return true;
-    return false;
-}
-
 // get the wallet transaction with the given hash (if it exists)
 bool static GetTransaction(const uint256& hashTx, CWalletTx& wtx)
 {
@@ -2063,7 +2054,7 @@ static unsigned int nCurrentBlockFile = 1;
 FILE* AppendBlockFile(unsigned int& nFileRet)
 {
     nFileRet = 0;
-    loop
+    while(1)
     {
         FILE* file = OpenBlockFile(nCurrentBlockFile, 0, "ab");
         if (!file)
@@ -3620,9 +3611,8 @@ CBlock* CreateNewBlock(CReserveKey& reservekey) {
     CBlockIndex* pindexPrev;
 
     // Create new block
-    auto_ptr<CBlock> pblock(new CBlock());
-    if (!pblock.get())
-        return NULL;
+    CBlock *pblock = new CBlock();
+    if(!pblock) return(NULL);
 
     // Create coinbase tx
     CTransaction txNew;
@@ -3795,10 +3785,10 @@ CBlock* CreateNewBlock(CReserveKey& reservekey) {
     pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
     pblock->hashMerkleRoot = pblock->BuildMerkleTree();
     pblock->UpdateTime(pindexPrev);
-    pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock.get());
+    pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock);
     pblock->nNonce         = 0;
 
-    return pblock.release();
+    return(pblock);
 }
 
 
@@ -3933,12 +3923,11 @@ void static PhoenixcoinMiner(CWallet *pwallet)
         unsigned int nTransactionsUpdatedLast = nTransactionsUpdated;
         CBlockIndex* pindexPrev = pindexBest;
 
-        auto_ptr<CBlock> pblock(CreateNewBlock(reservekey));
+        CBlock *pblock = CreateNewBlock(reservekey);
 
-        if (!pblock.get())
-            return;
+        if(!pblock) return;
 
-        IncrementExtraNonce(pblock.get(), pindexPrev, nExtraNonce);
+        IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
         printf("Running PhoenixcoinMiner with %d transactions in block\n", pblock->vtx.size());
 
@@ -3958,7 +3947,7 @@ void static PhoenixcoinMiner(CWallet *pwallet)
                 if(hash <= hashTarget) {
                     // Found a solution
                     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                    CheckWork(pblock.get(), *pwalletMain, reservekey, false);
+                    CheckWork(pblock, *pwalletMain, reservekey, false);
                     SetThreadPriority(THREAD_PRIORITY_LOWEST);
                     break;
                 }

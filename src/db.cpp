@@ -357,7 +357,7 @@ void CDBEnv::Flush(bool fShutdown)
             else
                 mi++;
         }
-        printf("DBFlush(%s)%s ended %15"PRI64d"ms\n", fShutdown ? "true" : "false", fDbEnvInit ? "" : " db not started", GetTimeMillis() - nStart);
+        printf("DBFlush(%s)%s ended %15" PRI64d "ms\n", fShutdown ? "true" : "false", fDbEnvInit ? "" : " db not started", GetTimeMillis() - nStart);
         if (fShutdown)
         {
             char** listp;
@@ -690,7 +690,7 @@ bool CTxDB::LoadBlockIndexGuts()
 
     // Load mapBlockIndex
     unsigned int fFlags = DB_SET_RANGE;
-    loop
+    while(1)
     {
         // Read next record
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
@@ -895,7 +895,7 @@ bool CBerkeleyAddrDB::LoadAddresses() {
 
     pcursor->close();
 
-    printf("  %"PRI64d"ms  Loaded %i addresses from addr.dat\n",
+    printf("  %" PRI64d "ms  Loaded %i addresses from addr.dat\n",
       GetTimeMillis() - nStart, mapAddresses.size());
 
     return(true);

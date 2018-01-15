@@ -46,12 +46,18 @@
 #include <QStackedWidget>
 #include <QDateTime>
 #include <QFileDialog>
-#include <QDesktopServices>
 #include <QTimer>
 #include <QDragEnterEvent>
-#include <QUrl>
 #include <QMimeData>
 #include <QStyle>
+
+#if (QT_VERSION < 0x050000)
+#include <QUrl>
+#include <QDesktopServices>
+#else
+#include <QMimeData>
+#include <QStandardPaths>
+#endif
 
 #include <iostream>
 
@@ -279,7 +285,7 @@ void BitcoinGUI::createActions()
     aboutAction = new QAction(QIcon(":/icons/bitcoin"), tr("&About Phoenixcoin"), this);
     aboutAction->setToolTip(tr("Show information about Phoenixcoin"));
     aboutAction->setMenuRole(QAction::AboutRole);
-    aboutQtAction = new QAction(QIcon(":/icons/qtlogo"), tr("About &Qt"), this);
+    aboutQtAction = new QAction(QIcon(":/icons/qt"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
@@ -903,9 +909,14 @@ void BitcoinGUI::encryptWallet(bool status)
     setEncryptionStatus(walletModel->getEncryptionStatus());
 }
 
-void BitcoinGUI::backupWallet()
-{
+void BitcoinGUI::backupWallet() {
+
+#if (QT_VERSION < 0x050000)
     QString saveDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+#else
+    QString saveDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+#endif
+
     QString filename = QFileDialog::getSaveFileName(this, tr("Backup Wallet"), saveDir, tr("Wallet Data (*.dat)"));
     if(!filename.isEmpty()) {
         if(!walletModel->backupWallet(filename)) {

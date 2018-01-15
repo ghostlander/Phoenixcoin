@@ -14,11 +14,14 @@
 
 #include <QApplication>
 #include <QMessageBox>
-#include <QTextCodec>
 #include <QLocale>
 #include <QTranslator>
 #include <QSplashScreen>
 #include <QLibraryInfo>
+
+#if (QT_VERSION < 0x050000)
+#include <QTextCodec>
+#endif
 
 #include <boost/interprocess/ipc/message_queue.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -147,8 +150,10 @@ int main(int argc, char *argv[])
 #endif
 
     // Internal string conversion is all UTF-8
+#if (QT_VERSION < 0x050000)
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForCStrings(QTextCodec::codecForTr());
+#endif
 
     Q_INIT_RESOURCE(bitcoin);
     QApplication app(argc, argv);
