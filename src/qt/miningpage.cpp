@@ -1,3 +1,5 @@
+#ifdef MINER
+
 #include "miningpage.h"
 #include "ui_miningpage.h"
 #include "util.h"
@@ -397,3 +399,4 @@ void MiningPage::resetMiningButton()
     }
 }
 
+#endif /* MINER */

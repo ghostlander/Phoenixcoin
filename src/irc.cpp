@@ -5,6 +5,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file LICENCE or http://www.opensource.org/licenses/mit-license.php
 
+#ifdef IRC
+
 #include "irc.h"
 #include "net.h"
 #include "strlcpy.h"
@@ -374,28 +376,4 @@ void ThreadIRCSeed2(void* parg)
     }
 }
 
-
-
-
-
-
-
-
-
-
-#ifdef TEST
-int main(int argc, char *argv[])
-{
-    WSADATA wsadata;
-    if (WSAStartup(MAKEWORD(2,2), &wsadata) != NO_ERROR)
-    {
-        printf("Error at WSAStartup()\n");
-        return false;
-    }
-
-    ThreadIRCSeed(NULL);
-
-    WSACleanup();
-    return 0;
-}
-#endif
+#endif /* IRC */

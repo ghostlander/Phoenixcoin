@@ -145,7 +145,9 @@ void PrintBlockTree();
 bool ProcessMessages(CNode* pfrom);
 bool SendMessages(CNode* pto, bool fSendTrickle);
 bool LoadExternalBlockFile(FILE* fileIn);
+#ifdef MINER
 void GenerateCoins(bool fGenerate, CWallet* pwallet);
+#endif
 CBlock* CreateNewBlock(CReserveKey& reservekey);
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 void FormatDataBuffer(CBlock *pblock, uint *pdata);

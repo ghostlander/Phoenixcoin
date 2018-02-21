@@ -21,6 +21,7 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
 
     pollTimer = new QTimer(this);
 
+#ifdef MINER
     /* Disable mining even if user enabled */
     fGenerateCoins = false;
     mapArgs["-gen"] = "0";
@@ -31,6 +32,7 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
 
     miningType = PoolMining;
     miningStarted = false;
+#endif
 
     pollTimer->setInterval(MODEL_UPDATE_DELAY);
     pollTimer->start();
@@ -60,6 +62,7 @@ int ClientModel::getNumBlocksAtStartup()
     return numBlocksAtStartup;
 }
 
+#ifdef MINER
 ClientModel::MiningType ClientModel::getMiningType() const
 {
     return miningType;
@@ -141,6 +144,7 @@ int ClientModel::getHashrate() const
         return (boost::int64_t)0;
     return (boost::int64_t)dHashesPerSec;
 }
+#endif /* MINER */
 
 // copied from bitcoinrpc.cpp
 double ClientModel::GetDifficulty() const
@@ -187,6 +191,7 @@ void ClientModel::updateTimer()
     cachedNumBlocks = newNumBlocks;
     cachedNumBlocksOfPeers = newNumBlocksOfPeers;
 
+#ifdef MINER
     // Only need to update if solo mining. When pool mining, stats are pushed.
     if (miningType == SoloMining)
     {
@@ -195,6 +200,7 @@ void ClientModel::updateTimer()
             emit miningChanged(miningStarted, newHashrate);
         cachedHashrate = newHashrate;
     }
+#endif
 }
 
 void ClientModel::updateNumConnections(int numConnections)
@@ -236,6 +242,7 @@ int ClientModel::getNumBlocksOfPeers() const
     return GetNumBlocksOfPeers();
 }
 
+#ifdef MINER
 void ClientModel::setMining(MiningType type, bool mining, int threads, int hashrate)
 {
     if((type == SoloMining) && (mining != miningStarted)) {
@@ -247,6 +254,7 @@ void ClientModel::setMining(MiningType type, bool mining, int threads, int hashr
     miningStarted = mining;
     emit miningChanged(mining, hashrate);
 }
+#endif
 
 QString ClientModel::getStatusBarWarnings() const
 {

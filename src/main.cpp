@@ -3886,6 +3886,7 @@ bool CheckWork(CBlock *pblock, CWallet &wallet, CReserveKey &reservekey, bool fG
     return true;
 }
 
+#ifdef MINER
 void static ThreadPhoenixcoinMiner(void* parg);
 
 static bool fLimitProcessors = false;
@@ -4062,3 +4063,4 @@ void GenerateCoins(bool fGenerate, CWallet* pwallet)
         }
     }
 }
+#endif /* MINER */

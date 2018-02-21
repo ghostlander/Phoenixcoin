@@ -9,6 +9,9 @@ CONFIG += thread
 CONFIG += static
 QMAKE_CFLAGS += -DSHA256 -DASM -DOPT
 
+# excluded in Phoenixcoin Lite
+DEFINES += MINER IRC
+
 greaterThan(QT_MAJOR_VERSION, 4): {
     QT += widgets
     message("Building with the Qt v5 support$$escape_expand(\\n)")

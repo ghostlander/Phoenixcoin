@@ -79,7 +79,10 @@ CMedianFilter<int64> vTimeOffsets(200,0);
 bool fReopenDebugLog = false;
 bool fDefaultKey = false;
 bool fBerkeleyAddrDB = false;
+
+#ifdef MINER
 bool fGenerateCoins = false;
+#endif
 
 /* NeoScrypt related */
 bool fNeoScrypt = false;

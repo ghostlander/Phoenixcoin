@@ -5,8 +5,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file LICENCE or http://www.opensource.org/licenses/mit-license.php
 
-#ifndef BITCOIN_IRC_H
-#define BITCOIN_IRC_H
+#ifdef IRC
 
 void ThreadIRCSeed(void* parg);
 

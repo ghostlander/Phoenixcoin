@@ -245,7 +245,9 @@ std::string HelpMessage()
         "  -externalip=<ip>       " + _("Specify your own public address") + "\n" +
         "  -onlynet=<net>         " + _("Only connect to nodes in network <net> (IPv4, IPv6 or Tor)") + "\n" +
         "  -discover              " + _("Discover own IP address (default: 1 when listening and no -externalip)") + "\n" +
+#ifdef IRC
         "  -irc                   " + _("Find peers using internet relay chat (default: 0)") + "\n" +
+#endif
         "  -listen                " + _("Accept connections from outside (default: 1 if no -proxy or -connect)") + "\n" +
         "  -bind=<addr>           " + _("Bind to given address. Use [host]:port notation for IPv6") + "\n" +
         "  -dnsseed               " + _("Find peers using DNS lookup (default: 1 unless -connect)") + "\n" +
@@ -364,11 +366,13 @@ bool AppInit2()
     /* Polling delay for message handling, in milliseconds */
     nMsgSleep = GetArg("-msgsleep", 20);
 
+#ifdef IRC
     // Phoenixcoin: Keep irc seeding on by default for now.
 //    if (fTestNet)
 //    {
         SoftSetBoolArg("-irc", true);
 //    }
+#endif
 
     if (mapArgs.count("-bind")) {
         // when specifying an explicit binding address, you want to listen on it

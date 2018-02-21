@@ -22,17 +22,21 @@ public:
     explicit ClientModel(OptionsModel *optionsModel, QObject *parent = 0);
     ~ClientModel();
 
+#ifdef MINER
     enum MiningType
     {
         SoloMining,
         PoolMining
     };
+#endif
 
     OptionsModel *getOptionsModel();
 
     int getNumConnections() const;
     int getNumBlocks() const;
     int getNumBlocksAtStartup();
+
+#ifdef MINER
     MiningType getMiningType() const;
     int getMiningThreads() const;
     bool getMiningStarted() const;
@@ -49,6 +53,7 @@ public:
     void setMiningUsername(QString username);
     QString getMiningPassword() const;
     void setMiningPassword(QString password);
+#endif
 
     int getHashrate() const;
     double GetDifficulty() const;
@@ -64,7 +69,9 @@ public:
     //! Return warnings to be displayed in status bar
     QString getStatusBarWarnings() const;
 
+#ifdef MINER
     void setMining(MiningType type, bool mining, int threads, int hashrate);
+#endif
 
     QString formatFullVersion() const;
     QString formatBuildDate() const;
@@ -78,6 +85,7 @@ private:
     int cachedNumBlocksOfPeers;
     int cachedHashrate;
 
+#ifdef MINER
     MiningType miningType;
     int miningThreads;
     bool miningStarted;
@@ -87,6 +95,7 @@ private:
     QString miningPort;
     QString miningUsername;
     QString miningPassword;
+#endif
 
     int numBlocksAtStartup;
 
@@ -98,7 +107,9 @@ private:
 signals:
     void numConnectionsChanged(int count);
     void numBlocksChanged(int count, int countOfPeers);
+#ifdef MINER
     void miningChanged(bool mining, int count);
+#endif
 
     //! Asynchronous error notification
     void error(const QString &title, const QString &message, bool modal);

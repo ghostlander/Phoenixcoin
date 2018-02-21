@@ -1538,12 +1538,14 @@ void ThreadOpenConnections2(void* parg)
                 if(nSinceLastTry < nDelay)
                   continue;
 
+#ifdef IRC
                 // If we have IRC, we'll be notified when they first come online,
                 // and again every 24 hours by the refresh broadcast.
                 if((nGotIRCAddresses > 0) &&
                   (vNodes.size() >= (MAX_OUTBOUND_CONNECTIONS / 4)) &&
                   (nSinceLastSeen > 24 * 60 * 60))
                   continue;
+#endif
 
                 // Only try the old stuff if we don't have enough connections
                 if((vNodes.size() >= MAX_OUTBOUND_CONNECTIONS) &&
@@ -2025,9 +2027,11 @@ void StartNode(void* parg)
     if (fUseUPnP)
         MapPort();
 
+#ifdef IRC
     // Get addresses from IRC and advertise ours
     if (!CreateThread(ThreadIRCSeed, NULL))
         printf("Error: CreateThread(ThreadIRCSeed) failed\n");
+#endif
 
     // Send and receive from sockets, accept connections
     if (!CreateThread(ThreadSocketHandler, NULL))
@@ -2050,8 +2054,10 @@ void StartNode(void* parg)
       if(!CreateThread(ThreadDumpAddress, NULL))
         printf("Error; CreateThread(ThreadDumpAddress) failed\n");
 
+#ifdef MINER
     // Generate coins in the background
     GenerateCoins(GetBoolArg("-gen", false), pwalletMain);
+#endif
 }
 
 bool StopNode()

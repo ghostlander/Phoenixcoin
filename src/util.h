@@ -129,7 +129,10 @@ extern bool fLogTimestamps;
 extern bool fReopenDebugLog;
 extern bool fDefaultKey;
 extern bool fBerkeleyAddrDB;
+
+#ifdef MINER
 extern bool fGenerateCoins;
+#endif
 
 extern bool fNeoScrypt;
 extern uint nNeoScryptOptions;

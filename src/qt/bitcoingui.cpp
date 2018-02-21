@@ -101,7 +101,9 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     // Create tabs
     overviewPage = new OverviewPage();
 
+#ifdef MINER
     miningPage = new MiningPage(this);
+#endif
 
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
@@ -119,7 +121,9 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
 
     centralWidget = new QStackedWidget(this);
     centralWidget->addWidget(overviewPage);
+#ifdef MINER
     centralWidget->addWidget(miningPage);
+#endif
     centralWidget->addWidget(transactionsPage);
     centralWidget->addWidget(addressBookPage);
     centralWidget->addWidget(receiveCoinsPage);
@@ -141,13 +145,17 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     frameBlocksLayout->setContentsMargins(3,0,3,0);
     frameBlocksLayout->setSpacing(3);
     labelEncryptionIcon = new QLabel();
+#ifdef MINER
     labelMiningIcon = new QLabel();
+#endif
     labelConnectionsIcon = new QLabel();
     labelBlocksIcon = new QLabel();
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelEncryptionIcon);
+#ifdef MINER
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelMiningIcon);
+#endif
     frameBlocksLayout->addStretch();
     frameBlocksLayout->addWidget(labelConnectionsIcon);
     frameBlocksLayout->addStretch();
@@ -208,10 +216,12 @@ void BitcoinGUI::createActions()
     overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
     tabGroup->addAction(overviewAction);
 
+#ifdef MINER
     miningAction = new QAction(QIcon(":/icons/mining"), tr("&Mining"), this);
     miningAction->setToolTip(tr("Configure mining"));
     miningAction->setCheckable(true);
     tabGroup->addAction(miningAction);
+#endif
 
     consoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Console"), this);
     consoleAction->setToolTip(tr("Open the RPC console"));
@@ -259,7 +269,9 @@ void BitcoinGUI::createActions()
 
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
+#ifdef MINER
     connect(miningAction, SIGNAL(triggered()), this, SLOT(gotoMiningPage()));
+#endif
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
     connect(addressBookAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -344,7 +356,9 @@ void BitcoinGUI::createMenuBar()
 
     QMenu *utilities = appMenuBar->addMenu(tr("&Utilities"));
     utilities->addAction(consoleAction);
+#ifdef MINER
     utilities->addAction(miningAction);
+#endif
 
     QMenu *help = appMenuBar->addMenu(tr("&Help"));
     help->addAction(aboutAction);
@@ -361,7 +375,9 @@ void BitcoinGUI::createToolBars()
     toolbar->addAction(historyAction);
     toolbar->addAction(addressBookAction);
     toolbar->addAction(consoleAction);
+#ifdef MINER
     toolbar->addAction(miningAction);
+#endif
 #ifdef FIRST_CLASS_MESSAGING
     toolbar->addAction(firstClassMessagingAction);
 #endif
@@ -403,8 +419,10 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
         setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
         connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
 
+#ifdef MINER
         setMining(false, 0);
         connect(clientModel, SIGNAL(miningChanged(bool,int)), this, SLOT(setMining(bool,int)));
+#endif
 
         // Report errors from network/worker thread
         connect(clientModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
@@ -431,7 +449,9 @@ void BitcoinGUI::setWalletModel(WalletModel *walletModel)
         receiveCoinsPage->setModel(walletModel->getAddressTableModel());
         sendCoinsPage->setModel(walletModel);
         signVerifyMessageDialog->setModel(walletModel);
+#ifdef MINER
         miningPage->setModel(clientModel);
+#endif
 
         setEncryptionStatus(walletModel->getEncryptionStatus());
         connect(walletModel, SIGNAL(encryptionStatusChanged(int)), this, SLOT(setEncryptionStatus(int)));
@@ -474,7 +494,9 @@ void BitcoinGUI::createTrayIcon()
     trayIconMenu->addAction(sendCoinsAction);
     trayIconMenu->addAction(receiveCoinsAction);
     trayIconMenu->addSeparator();
+#ifdef MINER
     trayIconMenu->addAction(miningAction);
+#endif
     trayIconMenu->addAction(consoleAction);
 #ifndef Q_WS_MAC // This is built-in on Mac
     trayIconMenu->addSeparator();
@@ -621,6 +643,7 @@ void BitcoinGUI::setNumBlocks(int count, int nTotalBlocks)
     progressBar->setToolTip(tooltip);
 }
 
+#ifdef MINER
 void BitcoinGUI::setMining(bool mining, int hashrate)
 {
     if (mining)
@@ -634,6 +657,7 @@ void BitcoinGUI::setMining(bool mining, int hashrate)
         labelMiningIcon->setToolTip(tr("Not mining Phoenixcoins"));
     }
 }
+#endif
 
 void BitcoinGUI::error(const QString &title, const QString &message, bool modal)
 {
@@ -739,6 +763,7 @@ void BitcoinGUI::gotoOverviewPage()
     disconnect(exportAction, SIGNAL(triggered()), 0, 0);
 }
 
+#ifdef MINER
 void BitcoinGUI::gotoMiningPage()
 {
     miningAction->setChecked(true);
@@ -747,6 +772,7 @@ void BitcoinGUI::gotoMiningPage()
     exportAction->setEnabled(false);
     disconnect(exportAction, SIGNAL(triggered()), 0, 0);
 }
+#endif
 
 void BitcoinGUI::gotoHistoryPage()
 {

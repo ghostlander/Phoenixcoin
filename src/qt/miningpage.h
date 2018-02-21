@@ -1,5 +1,4 @@
-#ifndef MININGPAGE_H
-#define MININGPAGE_H
+#ifdef MINER
 
 #include "clientmodel.h"
 
@@ -88,4 +87,4 @@ private:
     void resetMiningButton();
 };
 
-#endif // MININGPAGE_H
+#endif /* MINER */

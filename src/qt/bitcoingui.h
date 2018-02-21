@@ -11,7 +11,9 @@ class ClientModel;
 class WalletModel;
 class TransactionView;
 class OverviewPage;
+#ifdef MINER
 class MiningPage;
+#endif
 class AddressBookPage;
 class SendCoinsDialog;
 class SignVerifyMessageDialog;
@@ -60,7 +62,9 @@ private:
     QStackedWidget *centralWidget;
 
     OverviewPage *overviewPage;
+#ifdef MINER
     MiningPage *miningPage;
+#endif
     QWidget *transactionsPage;
     AddressBookPage *addressBookPage;
     AddressBookPage *receiveCoinsPage;
@@ -68,7 +72,9 @@ private:
     SignVerifyMessageDialog *signVerifyMessageDialog;
 
     QLabel *labelEncryptionIcon;
+#ifdef MINER
     QLabel *labelMiningIcon;
+#endif
     QLabel *labelConnectionsIcon;
     QLabel *labelBlocksIcon;
     QLabel *progressBarLabel;
@@ -76,7 +82,9 @@ private:
 
     QMenuBar *appMenuBar;
     QAction *overviewAction;
+#ifdef MINER
     QAction *miningAction;
+#endif
     QAction *historyAction;
     QAction *quitAction;
     QAction *sendCoinsAction;
@@ -118,8 +126,10 @@ public slots:
     void setNumConnections(int count);
     /** Set number of blocks shown in the UI */
     void setNumBlocks(int count, int nTotalBlocks);
+#ifdef MINER
     /** Set mining status and hashrate in the UI */
     void setMining(bool mining, int hashrate);
+#endif
     /** Set the encryption status as shown in the UI.
        @param[in] status            current encryption status
        @see WalletModel::EncryptionStatus
@@ -142,8 +152,10 @@ public slots:
 private slots:
     /** Switch to overview (home) page */
     void gotoOverviewPage();
+#ifdef MINER
     /** Switch to mining page */
     void gotoMiningPage();
+#endif
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
     /** Switch to address book page */
