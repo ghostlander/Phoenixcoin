@@ -936,6 +936,8 @@ public:
             }
         }
 
+        profile |= nNeoScryptOptions;
+
         neoscrypt((uchar *) &nVersion, (uchar *) &hash, profile);
 
         return(hash);

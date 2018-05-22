@@ -2171,6 +2171,8 @@ bool LoadBlockIndex(bool fAllowNew) {
             uint256 hashTarget = CBigNum().SetCompact(block.nBits).getuint256();
             uint256 hash;
 
+            profile |= nNeoScryptOptions;
+
             while(true) {
                 neoscrypt((uchar *) &block.nVersion, (uchar *) &hash, profile);
                 if(hash <= hashTarget) break;
@@ -3942,6 +3944,8 @@ void static PhoenixcoinMiner(CWallet *pwallet)
             unsigned int nHashesDone = 0;
             uint profile = fNeoScrypt ? 0x0 : 0x3;
             uint256 hash;
+
+            profile |= nNeoScryptOptions;
 
             while(true) {
                 neoscrypt((uchar *) &pblock->nVersion, (uchar *) &hash, profile);
