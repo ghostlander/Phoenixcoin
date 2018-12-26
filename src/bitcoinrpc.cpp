@@ -10,6 +10,7 @@
 #include "db.h"
 #include "walletdb.h"
 #include "net.h"
+#include "ntp.h"
 #include "init.h"
 #include "ui_interface.h"
 #include "base58.h"
@@ -48,6 +49,7 @@ static CCriticalSection cs_nWalletUnlockTime;
 
 extern Value getconnectioncount(const Array& params, bool fHelp); // in rpcnet.cpp
 extern Value getpeerinfo(const Array& params, bool fHelp);
+extern Value ntptime(const Array &params, bool fHelp);
 extern Value dumpprivkey(const Array& params, bool fHelp); // in rpcdump.cpp
 extern Value importprivkey(const Array& params, bool fHelp);
 extern Value checkwallet(const Array& params, bool fHelp);
@@ -432,9 +434,12 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("newpowmint",    ValueFromAmount(pwalletMain->GetMinted(0x5))));
     obj.push_back(Pair("blocks",        (int)nBestHeight));
     obj.push_back(Pair("connections",   (int)vNodes.size()));
-    obj.push_back(Pair("timeoffset",    (boost::int64_t)GetTimeOffset()));
     obj.push_back(Pair("proxy",         (addrProxy.IsValid() ? addrProxy.ToStringIPPort() : string())));
     obj.push_back(Pair("ip",            addrExternal.ToStringIP()));
+    obj.push_back(Pair("systemtime",    (boost::int64_t)GetTime()));
+    obj.push_back(Pair("adjustedtime",  (boost::int64_t)GetAdjustedTime()));
+    obj.push_back(Pair("ntpoffset",     (boost::int64_t)nNtpOffset != INT64_MAX ? (boost::int64_t)nNtpOffset : Value::null));
+    obj.push_back(Pair("p2poffset",     (boost::int64_t)nPeersOffset != INT64_MAX ? (boost::int64_t)nPeersOffset : Value::null));
     obj.push_back(Pair("testnet",       fTestNet));
     obj.push_back(Pair("keypoololdest", (boost::int64_t)pwalletMain->GetOldestKeyPoolTime()));
     obj.push_back(Pair("keypoolsize",   pwalletMain->GetKeyPoolSize()));
@@ -2514,6 +2519,7 @@ static const CRPCCommand vRPCCommands[] =
     { "lockunspent",            &lockunspent,            false },
     { "listlockunspent",        &listlockunspent,        false },
     { "resendtx",               &resendtx,               false },
+    { "ntptime",                &ntptime,                true },
 };
 
 CRPCTable::CRPCTable()

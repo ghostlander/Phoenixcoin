@@ -220,7 +220,8 @@ HEADERS += src/qt/bitcoingui.h \
     src/qt/rpcconsole.h \
     src/qt/walletmodeltransaction.h \
     src/qt/coincontroldialog.h \
-    src/qt/coincontroltreewidget.h
+    src/qt/coincontroltreewidget.h \
+    src/ntp.h
 
 SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/qt/transactiontablemodel.cpp \
@@ -286,7 +287,8 @@ SOURCES += src/qt/bitcoin.cpp src/qt/bitcoingui.cpp \
     src/noui.cpp \
     src/qt/walletmodeltransaction.cpp \
     src/qt/coincontroldialog.cpp \
-    src/qt/coincontroltreewidget.cpp
+    src/qt/coincontroltreewidget.cpp \
+    src/ntp.cpp
 
 RESOURCES += \
     src/qt/bitcoin.qrc

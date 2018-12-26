@@ -5,6 +5,7 @@
 // file LICENCE or http://www.opensource.org/licenses/mit-license.php
 
 #include "net.h"
+#include "ntp.h"
 #include "bitcoinrpc.h"
 
 using namespace json_spirit;
@@ -200,4 +201,56 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
     }
 
     return ret;
+}
+
+
+Value ntptime(const Array &params, bool fHelp) {
+    int64 nTime;
+    CNetAddr ip;
+
+    if(fHelp || (params.size() > 1))
+      throw(runtime_error(
+        "ntptime [server]\n"
+        "Returns current time from a specific or random NTP server."));
+
+    if(params.size() > 0) {
+        nTime = NtpGetTime(params[0].get_str());
+    } else {
+        nTime = NtpGetTime(ip);
+    }
+
+    Object obj;
+    switch(nTime) {
+
+        case(-1):
+            throw(runtime_error("Socket init error"));
+
+        case(-2):
+            throw(runtime_error("Non-blocking socket mode failed"));
+
+        case(-3):
+            throw(runtime_error("Unable to send data"));
+
+        case(-4):
+            throw(runtime_error("Receive timed out"));
+
+        default:
+            if((nTime > 0) && (nTime != 2085978496)) {
+                /* Update the offset */
+                nNtpOffset = nTime - GetTime();
+                /* Remove the warning if back to normal */
+                if(fNtpWarning && (abs64(nNtpOffset) <= 5 * 60)) {
+                    strMiscWarning.clear();
+                    fNtpWarning = false;
+                }
+                /* Push data into the object */
+                if(ip.IsValid()) obj.push_back(Pair("server", ip.ToStringIP().c_str()));
+                obj.push_back(Pair("time", DateTimeStrFormat("%x %H:%M:%S", nTime)));
+                obj.push_back(Pair("sample", (boost::int64_t)nTime));
+                obj.push_back(Pair("offset", (boost::int64_t)nNtpOffset));
+        } else throw(runtime_error("Unknown response"));
+
+    }
+
+    return(obj);
 }

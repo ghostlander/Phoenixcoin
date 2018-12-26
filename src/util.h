@@ -63,6 +63,10 @@ static const int64 CENT = 1000000;
 #endif
 #endif
 
+#ifndef INT64_MAX
+#define INT64_MAX 9223372036854775807LL
+#endif
+
 // This is needed because the foreach macro can't get over the comma in pair<t1, t2>
 #define PAIRTYPE(t1, t2)    std::pair<t1, t2>
 
@@ -192,7 +196,7 @@ uint256 GetRandHash();
 int64 GetTime();
 void SetMockTime(int64 nMockTimeIn);
 int64 GetAdjustedTime();
-int64 GetTimeOffset();
+extern int64 nPeersOffset;
 std::string FormatFullVersion();
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments);
 void AddTimeData(const CNetAddr& ip, int64 nTime);
