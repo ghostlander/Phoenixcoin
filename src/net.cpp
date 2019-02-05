@@ -673,11 +673,11 @@ void CNode::PushVersion() {
          * dual magic peers decode both, process the 1st (old) and ignore the 2nd (new) with no consequences,
          * old magic peers decode and process the old + "MESSAGESTART NOT FOUND" and "SKIPPED 24 BYTES",
          * future new magic only peers decode and process the new + "SKIPPED 130 BYTES" */
-        PushVersionMessage(false, PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
-          nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight);
+//        PushVersionMessage(false, PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
+//          nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight);
         PushVersionMessage(true, PROTOCOL_VERSION, nLocalServices, nTime, addrYou, addrMe,
           nLocalHostNonce, FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, std::vector<string>()), nBestHeight);
-        printf("peer %s unknown, sending version using dual magic\n", addr.ToString().c_str());
+//        printf("peer %s unknown, sending version using dual magic\n", addr.ToString().c_str());
     }
 
     printf("sent version message to %s, version %d, blocks=%d, us=%s, them=%s\n",
