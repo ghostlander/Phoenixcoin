@@ -2658,16 +2658,16 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         // if their nStartingHeight is much higher of what we estimate it
         // to be, disconnect them.
         // nRefHeight and nRefTime should be updated periodically
-        long nRefHeight = 1453000, nRefTime = 1501534986; // block #1453000
-        long nOurTime = GetAdjustedTime();
-        long nHeightOffset = (nOurTime - nRefTime) / nTargetSpacingFour;
+//        long nRefHeight = 1453000, nRefTime = 1501534986; // block #1453000
+//        long nOurTime = GetAdjustedTime();
+//        long nHeightOffset = (nOurTime - nRefTime) / nTargetSpacingFour;
         // Add 10000 blocks to be safe
-        if(pfrom->nStartingHeight > (nRefHeight + nHeightOffset + 10000)) {
-            printf("peer %s reports height %i, estimated height is %i; disconnecting\n",
-              pfrom->addr.ToString().c_str(), pfrom->nStartingHeight, nRefHeight + nHeightOffset);
-            pfrom->fDisconnect = true;
-            return false;
-        }
+//        if(pfrom->nStartingHeight > (nRefHeight + nHeightOffset + 10000)) {
+//            printf("peer %s reports height %i, estimated height is %i; disconnecting\n",
+//              pfrom->addr.ToString().c_str(), pfrom->nStartingHeight, nRefHeight + nHeightOffset);
+//            pfrom->fDisconnect = true;
+//            return false;
+//        }
 
         // Ask the first connected node for block updates
         static int nAskedForBlocks = 0;
