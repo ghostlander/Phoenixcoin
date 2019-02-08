@@ -16,7 +16,9 @@
 #include "uint256.h"
 #include "util.h"
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
 #include <openssl/ec.h> // for EC_KEY definition
+#endif
 
 // secp160k1
 // const unsigned int PRIVATE_KEY_SIZE = 192;

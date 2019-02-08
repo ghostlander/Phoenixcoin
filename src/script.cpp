@@ -586,6 +586,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 //
                 // Splice ops
                 //
+                #if OPENSSL_VERSION_NUMBER < 0x10100000L
                 case OP_CAT:
                 {
                     // (x1 x2 -- out)
@@ -640,6 +641,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     popstack(stack);
                 }
                 break;
+                #endif
 
                 case OP_SIZE:
                 {
@@ -655,6 +657,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 //
                 // Bitwise logic
                 //
+                #if OPENSSL_VERSION_NUMBER < 0x10100000L
                 case OP_INVERT:
                 {
                     // (in - out)
@@ -694,6 +697,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     popstack(stack);
                 }
                 break;
+                #endif
 
                 case OP_EQUAL:
                 case OP_EQUALVERIFY:
@@ -729,8 +733,10 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                 //
                 case OP_1ADD:
                 case OP_1SUB:
+                #if OPENSSL_VERSION_NUMBER < 0x10100000L
                 case OP_2MUL:
                 case OP_2DIV:
+                #endif
                 case OP_NEGATE:
                 case OP_ABS:
                 case OP_NOT:
@@ -744,8 +750,10 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                     {
                     case OP_1ADD:       bn += bnOne; break;
                     case OP_1SUB:       bn -= bnOne; break;
+                    #if OPENSSL_VERSION_NUMBER < 0x10100000L
                     case OP_2MUL:       bn <<= 1; break;
                     case OP_2DIV:       bn >>= 1; break;
+                    #endif
                     case OP_NEGATE:     bn = -bn; break;
                     case OP_ABS:        if (bn < bnZero) bn = -bn; break;
                     case OP_NOT:        bn = (bn == bnZero); break;
@@ -759,11 +767,13 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
 
                 case OP_ADD:
                 case OP_SUB:
+                #if OPENSSL_VERSION_NUMBER < 0x10100000L
                 case OP_MUL:
                 case OP_DIV:
                 case OP_MOD:
                 case OP_LSHIFT:
                 case OP_RSHIFT:
+                #endif
                 case OP_BOOLAND:
                 case OP_BOOLOR:
                 case OP_NUMEQUAL:
@@ -792,6 +802,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                         bn = bn1 - bn2;
                         break;
 
+                    #if OPENSSL_VERSION_NUMBER < 0x10100000L
                     case OP_MUL:
                         if (!BN_mul(&bn, &bn1, &bn2, pctx))
                             return false;
@@ -818,6 +829,7 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                             return false;
                         bn = bn1 >> bn2.getulong();
                         break;
+                    #endif
 
                     case OP_BOOLAND:             bn = (bn1 != bnZero && bn2 != bnZero); break;
                     case OP_BOOLOR:              bn = (bn1 != bnZero || bn2 != bnZero); break;

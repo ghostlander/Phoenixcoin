@@ -563,9 +563,9 @@ public:
     }
 };
 
-
-
-
+#if (BOOST_VERSION > 106501)
+bool CreateThread(void(*pfn)(void*), void* parg);
+#endif
 
 
 
@@ -576,6 +576,7 @@ public:
 // by using TerminateThread(boost::thread.native_handle(), 0);
 #ifdef WINDOWS
 
+#if (BOOST_VERSION <= 106501)
 inline HANDLE CreateThread(void(*pfn)(void*), void* parg, bool fWantHandle=false)
 {
     DWORD nUnused = 0;
@@ -599,12 +600,14 @@ inline HANDLE CreateThread(void(*pfn)(void*), void* parg, bool fWantHandle=false
     }
     return hthread;
 }
+ #endif
 
 inline void SetThreadPriority(int nPriority)
 {
     SetThreadPriority(GetCurrentThread(), nPriority);
 }
 #else
+#if (BOOST_VERSION <= 106501)
 inline pthread_t CreateThread(void(*pfn)(void*), void* parg, bool fWantHandle=false)
 {
     pthread_t hthread = 0;
@@ -621,6 +624,7 @@ inline pthread_t CreateThread(void(*pfn)(void*), void* parg, bool fWantHandle=fa
     }
     return hthread;
 }
+#endif
 
 #define THREAD_PRIORITY_LOWEST          PRIO_MAX
 #define THREAD_PRIORITY_BELOW_NORMAL    2
