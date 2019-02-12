@@ -6,7 +6,7 @@ Phoenixcoin (PXC) is a decentralised open source digital currency.
  - NeoScrypt (N = 128, r = 2, p = 1, etc.)
  - ~98 million total coins
  - block target is 1.5 minutes
- - block reward is 25 coins
+ - block reward is 12.5 coins
  - block reward halves every 1 million blocks
  - retargets every 20 blocks (~30 minutes)
  - 2% max. change on every retarget

@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = phoenixcoin-qt
-VERSION = 0.6.6.1
+VERSION = 0.6.6.2
 INCLUDEPATH += src src/json src/qt
 QT += core gui network
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
