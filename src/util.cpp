@@ -1098,25 +1098,26 @@ bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest)
 #endif /* WINDOWS */
 }
 
-/* Returns zero on success and -1 on failure */
+/* Syncronises a file with a medium;
+ * returns zero on success or -1 on failure */
 int FileCommit(FILE *fileout) {
     int ret, fd;
 
-    /* fflush() is a caller's responsibility */
+    /* fflush() is a caller's responsibility;
+     * get a file descriptor first and perform the synchronisation next */
 
-    /* Get a file descriptor and perform the synchronisation */
-#if defined WINDOWS
+#if (WINDOWS)
     fd = _fileno(fileout);
     ret = _commit(fd);
 #else
     fd = fileno(fileout);
-#if defined __linux__
+#if (__linux__)
     ret = fdatasync(fd);
-#elif defined __APPLE__ && defined F_FULLFSYNC
-    /* F_FULLFSYNC means fsync with device flush to medium;
-     * works with HFS only as of 10.4, so fail over to fsync */
+#elif (__APPLE__) && (F_FULLFSYNC)
+    /* fcntl() with F_FULLFSYNC means fsync() with device flush to medium;
+     * works with HFS only as of 10.4, so fail over to fsync() */
     ret = fcntl(fd, F_FULLFSYNC, 0);
-    if(!ret) ret = fsync(fd);
+    if(ret) ret = fsync(fd);
 #else
     ret = fsync(fd);
 #endif
