@@ -15,7 +15,7 @@
 typedef boost::recursive_mutex CCriticalSection;
 
 /** Wrapped boost mutex: supports waiting but not recursive locking */
-typedef boost::mutex::scoped_lock CWaitableCriticalSection;
+typedef boost::mutex CWaitableCriticalSection;
 
 #ifdef DEBUG_LOCKORDER
 void EnterCritical(const char* pszName, const char* pszFile, int nLine, void* cs, bool fTry = false);
