@@ -912,7 +912,11 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
         nBits -= 8;
     }
     if (nBits > 0)
-        vchRet.push_back(GetByte(15 - nStartByte) | ((1 << (8 - nBits)) - 1));
+    {
+    uint8_t byte = GetByte(15 - nStartByte);
+    byte &= static_cast<uint8_t>(0xFF << (8 - nBits));
+    vchRet.push_back(byte);
+    }
 
     return vchRet;
 }
