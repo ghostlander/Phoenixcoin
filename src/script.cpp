@@ -10,6 +10,8 @@
 #include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
 
+#include <openssl/evp.h>
+
 #include "sync.h"
 #include "bignum.h"
 #include "keystore.h"
@@ -821,8 +823,27 @@ bool EvalScript(vector<vector<unsigned char> >& stack, const CScript& script, co
                         return(false);
                     valtype& vch = stacktop(-1);
                     valtype vchHash((opcode == OP_RIPEMD160 || opcode == OP_SHA1 || opcode == OP_HASH160) ? 20 : 32);
-                    if(opcode == OP_RIPEMD160)
-                        RIPEMD160(&vch[0], vch.size(), &vchHash[0]);
+                    if(opcode == OP_RIPEMD160) {
+                        EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+                        if(!ctx)
+                            return false;
+                        const EVP_MD* md = EVP_ripemd160();
+
+                        if(1 != EVP_DigestInit_ex(ctx, md, NULL)) {
+                            EVP_MD_CTX_free(ctx);
+                            return false;
+                        }
+                        if(1 != EVP_DigestUpdate(ctx, &vch[0], vch.size())) {
+                            EVP_MD_CTX_free(ctx);
+                            return false;
+                        }
+                        unsigned int hash_len = 0;
+                       if(1 != EVP_DigestFinal_ex(ctx, &vchHash[0], &hash_len)) {
+                           EVP_MD_CTX_free(ctx);
+                           return false;
+                       }
+                       EVP_MD_CTX_free(ctx);
+                    }
                     else if(opcode == OP_SHA1)
                         SHA1(&vch[0], vch.size(), &vchHash[0]);
                     else if(opcode == OP_SHA256)

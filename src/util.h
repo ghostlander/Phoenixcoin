@@ -10,6 +10,7 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <cstring> // for memcpy
 
 #include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
@@ -17,6 +18,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/thread.hpp>
 
+#include <openssl/evp.h>
 #include <openssl/sha.h>
 #include <openssl/ripemd.h>
 
@@ -382,31 +384,53 @@ inline uint256 Hash(const T1 pbegin, const T1 pend)
 class CHashWriter
 {
 private:
-    SHA256_CTX ctx;
+    EVP_MD_CTX* ctx;  // EVP message digest context
 
 public:
     int nType;
     int nVersion;
 
     void Init() {
-        SHA256_Init(&ctx);
+        ctx = EVP_MD_CTX_new();
+        EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr);
     }
 
     CHashWriter(int nTypeIn, int nVersionIn) : nType(nTypeIn), nVersion(nVersionIn) {
         Init();
     }
 
+    ~CHashWriter() {
+        if (ctx) {
+            EVP_MD_CTX_free(ctx);
+        }
+    }
+
     CHashWriter& write(const char *pch, size_t size) {
-        SHA256_Update(&ctx, pch, size);
+        EVP_DigestUpdate(ctx, pch, size);
         return (*this);
     }
 
     // invalidates the object
     uint256 GetHash() {
+        unsigned char hash[EVP_MAX_MD_SIZE];
+        unsigned int length = 0;
+
+        EVP_DigestFinal_ex(ctx, hash, &length);
+
+        // Re-initialize context to avoid reuse issues
+        EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr);
+
         uint256 hash1;
-        SHA256_Final((unsigned char*)&hash1, &ctx);
+        memcpy(&hash1, hash, sizeof(hash1));
+
+        // Double SHA256 as in original
         uint256 hash2;
-        SHA256((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
+        EVP_MD_CTX* ctx2 = EVP_MD_CTX_new();
+        EVP_DigestInit_ex(ctx2, EVP_sha256(), nullptr);
+        EVP_DigestUpdate(ctx2, &hash1, sizeof(hash1));
+        EVP_DigestFinal_ex(ctx2, (unsigned char*)&hash2, &length);
+        EVP_MD_CTX_free(ctx2);
+
         return hash2;
     }
 
@@ -418,23 +442,40 @@ public:
     }
 };
 
-
+// Hash function for two ranges
 template<typename T1, typename T2>
 inline uint256 Hash(const T1 p1begin, const T1 p1end,
                     const T2 p2begin, const T2 p2end)
 {
     static unsigned char pblank[1];
     uint256 hash1;
-    SHA256_CTX ctx;
-    SHA256_Init(&ctx);
-    SHA256_Update(&ctx, (p1begin == p1end ? pblank : (unsigned char*)&p1begin[0]), (p1end - p1begin) * sizeof(p1begin[0]));
-    SHA256_Update(&ctx, (p2begin == p2end ? pblank : (unsigned char*)&p2begin[0]), (p2end - p2begin) * sizeof(p2begin[0]));
-    SHA256_Final((unsigned char*)&hash1, &ctx);
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr);
+
+    const unsigned char* p1ptr = (p1begin == p1end ? pblank : (unsigned char*)&p1begin[0]);
+    size_t p1len = (p1end - p1begin) * sizeof(p1begin[0]);
+    EVP_DigestUpdate(ctx, p1ptr, p1len);
+
+    const unsigned char* p2ptr = (p2begin == p2end ? pblank : (unsigned char*)&p2begin[0]);
+    size_t p2len = (p2end - p2begin) * sizeof(p2begin[0]);
+    EVP_DigestUpdate(ctx, p2ptr, p2len);
+
+    unsigned int length = 0;
+    EVP_DigestFinal_ex(ctx, (unsigned char*)&hash1, &length);
+    EVP_MD_CTX_free(ctx);
+
+    // Double SHA256
     uint256 hash2;
-    SHA256((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
+    EVP_MD_CTX* ctx2 = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(ctx2, EVP_sha256(), nullptr);
+    EVP_DigestUpdate(ctx2, &hash1, sizeof(hash1));
+    EVP_DigestFinal_ex(ctx2, (unsigned char*)&hash2, &length);
+    EVP_MD_CTX_free(ctx2);
+
     return hash2;
 }
 
+// Hash function for three ranges
 template<typename T1, typename T2, typename T3>
 inline uint256 Hash(const T1 p1begin, const T1 p1end,
                     const T2 p2begin, const T2 p2end,
@@ -442,14 +483,33 @@ inline uint256 Hash(const T1 p1begin, const T1 p1end,
 {
     static unsigned char pblank[1];
     uint256 hash1;
-    SHA256_CTX ctx;
-    SHA256_Init(&ctx);
-    SHA256_Update(&ctx, (p1begin == p1end ? pblank : (unsigned char*)&p1begin[0]), (p1end - p1begin) * sizeof(p1begin[0]));
-    SHA256_Update(&ctx, (p2begin == p2end ? pblank : (unsigned char*)&p2begin[0]), (p2end - p2begin) * sizeof(p2begin[0]));
-    SHA256_Update(&ctx, (p3begin == p3end ? pblank : (unsigned char*)&p3begin[0]), (p3end - p3begin) * sizeof(p3begin[0]));
-    SHA256_Final((unsigned char*)&hash1, &ctx);
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr);
+
+    const unsigned char* p1ptr = (p1begin == p1end ? pblank : (unsigned char*)&p1begin[0]);
+    size_t p1len = (p1end - p1begin) * sizeof(p1begin[0]);
+    EVP_DigestUpdate(ctx, p1ptr, p1len);
+
+    const unsigned char* p2ptr = (p2begin == p2end ? pblank : (unsigned char*)&p2begin[0]);
+    size_t p2len = (p2end - p2begin) * sizeof(p2begin[0]);
+    EVP_DigestUpdate(ctx, p2ptr, p2len);
+
+    const unsigned char* p3ptr = (p3begin == p3end ? pblank : (unsigned char*)&p3begin[0]);
+    size_t p3len = (p3end - p3begin) * sizeof(p3begin[0]);
+    EVP_DigestUpdate(ctx, p3ptr, p3len);
+
+    unsigned int length = 0;
+    EVP_DigestFinal_ex(ctx, (unsigned char*)&hash1, &length);
+    EVP_MD_CTX_free(ctx);
+
+    // Double SHA256
     uint256 hash2;
-    SHA256((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
+    EVP_MD_CTX* ctx2 = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(ctx2, EVP_sha256(), nullptr);
+    EVP_DigestUpdate(ctx2, &hash1, sizeof(hash1));
+    EVP_DigestFinal_ex(ctx2, (unsigned char*)&hash2, &length);
+    EVP_MD_CTX_free(ctx2);
+
     return hash2;
 }
 
@@ -465,8 +525,40 @@ inline uint160 Hash160(const std::vector<unsigned char>& vch)
 {
     uint256 hash1;
     SHA256(&vch[0], vch.size(), (unsigned char*)&hash1);
+
     uint160 hash2;
-    RIPEMD160((unsigned char*)&hash1, sizeof(hash1), (unsigned char*)&hash2);
+    unsigned int len = 0;
+
+    // Initialize EVP_MD_CTX
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+    if (!ctx)
+    {
+        // handle error
+        throw std::runtime_error("Failed to create EVP_MD_CTX");
+    }
+
+    // Initialize digest context for RIPEMD160
+    if (1 != EVP_DigestInit_ex(ctx, EVP_ripemd160(), NULL))
+    {
+        EVP_MD_CTX_free(ctx);
+        throw std::runtime_error("EVP_DigestInit_ex failed");
+    }
+
+    // Perform digest
+    if (1 != EVP_DigestUpdate(ctx, &hash1, sizeof(hash1)))
+    {
+        EVP_MD_CTX_free(ctx);
+        throw std::runtime_error("EVP_DigestUpdate failed");
+    }
+
+    // Finalize digest
+    if (1 != EVP_DigestFinal_ex(ctx, (unsigned char*)&hash2, &len))
+    {
+        EVP_MD_CTX_free(ctx);
+        throw std::runtime_error("EVP_DigestFinal_ex failed");
+    }
+
+    EVP_MD_CTX_free(ctx);
     return hash2;
 }
 
