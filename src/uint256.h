@@ -334,7 +334,7 @@ public:
         return (GetHex());
     }
 
-    unsigned char* begin()
+    unsigned char* begin() const
     {
         return (unsigned char*)&pn[0];
     }

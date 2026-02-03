@@ -299,9 +299,8 @@ SOURCES += src/qt/phoenixcoin.cpp \
     src/noui.cpp \
     src/neoscrypt.c \
     src/neoscrypt_asm.S \
-    src/ecies/secure.c \
-    src/ecies/ecies.c \
-    src/ecies/kdf.c \
+    src/ecies/secure.cpp \
+    src/ecies/ecies.cpp \
     src/ntp.cpp \
     src/qt/walletmodeltransaction.cpp \
     src/qt/coincontrol.cpp
@@ -384,7 +383,7 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
 INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -lsecp256k1
 # -lgdi32 has to happen after -lcrypto (see  #681)
 win32:LIBS += -lws2_32 -lmswsock -lshlwapi -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_LIB_SUFFIX
