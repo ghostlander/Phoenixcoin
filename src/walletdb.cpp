@@ -875,7 +875,7 @@ bool ImportWallet(CWallet *pwallet, const string &strSrc) {
         bool fCompressed;
         CKey key;
         CSecret secret = vchSecret.GetSecret(fCompressed);
-        key.SetSecret(secret, fCompressed);
+        key.SetSecret(secret, true);
         CKeyID keyid = key.GetPubKey().GetID();
 
         if(pwallet->HaveKey(keyid)) {

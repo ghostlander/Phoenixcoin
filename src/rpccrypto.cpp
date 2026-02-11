@@ -94,7 +94,7 @@ Value decryptmessage(const Array &params, bool fHelp) {
           throw(JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key"));
         bool fCompressed;
         CSecret secret = vchSecret.GetSecret(fCompressed);
-        key.SetSecret(secret, fCompressed);
+        key.SetSecret(secret, true);
     }
 
     vector<uchar> vchEncrypted;
@@ -163,7 +163,7 @@ Value decryptdata(const Array &params, bool fHelp) {
           throw(JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key"));
         bool fCompressed;
         CSecret secret = vchSecret.GetSecret(fCompressed);
-        key.SetSecret(secret, fCompressed);
+        key.SetSecret(secret, true);
     }
 
     vector<uchar> vchDecrypted;

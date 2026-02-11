@@ -196,7 +196,7 @@ bool CKey::SetPrivKey(const CPrivKey& vchPrivKey) {
 
     if (vchPrivKey.size() == 32) {
         CSecret secret(vchPrivKey.begin(), vchPrivKey.end());
-        return SetSecret(secret, false);
+        return SetSecret(secret, true);
     }
 
     const unsigned char* p = vchPrivKey.data();
@@ -320,10 +320,6 @@ bool CKey::SetPubKey(const CPubKey& vchPubKeyIn) {
 }
 
 CPubKey CKey::GetPubKey() const {
-    if (!fCompressedPubKey) {
-        // legacy key → force upgrade
-        const_cast<CKey*>(this)->fCompressedPubKey = true;
-    }
     return vchPubKey;
 }
 

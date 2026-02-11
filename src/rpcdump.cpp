@@ -61,7 +61,7 @@ Value importprivkey(const Array &params, bool fHelp) {
     CKey key;
     bool fCompressed;
     CSecret secret = vchSecret.GetSecret(fCompressed);
-    key.SetSecret(secret, fCompressed);
+    key.SetSecret(secret, true);
     CKeyID vchAddress = key.GetPubKey().GetID();
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);

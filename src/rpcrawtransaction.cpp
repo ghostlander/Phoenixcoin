@@ -460,7 +460,7 @@ Value signrawtransaction(const Array &params, bool fHelp) {
             CKey key;
             bool fCompressed;
             CSecret secret = vchSecret.GetSecret(fCompressed);
-            key.SetSecret(secret, fCompressed);
+            key.SetSecret(secret, true);
             tempKeystore.AddKey(key);
         }
     }

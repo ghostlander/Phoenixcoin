@@ -191,8 +191,8 @@ bool CCryptoKeyStore::GetKey(const CKeyID &address, CKey& keyOut) const
                 return false;
             if (vchSecret.size() != 32)
                 return false;
-            keyOut.SetPubKey(vchPubKey);
-            keyOut.SetSecret(vchSecret);
+            bool fCompressed = (vchPubKey.Raw().size() == 33);
+            keyOut.SetSecret(vchSecret, fCompressed);
             return true;
         }
     }

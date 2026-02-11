@@ -133,7 +133,6 @@ class CKey {
     void Reset() {
         if (pkey) EVP_PKEY_free(pkey);
         pkey = nullptr;
-        fCompressedPubKey = false;
         fSet = false;
     }
     bool IsNull() const;
